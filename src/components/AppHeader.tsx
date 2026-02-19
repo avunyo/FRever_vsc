@@ -2,7 +2,9 @@ import { Link, useLocation } from "react-router-dom";
 import { Home, Camera, ChefHat, BarChart3, Settings, Sun, Moon } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { motion } from "framer-motion";
-import logo from "@/assets/logo.png";
+// Импортируем оба варианта логотипа
+import logoLight from "@/assets/logo-light.png";
+import logoDark from "@/assets/logo-dark.png";
 
 const navItems = [
   { to: "/dashboard", icon: Home, label: "Dashboard" },
@@ -19,12 +21,12 @@ export const AppHeader = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between px-4">
-        {/* ЛОГОТИП */}
+        {/* ЛОГОТИП (автоматическая смена PNG) */}
         <Link to="/" className="flex items-center gap-2">
           <img
-            src={logo}
+            src={theme === "light" ? logoLight : logoDark}
             alt="FRever"
-            className="h-7 md:h-8 object-contain dark:[filter:brightness(0)_invert(0.85)_sepia(0.3)_hue-rotate(100deg)_saturate(0.5)]"
+            className="h-7 md:h-8 object-contain"
           />
         </Link>
 
@@ -42,7 +44,6 @@ export const AppHeader = () => {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {/* Анимированный фон-овал для активного пункта */}
                 {isActive && (
                   <motion.div
                     layoutId="nav-indicator-desktop"
@@ -80,7 +81,6 @@ export const AppHeader = () => {
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               >
-                {/* Маленький индикатор сверху иконки для мобилок */}
                 {isActive && (
                   <motion.div
                     layoutId="nav-indicator-mobile"

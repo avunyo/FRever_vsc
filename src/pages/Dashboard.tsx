@@ -96,7 +96,7 @@ const Dashboard = () => {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="mb-8 rounded-2xl bg-card border border-border p-6"
         >
-          <h1 className="font-heading text-2xl font-bold mb-1">Hallo Max! 👋</h1>
+          <h1 className="font-heading text-2xl font-bold mb-1">Hallo! 👋</h1>
           <p className="text-muted-foreground">
             Du hast aktuell <span className="font-semibold text-foreground">{products.length}</span> Produkte im Blick.
           </p>

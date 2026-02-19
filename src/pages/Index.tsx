@@ -1,15 +1,16 @@
 import { motion } from "framer-motion";
-import { ArrowRight, ShieldCheck, TrendingDown, Lightbulb } from "lucide-react";
+import { ArrowRight, ShieldCheck, TrendingDown, Lightbulb, Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "@/components/ThemeProvider";
-import { Sun, Moon } from "lucide-react";
-import logo from "@/assets/logo.png";
+// Импортируем оба варианта логотипа
+import logoLight from "@/assets/logo-light.png";
+import logoDark from "@/assets/logo-dark.png";
 
 const features = [
   {
     icon: ShieldCheck,
     title: "Überblick behalten",
-    description: "Alle Lebensmittel im Blick, automatisch sortiert nach Ablaufdatum.",
+    description: "Alle Lebensmittel im Blick, автоматически sortiert nach Ablaufdatum.",
   },
   {
     icon: TrendingDown,
@@ -28,16 +29,17 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Minimal header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-        <div className="container flex h-16 items-center justify-between">
+        <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <img
-              src={logo}
+              src={theme === "light" ? logoLight : logoDark}
               alt="FRever"
-              className="h-8 object-contain dark:[filter:brightness(0)_invert(0.85)_sepia(0.3)_hue-rotate(100deg)_saturate(0.5)]"
+              className="h-8 object-contain"
             />
           </div>
+          
+          {/* Кнопка смены темы (на десктопе справа) */}
           <button
             onClick={toggleTheme}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:text-foreground"
@@ -48,9 +50,18 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Hero */}
       <main className="pt-16">
         <section className="relative overflow-hidden">
+          {/* МОБИЛЬНАЯ КНОПКА СМЕНЫ ТЕМЫ (Слева сверху внутри контента) */}
+          <div className="md:hidden absolute top-4 left-4 z-20">
+             <button
+                onClick={toggleTheme}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/50 backdrop-blur-md shadow-sm"
+              >
+                {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5 text-yellow-500" />}
+              </button>
+          </div>
+
           <div className="absolute inset-0 -z-10">
             <div className="absolute top-20 left-1/2 -translate-x-1/2 h-[600px] w-[600px] rounded-full bg-primary/5 blur-3xl" />
           </div>
