@@ -28,7 +28,7 @@ export const AppHeader = () => {
           />
         </Link>
 
-        {/* МЕНЮ ДЛЯ КОМПЬЮТЕРА (на телефоне скрыто) */}
+        {/* МЕНЮ ДЛЯ КОМПЬЮТЕРА */}
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to;
@@ -36,21 +36,22 @@ export const AppHeader = () => {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   isActive
-                    ? "text-primary"
+                    ? "text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <item.icon className="h-4 w-4" />
-                {item.label}
+                {/* Анимированный фон-овал для активного пункта */}
                 {isActive && (
                   <motion.div
-                    layoutId="nav-indicator"
-                    className="absolute inset-0 rounded-lg bg-primary/10"
+                    layoutId="nav-indicator-desktop"
+                    className="absolute inset-0 bg-primary rounded-full -z-10"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
+                <item.icon className="h-4 w-4" />
+                {item.label}
               </Link>
             );
           })}
@@ -75,10 +76,18 @@ export const AppHeader = () => {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center gap-1 px-2 py-1 text-[10px] transition-colors ${
+                className={`relative flex flex-col items-center gap-1 px-2 py-1 text-[10px] transition-colors ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               >
+                {/* Маленький индикатор сверху иконки для мобилок */}
+                {isActive && (
+                  <motion.div
+                    layoutId="nav-indicator-mobile"
+                    className="absolute -top-2 h-1 w-8 bg-primary rounded-full"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
                 <item.icon className="h-5 w-5" />
                 <span className="truncate max-w-[60px]">{item.label}</span>
               </Link>
