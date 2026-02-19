@@ -1,7 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Camera, ChefHat, BarChart3, Settings, Sun, Moon, Leaf } from "lucide-react";
+import { Home, Camera, ChefHat, BarChart3, Settings, Sun, Moon } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { motion } from "framer-motion";
+import appIcon from "@/assets/app-icon.png";
+import logo from "@/assets/logo.png";
 
 const navItems = [
   { to: "/dashboard", icon: Home, label: "Dashboard" },
@@ -19,10 +21,8 @@ export const AppHeader = () => {
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <Leaf className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="font-heading text-xl font-bold">FRever</span>
+          <img src={appIcon} alt="FRever" className="h-9 w-9 object-contain" />
+          <img src={logo} alt="FRever" className="h-7 object-contain" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">

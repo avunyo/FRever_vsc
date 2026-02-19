@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
-import { Leaf, ArrowRight, ShieldCheck, TrendingDown, Lightbulb } from "lucide-react";
+import { ArrowRight, ShieldCheck, TrendingDown, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "@/components/ThemeProvider";
 import { Sun, Moon } from "lucide-react";
+import appIcon from "@/assets/app-icon.png";
+import logo from "@/assets/logo.png";
 
 const features = [
   {
@@ -31,10 +33,8 @@ const LandingPage = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <Leaf className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-heading text-xl font-bold">FRever</span>
+            <img src={appIcon} alt="FRever" className="h-9 w-9 object-contain" />
+            <img src={logo} alt="FRever" className="h-7 object-contain" />
           </div>
           <button
             onClick={toggleTheme}
@@ -62,7 +62,7 @@ const LandingPage = () => {
               className="max-w-2xl"
             >
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-sm text-muted-foreground">
-                <Leaf className="h-4 w-4 text-primary" />
+                <img src={appIcon} alt="" className="h-5 w-5 object-contain" />
                 Weniger verschwenden, mehr genießen
               </div>
 
