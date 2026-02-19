@@ -59,6 +59,17 @@ export const AppHeader = () => {
         </nav>
 
         {/* КНОПКА СМЕНЫ ТЕМЫ — СКРЫТА НА ТЕЛЕФОНАХ (hidden), видна на ПК (md:flex) */}
+    
+
+        <button
+          onClick={toggleTheme}
+          className="flex md:hidden h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground"
+          aria-label="Theme wechseln"
+        >
+          {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-yellow-500" />}
+        </button>
+
+        {/* КНОПКА СМЕНЫ ТЕМЫ ДЛЯ ПК (уже есть у вас) */}
         <button
           onClick={toggleTheme}
           className="hidden md:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:text-foreground hover:bg-accent"

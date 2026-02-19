@@ -88,7 +88,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8">
       <AppHeader />
-      <main className="container px-4 py-8">
+      <main className="container max-w-5xl mx-auto px-4 py-8">
         {/* Welcome Widget */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -112,7 +112,7 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
           {/* Products Column */}
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-5">
@@ -151,7 +151,7 @@ const Dashboard = () => {
                       variants={itemVariants}
                       exit="exit"
                       layout
-                      className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 group hover:border-primary/30 transition-colors duration-200"
+                      className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-4 group hover:border-primary/30 transition-all duration-200"
                     >
                       <motion.div
                         whileHover={{ rotate: 10, scale: 1.1 }}
