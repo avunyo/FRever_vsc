@@ -77,7 +77,7 @@ export const AppHeader = () => {
                 }`}
               >
                 <item.icon className="h-5 w-5" />
-                {item.label}
+                <span className="hidden xs:block">{item.label}</span>
               </Link>
             );
           })}
