@@ -18,15 +18,17 @@ export const AppHeader = () => {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between px-4">
+        {/* ЛОГОТИП */}
         <Link to="/" className="flex items-center gap-2">
           <img
             src={logo}
             alt="FRever"
-            className="h-8 object-contain dark:[filter:brightness(0)_invert(0.85)_sepia(0.3)_hue-rotate(100deg)_saturate(0.5)]"
+            className="h-7 md:h-8 object-contain dark:[filter:brightness(0)_invert(0.85)_sepia(0.3)_hue-rotate(100deg)_saturate(0.5)]"
           />
         </Link>
 
+        {/* МЕНЮ ДЛЯ КОМПЬЮТЕРА (на телефоне скрыто) */}
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to;
@@ -54,30 +56,31 @@ export const AppHeader = () => {
           })}
         </nav>
 
+        {/* КНОПКА СМЕНЫ ТЕМЫ */}
         <button
           onClick={toggleTheme}
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:text-foreground hover:bg-accent"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:text-foreground hover:bg-accent"
           aria-label="Theme wechseln"
         >
           {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
         </button>
       </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-lg">
-        <div className="flex justify-around py-2">
-          {navItems.slice(0, 4).map((item) => {
+      {/* НИЖНЕЕ МЕНЮ ДЛЯ ТЕЛЕФОНА */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-lg pb-safe">
+        <div className="flex justify-around items-center py-2">
+          {navItems.map((item) => {
             const isActive = location.pathname === item.to;
             return (
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center gap-1 px-3 py-1 text-xs transition-colors ${
+                className={`flex flex-col items-center gap-1 px-2 py-1 text-[10px] transition-colors ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               >
                 <item.icon className="h-5 w-5" />
-                <span className="hidden xs:block">{item.label}</span>
+                <span className="truncate max-w-[60px]">{item.label}</span>
               </Link>
             );
           })}
