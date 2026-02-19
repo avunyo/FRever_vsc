@@ -1,105 +1,47 @@
-import { Link, useLocation } from "react-router-dom";
-import { Home, Camera, ChefHat, BarChart3, Settings, Sun, Moon } from "lucide-react";
-import { useTheme } from "./ThemeProvider";
+import { AppHeader } from "@/components/AppHeader";
 import { motion } from "framer-motion";
-// Импортируем оба варианта логотипа
-import logoLight from "@/assets/logo-light.png";
-import logoDark from "@/assets/logo-dark.png";
+import { User, Bell, Target, Sliders, Crown, Shield, Info } from "lucide-react";
 
-const navItems = [
-  { to: "/dashboard", icon: Home, label: "Dashboard" },
-  { to: "/scan", icon: Camera, label: "Scannen" },
-  { to: "/recipes", icon: ChefHat, label: "Rezepte" },
-  { to: "/reports", icon: BarChart3, label: "Berichte" },
-  { to: "/settings", icon: Settings, label: "Einstellungen" },
+const sections = [
+  { icon: User, label: "Mein Konto", description: "E-Mail, Passwort, Name verwalten" },
+  { icon: Bell, label: "Benachrichtigungen", description: "Push-Zeiten und Warnungen einstellen" },
+  { icon: Target, label: "Ziele", description: "Monatsziel für weniger Abfall anpassen" },
+  { icon: Sliders, label: "Heuristiken", description: "Haltbarkeiten für deine Produkte anpassen" },
+  { icon: Crown, label: "Premium", description: "Abo verwalten und upgraden" },
+  { icon: Shield, label: "Datenschutz", description: "Deine Daten und Privatsphäre" },
+  { icon: Info, label: "Über FRever", description: "Version, Team und Kontakt" },
 ];
 
-export const AppHeader = () => {
-  const { theme, toggleTheme } = useTheme();
-  const location = useLocation();
-
-  return (
-    <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
-      <div className="container flex h-16 items-center justify-between px-4">
-        {/* ЛОГОТИП — ТЕПЕРЬ БУДЕТ МЕНЯТЬСЯ ПРАВИЛЬНО */}
-        <Link to="/" className="flex items-center gap-2">
-          <img
-            src={theme === "light" ? logoDark : logoLight}
-            alt="FRever"
-            className="h-7 md:h-8 object-contain"
-          />
-        </Link>
-
-        {/* МЕНЮ ДЛЯ КОМПЬЮТЕРА */}
-        <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.to;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  isActive
-                    ? "text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-indicator-desktop"
-                    className="absolute inset-0 bg-primary rounded-full -z-10"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* КНОПКА СМЕНЫ ТЕМЫ — СКРЫТА НА ТЕЛЕФОНАХ (hidden), видна на ПК (md:flex) */}
-    
-
-        <button
-          onClick={toggleTheme}
-          className="flex md:hidden h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground"
-          aria-label="Theme wechseln"
-        >
-          {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-yellow-500" />}
-        </button>
-
-        {/* КНОПКА СМЕНЫ ТЕМЫ ДЛЯ ПК (уже есть у вас) */}
-        <button
-          onClick={toggleTheme}
-          className="hidden md:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:text-foreground hover:bg-accent"
-          aria-label="Theme wechseln"
-        >
-          {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-        </button>
+const SettingsPage = () => (
+  <div className="min-h-screen bg-background pb-24 md:pb-8">
+    <AppHeader />
+    <main className="container px-4 py-8 max-w-2xl">
+      <div className="mb-8">
+        <h1 className="font-heading text-2xl font-bold mb-1">Einstellungen</h1>
+        <p className="text-muted-foreground">Personalisiere dein FRever-Erlebnis</p>
       </div>
 
-      {/* НИЖНЕЕ МЕНЮ (без изменений) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-lg pb-safe">
-  {/* Вставь этот кусочек внутрь */}
-  <div className="flex items-center justify-around h-16">
-    {navItems.map((item) => {
-      const isActive = location.pathname === item.to;
-      return (
-        <Link
-          key={item.to}
-          to={item.to}
-          className={`flex flex-col items-center justify-center flex-1 h-full ${
-            isActive ? "text-primary" : "text-muted-foreground"
-          }`}
-        >
-          <item.icon className="h-5 w-5" />
-          <span className="text-[10px] mt-1">{item.label}</span>
-        </Link>
-      );
-    })}
+      <div className="space-y-2">
+        {sections.map((s, i) => (
+          <motion.button
+            key={s.label}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.05 }}
+            className="w-full flex items-center gap-4 rounded-xl border border-border bg-card p-4 text-left transition-colors hover:bg-accent group"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+              <s.icon className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="font-medium">{s.label}</p>
+              <p className="text-sm text-muted-foreground">{s.description}</p>
+            </div>
+          </motion.button>
+        ))}
+      </div>
+    </main>
   </div>
-</nav>
-    </header>
-  );
-};
+);
+
+export default SettingsPage;
