@@ -80,26 +80,34 @@ export const AppHeader = () => {
       </div>
 
       {/* НИЖНЕЕ МЕНЮ (без изменений) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-lg pb-safe">
-  {/* Вставь этот кусочек внутрь */}
-  <div className="flex items-center justify-around h-16">
-    {navItems.map((item) => {
-      const isActive = location.pathname === item.to;
-      return (
-        <Link
-          key={item.to}
-          to={item.to}
-          className={`flex flex-col items-center justify-center flex-1 h-full ${
-            isActive ? "text-primary" : "text-muted-foreground"
-          }`}
-        >
-          <item.icon className="h-5 w-5" />
-          <span className="text-[10px] mt-1">{item.label}</span>
-        </Link>
-      );
-    })}
-  </div>
-</nav>
+     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-lg pb-safe">
+       <div className="flex items-center justify-around h-16 px-2">
+         {navItems.map((item) => {
+           const isActive = location.pathname === item.to;
+           return (
+             <Link
+               key={item.to}
+               to={item.to}
+               className={`relative flex flex-col items-center justify-center min-w-[64px] h-12 transition-colors ${
+                 isActive ? "text-primary-foreground" : "text-muted-foreground"
+               }`}
+             >
+               {/* ФОНОВАЯ КАПСУЛА (появляется только если isActive) */}
+               {isActive && (
+                 <motion.div
+                   layoutId="nav-indicator-mobile"
+                   className="absolute inset-0 bg-primary rounded-xl -z-10"
+                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                 />
+               )}
+     
+               <item.icon className={`h-5 w-5 mb-0.5`} />
+               <span className="text-[10px] font-medium">{item.label}</span>
+             </Link>
+           );
+         })}
+       </div>
+     </nav>
     </header>
   );
 };
