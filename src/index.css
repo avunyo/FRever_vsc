@@ -57,53 +57,58 @@
   }
 
   .dark {
-    --background: 183 33% 12%;
-    --foreground: 122 18% 80%;
+    /* Глубокий хвойный фон как на твоем эскизе */
+    --background: 174 8% 13%; 
+    --foreground: 150 15% 94%;
 
-    --card: 163 24% 37%;
-    --card-foreground: 122 18% 80%;
+    /* Карточки делаем светлее и сочнее, чтобы они выделялись */
+    --card: 172 17% 26%; 
+    --card-foreground: 150 15% 96%;
 
-    --popover: 163 24% 37%;
-    --popover-foreground: 122 18% 80%;
+    --popover: 172 20% 15%;
+    --popover-foreground: 150 15% 96%;
 
-    --primary: 150 35% 60%;
-    --primary-foreground: 183 33% 10%;
+    /* Основной акцентный зеленый (кнопки) */
+    --primary: 153 35% 52%;
+    --primary-foreground: 172 25% 5%;
 
-    --secondary: 163 20% 30%;
-    --secondary-foreground: 122 18% 80%;
+    /* Второстепенные элементы, как кнопки фильтров */
+    --secondary: 172 15% 18%;
+    --secondary-foreground: 150 15% 90%;
 
-    --muted: 163 20% 30%;
-    --muted-foreground: 122 12% 65%;
+    --muted: 172 15% 18%;
+    --muted-foreground: 160 10% 70%;
 
-    --accent: 163 20% 30%;
-    --accent-foreground: 122 18% 80%;
+    --accent: 172 15% 22%;
+    --accent-foreground: 150 15% 96%;
 
-    --destructive: 0 62% 50%;
+    /* Статусы (Красный, Оранжевый, Зеленый) делаем чуть ярче для контраста */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
+    --warning: 38 92% 58%;
+    --warning-foreground: 38 100% 10%;
+    --success: 153 35% 52%;
+    --success-foreground: 172 25% 5%;
 
-    --warning: 37 91% 60%;
-    --warning-foreground: 37 100% 15%;
+    --fresh: 153 91% 38%;
+    --expiring: 38 79% 46%;
+    --expired: 7 87% 58%;
 
-    --success: 150 35% 60%;
-    --success-foreground: 183 33% 10%;
+    /* Рамки: делаем их чуть светлее карточки, чтобы был виден контур */
+    --border: 182 36% 21%;
+    --input: 172 15% 20%;
+    --ring: 153 35% 52%;
 
-    --fresh: 150 35% 60%;
-    --expiring: 37 91% 60%;
-    --expired: 0 62% 50%;
-
-    --border: 163 20% 28%;
-    --input: 163 20% 28%;
-    --ring: 150 35% 60%;
-
-    --sidebar-background: 183 33% 12%;
-    --sidebar-foreground: 122 18% 80%;
-    --sidebar-primary: 150 35% 60%;
-    --sidebar-primary-foreground: 183 33% 10%;
-    --sidebar-accent: 163 20% 30%;
-    --sidebar-accent-foreground: 122 18% 80%;
-    --sidebar-border: 163 20% 28%;
-    --sidebar-ring: 150 35% 60%;
-  }
+    /* Боковая панель: чуть темнее основного фона для стиля */
+    --sidebar-background: 172 25% 7%;
+    --sidebar-foreground: 150 15% 90%;
+    --sidebar-primary: 153 35% 52%;
+    --sidebar-primary-foreground: 172 25% 5%;
+    --sidebar-accent: 172 15% 18%;
+    --sidebar-accent-foreground: 150 15% 96%;
+    --sidebar-border: 172 15% 18%;
+    --sidebar-ring: 153 35% 52%;
+ }
 }
 
 @layer base {
