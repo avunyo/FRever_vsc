@@ -27,7 +27,7 @@ export const AppHeader = () => {
             src={theme === "light" ? logoLight : logoDark}
             alt="FRever"
             className="h-7 md:h-8 object-contain"
-          />
+         />
         </Link>
 
         {/* МЕНЮ ДЛЯ КОМПЬЮТЕРА */}
