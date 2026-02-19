@@ -3,7 +3,6 @@ import { ArrowRight, ShieldCheck, TrendingDown, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "@/components/ThemeProvider";
 import { Sun, Moon } from "lucide-react";
-import appIcon from "@/assets/app-icon.png";
 import logo from "@/assets/logo.png";
 
 const features = [
@@ -33,8 +32,11 @@ const LandingPage = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src={appIcon} alt="FRever" className="h-9 w-9 object-contain" />
-            <img src={logo} alt="FRever" className="h-7 object-contain" />
+            <img
+              src={logo}
+              alt="FRever"
+              className="h-8 object-contain dark:[filter:brightness(0)_invert(0.85)_sepia(0.3)_hue-rotate(100deg)_saturate(0.5)]"
+            />
           </div>
           <button
             onClick={toggleTheme}
@@ -49,7 +51,6 @@ const LandingPage = () => {
       {/* Hero */}
       <main className="pt-16">
         <section className="relative overflow-hidden">
-          {/* Background decoration */}
           <div className="absolute inset-0 -z-10">
             <div className="absolute top-20 left-1/2 -translate-x-1/2 h-[600px] w-[600px] rounded-full bg-primary/5 blur-3xl" />
           </div>
@@ -62,8 +63,7 @@ const LandingPage = () => {
               className="max-w-2xl"
             >
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-sm text-muted-foreground">
-                <img src={appIcon} alt="" className="h-5 w-5 object-contain" />
-                Weniger verschwenden, mehr genießen
+                🌿 Weniger verschwenden, mehr genießen
               </div>
 
               <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6">
