@@ -24,7 +24,7 @@ export const AppHeader = () => {
         {/* ЛОГОТИП (автоматическая смена PNG) */}
         <Link to="/" className="flex items-center gap-2">
           <img
-            src={theme === "light" ? logoLight : logoDark}
+            src={theme === "light" ? logoLight : logoLight}
             alt="FRever"
             className="h-7 md:h-8 object-contain"
          />
