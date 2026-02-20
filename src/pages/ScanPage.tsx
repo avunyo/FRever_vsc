@@ -176,13 +176,13 @@ const ScanPage = () => {
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={() => { setShowReview(false); setProducts([]); }}
-                  className="flex-1 rounded-xl border border-border bg-card px-6 py-3 font-medium transition-colors hover:bg-accent"
+                  className="flex-1 rounded-xl -mt-2 border border-border bg-card px-6 py-2 font-medium transition-colors hover:bg-accent"
                 >
                   Abbrechen
                 </button>
                 <button
                   onClick={confirmProducts}
-                  className="flex-1 rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-shadow hover:shadow-xl"
+                  className="flex-1 rounded-xl -mt-2 bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-shadow hover:shadow-xl"
                 >
                   Alle hinzufügen
                 </button>

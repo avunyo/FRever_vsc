@@ -45,7 +45,7 @@ const LandingPage = () => {
                 </div>
             </header>
 
-            <main className="pt-24 md:pt-10">
+            <main className="pt-20 md:pt-20">
                 <section className="relative overflow-hidden">
                     {/* МОБИЛЬНУЮ КНОПКУ ОТСЮДА УДАЛИЛИ */}
 
@@ -54,7 +54,7 @@ const LandingPage = () => {
                     </div>
 
                     {/* --- ЗАМЕНИТЬ ОТСЮДА --- */}
-                    <div className="container flex flex-col items-center -mt-5 md:pt-0 px-4 text-center">
+                    <div className="container flex flex-col items-center mt-5 md:pt-0 px-4 text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ const LandingPage = () => {
                                     opacity: { delay: 0.5, duration: 0.8 },
                                     y: { repeat: Infinity, duration: 2, ease: "easeInOut" }
                                 }}
-                                className="mt-4 mb-10 flex flex-col items-center gap-3 cursor-pointer text-muted-foreground hover:text-primary transition-colors group"
+                                className="mt-2 mb-10 flex flex-col items-center gap-3 cursor-pointer text-muted-foreground hover:text-primary transition-colors group"
                                 onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
                             >
                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Mehr erfahren</span>
