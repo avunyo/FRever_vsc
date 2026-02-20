@@ -32,14 +32,14 @@ const LandingPage = () => {
             {/* Шапка Landing Page — Кнопку темы отсюда тоже убрали, так как она есть в AppHeader */}
             <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
                 {/* Увеличили высоту контейнера до h-20 */}
-                <div className="container flex h-20 items-center justify-between px-4">
+                <div className="container flex h-16 items-center justify-between px-4">
                     <div className="flex items-center gap-2">
                         <img
                             /* Логика темы остается */
                             src={theme === "light" ? logoDark : logoLight}
                             alt="FRever"
                             /* УВЕЛИЧЕННЫЙ РАЗМЕР: h-12 на мобильных, h-14 на компах */
-                            className="h-12 md:h-14 w-auto object-contain"
+                            className="h-10 md:h-12 w-auto object-contain"
                         />
                     </div>
                 </div>
@@ -54,7 +54,7 @@ const LandingPage = () => {
                     </div>
 
                     {/* --- ЗАМЕНИТЬ ОТСЮДА --- */}
-                    <div className="container flex flex-col items-center -mt-8 md:pt-0 px-4 text-center">
+                    <div className="container flex flex-col items-center -mt-5 md:pt-0 px-4 text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ const LandingPage = () => {
                                     opacity: { delay: 0.5, duration: 0.8 },
                                     y: { repeat: Infinity, duration: 2, ease: "easeInOut" }
                                 }}
-                                className="mt-12 mb-10 flex flex-col items-center gap-3 cursor-pointer text-muted-foreground hover:text-primary transition-colors group"
+                                className="mt-4 mb-10 flex flex-col items-center gap-3 cursor-pointer text-muted-foreground hover:text-primary transition-colors group"
                                 onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
                             >
                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Mehr erfahren</span>
