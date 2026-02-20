@@ -54,7 +54,7 @@ const LandingPage = () => {
                     </div>
 
                     {/* --- ЗАМЕНИТЬ ОТСЮДА --- */}
-                    <div className="container flex flex-col items-center -mt-4 md:pt-0 px-4 text-center">
+                    <div className="container flex flex-col items-center -mt-8 md:pt-0 px-4 text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
