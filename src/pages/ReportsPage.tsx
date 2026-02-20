@@ -31,7 +31,7 @@ const ReportsPage = () => (
     <main className="container px-4 py-8 max-w-5xl">
       <div className="mb-8">
         <h1 className="font-heading text-2xl font-bold mb-1">Monatsbericht</h1>
-        <p className="text-muted-foreground">April 2024</p>
+        <p className="text-muted-foreground">März 2026</p>
       </div>
 
       {/* KPIs */}

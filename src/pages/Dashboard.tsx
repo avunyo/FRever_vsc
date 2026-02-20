@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check, Pencil, Trash2, CalendarDays, Milk, Apple, Croissant,
-  ChefHat, TrendingUp, AlertTriangle, Target, Plus, X
+  ChefHat, TrendingUp, AlertTriangle, Target, Plus, X, ArrowRight, Settings2
 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { toast } from "@/hooks/use-toast";
@@ -21,13 +21,20 @@ interface Product {
 }
 
 const mockProducts: Product[] = [
-  { id: "1", name: "Vollmilch 1,5%", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2024-04-26", status: "expiring", quantity: 1 },
-  { id: "2", name: "Bio Joghurt Erdbeer", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2024-04-28", status: "expiring", quantity: 1 },
-  { id: "3", name: "Dinkel Toastbrot", category: "Backwaren", categoryIcon: Croissant, expiryDate: "2024-04-25", status: "expired", quantity: 1 },
-  { id: "4", name: "Bio Bananen", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2024-04-27", status: "expiring", quantity: 6 },
-  { id: "5", name: "Cheddar Scheiben", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2024-05-10", status: "fresh", quantity: 1 },
-  { id: "6", name: "Butter", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2024-05-15", status: "fresh", quantity: 1 },
-  { id: "7", name: "Äpfel Braeburn", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2024-05-02", status: "fresh", quantity: 4 },
+  { id: "1", name: "Vollmilch 1,5%", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-20", status: "expiring", quantity: 2 },
+  { id: "2", name: "Bio Joghurt Erdbeer", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-28", status: "fresh", quantity: 1 },
+  { id: "3", name: "Dinkel Toastbrot", category: "Backwaren", categoryIcon: Croissant, expiryDate: "2026-05-25", status: "expiring", quantity: 1 },
+  { id: "4", name: "Bio Bananen", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-27", status: "fresh", quantity: 6 },
+  { id: "5", name: "Cheddar Scheiben", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-10", status: "fresh", quantity: 3 },
+  { id: "6", name: "Butter", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-15", status: "fresh", quantity: 1 },
+  { id: "7", name: "Äpfel Braeburn", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-02", status: "fresh", quantity: 6 },
+  { id: "8", name: "Magerquark", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-20", status: "expiring", quantity: 4 },
+  { id: "9", name: "Karotten", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-20", status: "fresh", quantity: 1 },
+  { id: "10", name: "Protein Brötchen", category: "Backwaren", categoryIcon: Croissant, expiryDate: "2026-05-20", status: "expiring", quantity: 4 },
+  { id: "11", name: "mango", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-20", status: "expired", quantity: 2 },
+  { id: "12", name: "Kiwi", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-20", status: "fresh", quantity: 3 },
+  { id: "13", name: "Süßkartoffel", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-20", status: "fresh", quantity: 2 },
+  { id: "14", name: "Frischkäse", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-20", status: "expired", quantity: 2 },
 ];
 
 const statusConfig: Record<ProductStatus, { label: string; className: string; dotColor: string }> = {
@@ -41,6 +48,7 @@ const filters = ["Alle", "Nach Ablaufdatum", "Nach Kategorie", "Abgelaufen"];
 const Dashboard = () => {
   const [products, setProducts] = useState(mockProducts);
   const [activeFilter, setActiveFilter] = useState("Alle");
+  const [showFilters, setShowFilters] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const expiringCount = products.filter((p) => p.status === "expiring" || p.status === "expired").length;
@@ -62,6 +70,7 @@ const Dashboard = () => {
     if (activeFilter === "Nach Kategorie") return a.category.localeCompare(b.category);
     return new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime();
   });
+  const displayedProducts = activeFilter === "Alle" ? sortedProducts.slice(0, 5) : sortedProducts;
 
   const markConsumed = (id: string) => {
     const product = products.find((p) => p.id === id);
@@ -109,31 +118,65 @@ const Dashboard = () => {
               <span className="h-2 w-2 rounded-full bg-warning animate-pulse" />
               <span className="text-sm font-medium text-warning">{expiringCount} Bald ablaufend</span>
             </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-2 rounded-xl bg-destructive/10 px-4 py-2 cursor-pointer">
+              <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
+              <span className="text-sm font-medium text-destructive">
+                {products.filter(p => p.status === "expired").length} Abgelaufen
+              </span>
+            </motion.div>
           </div>
         </motion.div>
 
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
           {/* Products Column */}
           <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-heading text-xl font-bold">Meine Produkte</h2>
-              <div className="flex gap-1.5 flex-wrap">
-                {filters.map((f) => (
-                  <motion.button
-                    key={f}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setActiveFilter(f)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
-                      activeFilter === f
-                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                        : "bg-muted text-muted-foreground hover:text-foreground hover:bg-accent"
+            <div className="flex flex-col mb-5">
+              {/* Верхний ряд: Заголовок слева, иконка справа */}
+              <div className="flex items-center justify-between">
+                <h2 className="font-heading text-xl font-bold whitespace-nowrap">
+                  Zuletzt hinzugefügt
+                </h2>
+
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`p-2 rounded-xl border transition-all ${showFilters
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted text-muted-foreground border-border hover:bg-accent"
                     }`}
-                  >
-                    {f}
-                  </motion.button>
-                ))}
+                >
+                  <Settings2 className="h-5 w-5" />
+                </motion.button>
               </div>
+
+              {/* Выпадающий список кнопок-фильтров */}
+              <AnimatePresence>
+                {showFilters && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                    animate={{ height: "auto", opacity: 1, marginTop: 16 }}
+                    exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex flex-wrap gap-2">
+                      {filters.map((f) => (
+                        <motion.button
+                          key={f}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setActiveFilter(f)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${activeFilter === f
+                            ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                            : "bg-muted text-muted-foreground hover:text-foreground hover:bg-accent"
+                            }`}
+                        >
+                          {f}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <motion.div
@@ -143,7 +186,7 @@ const Dashboard = () => {
               className="space-y-3"
             >
               <AnimatePresence mode="popLayout">
-                {sortedProducts.map((product) => {
+                {displayedProducts.map((product) => {
                   const status = statusConfig[product.status];
                   return (
                     <motion.div
@@ -213,7 +256,21 @@ const Dashboard = () => {
                   );
                 })}
               </AnimatePresence>
-
+              {activeFilter === "Alle" && products.length > 5 && (
+                <Link to="/inventory" className="block mt-6">
+                  <motion.div
+                    whileHover={{ scale: 1.02, backgroundColor: "var(--accent)" }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center justify-center gap-2 w-full py-4 px-6 
+                               bg-secondary/50 border-2 border-primary/20 rounded-2xl 
+                               text-primary font-bold shadow-sm hover:shadow-md 
+                               hover:border-primary/40 transition-all cursor-pointer"
+                  >
+                    <span>Alle {products.length} Produkte im Inventar sehen</span>
+                    <ArrowRight className="h-5 w-5" />
+                  </motion.div>
+                </Link>
+              )}
               {sortedProducts.length === 0 && (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -347,8 +404,9 @@ const Dashboard = () => {
                 {goalProgress}% erreicht 🎉
               </motion.p>
             </motion.div>
+
           </div>
-        </div>
+       </div>
       </main>
     </div>
   );

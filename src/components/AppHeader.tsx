@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Camera, ChefHat, BarChart3, Settings, Sun, Moon } from "lucide-react";
+import { Home, Refrigerator, ChefHat, BarChart3, Settings, Sun, Moon } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { motion } from "framer-motion";
 // Импортируем оба варианта логотипа
@@ -8,7 +8,7 @@ import logoDark from "@/assets/logo-dark.png";
 
 const navItems = [
   { to: "/dashboard", icon: Home, label: "Dashboard" },
-  { to: "/scan", icon: Camera, label: "Scannen" },
+  { to: "/inventory", icon: Refrigerator, label: "Inventar" },
   { to: "/recipes", icon: ChefHat, label: "Rezepte" },
   { to: "/reports", icon: BarChart3, label: "Berichte" },
   { to: "/settings", icon: Settings, label: "Einstellungen" },
@@ -20,15 +20,20 @@ export const AppHeader = () => {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
-      <div className="container flex h-16 items-center justify-between px-4">
+      <div className="container flex h-20 items-center justify-between px-4">
         {/* ЛОГОТИП — ТЕПЕРЬ БУДЕТ МЕНЯТЬСЯ ПРАВИЛЬНО */}
-        <Link to="/" className="flex items-center gap-2">
-          <img
-            src={theme === "light" ? logoDark : logoLight}
-            alt="FRever"
-            className="h-7 md:h-8 object-contain"
-          />
-        </Link>
+        <Link to="/" className="flex items-center" style={{ height: '100%' }}>
+  <img
+    src={theme === "light" ? logoDark : logoLight}
+    alt="FRever"
+    className="w-auto object-contain"
+    style={{ 
+      height: '56px',      // Это намного больше стандартного (было около 30px)
+      minHeight: '56px',   // Гарантируем, что не сожмется
+      display: 'block' 
+    }}
+  />
+</Link>
 
         {/* МЕНЮ ДЛЯ КОМПЬЮТЕРА */}
         <nav className="hidden md:flex items-center gap-1">
