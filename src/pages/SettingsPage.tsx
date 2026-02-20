@@ -1,7 +1,11 @@
 import { AppHeader } from "@/components/AppHeader";
 import { motion } from "framer-motion";
-import { User, Bell, Target, Sliders, Crown, Shield, Info, Sun, Moon } from "lucide-react";
+import { User, Bell, Target, Sliders, Crown, Shield, Info, Sun, Moon} from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
+import { Link } from "react-router-dom";
+
+import logoLight from "@/assets/logo-light.png";
+import logoDark from "@/assets/logo-dark.png";
 
 const sections = [
   { icon: User, label: "Mein Konto", description: "E-Mail, Passwort, Name verwalten" },
@@ -17,7 +21,7 @@ const SettingsPage = () => {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8">
+    <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
       <AppHeader />
       <main className="container px-4 py-8 max-w-2xl">
         <div className="mb-8">
@@ -64,6 +68,19 @@ const SettingsPage = () => {
           ))}
         </div>
       </main>
+      <div className="mt-20 mb-10 flex flex-col items-center gap-4 border-t border-border pt-12">
+    <Link to="/" className="active:scale-95 transition-transform">
+    <img
+        src={theme === "light" ? logoDark : logoLight} 
+        alt="FRever Home"
+        /* Убрали прозрачность, теперь логотип всегда яркий */
+        className="h-10 w-auto object-contain" 
+    />
+</Link>
+    <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+        Version 1.0.2
+    </p>
+</div>
     </div>
   );
 };

@@ -12,7 +12,8 @@ const recipes = [
 ];
 
 const RecipesPage = () => (
-  <div className="min-h-screen bg-background pb-24 md:pb-8">
+  <div className="min-h-screen bg-background pt-20
+   pb-24 md:pb-8">
     <AppHeader />
     <main className="container px-4 py-8 max-w-5xl">
       <div className="mb-8">

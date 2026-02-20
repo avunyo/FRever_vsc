@@ -95,7 +95,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8">
+    <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
       <AppHeader />
       <main className="container max-w-5xl mx-auto px-4 py-8">
         {/* Welcome Widget */}

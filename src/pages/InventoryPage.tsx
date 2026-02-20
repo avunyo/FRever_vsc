@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { Box, ShoppingCart, Plus, CalendarDays, Check, Trash2, Camera, Milk, Apple, Croissant } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
@@ -35,26 +35,33 @@ const InventoryPage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const { scrollY } = useScroll();
 
+ // Логика появления/исчезновения кнопки
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
-    if (latest > 50) {
+    
+    // Если проскроллили больше 50px и идем ВНИЗ — скрываем
+    if (latest > previous && latest > 50) {
       setIsVisible(false);
-    }
+    } 
+    // Если скроллим ВВЕРХ — показываем
     else if (latest < previous) {
       setIsVisible(true);
     }
-    else if (latest < previous && latest < 150) {
-      setIsVisible(false);
-    }
   });
+
+  // Чтобы кнопка была видна СРАЗУ при заходе на страницу:
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8">
+    <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
       <AppHeader />
       <main className="container max-w-2xl mx-auto px-4 py-8">
 
         {/* ЗАГОЛОВОК */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold font-heading">Mein Inventar</h1>
+          
         </div>
 
 
@@ -89,7 +96,7 @@ const InventoryPage = () => {
               className="space-y-3"
             >
               {/* Сюда позже перенесем твой маппинг продуктов из Dashboard */}
-              <p className="text-center text-muted-foreground py-10">Hier findest du deine Vorräte.</p>
+
               {Object.entries(groupedProducts).map(([category, items]) => {
                 const isExpanded = expandedCategory === category;
                 const CategoryIcon = items[0].categoryIcon;
@@ -163,14 +170,14 @@ const InventoryPage = () => {
             initial={{ scale: 0, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0, opacity: 0, y: 20 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.2 }}
             className="fixed bottom-24 right-6 z-[60] md:bottom-10 md:right-10"
           >
             <Link to="/scan">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40 transition-colors hover:bg-primary/90"
+                className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
               >
                 <Camera className="h-8 w-8" />
               </motion.button>

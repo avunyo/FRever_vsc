@@ -45,7 +45,7 @@ const LandingPage = () => {
                 </div>
             </header>
 
-            <main className="pt-4 md:pt-10">
+            <main className="pt-24 md:pt-10">
                 <section className="relative overflow-hidden">
                     {/* МОБИЛЬНУЮ КНОПКУ ОТСЮДА УДАЛИЛИ */}
 
@@ -54,7 +54,7 @@ const LandingPage = () => {
                     </div>
 
                     {/* --- ЗАМЕНИТЬ ОТСЮДА --- */}
-                    <div className="container flex flex-col items-center pt-10 md:pt-20 px-4">
+                    <div className="container flex flex-col items-center pt-6 md:pt-20 px-4 text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -104,17 +104,21 @@ const LandingPage = () => {
                             </div>
                             <motion.div
                                 initial={{ opacity: 0 }}
-                                animate={{ opacity: 1, y: [0, 8, 0] }}
+                                animate={{ 
+                                    opacity: 1, 
+                                    y: [0, 10, 0] // Прыжок вниз на 10px
+                                }}
                                 transition={{
                                     opacity: { delay: 0.5, duration: 0.8 },
                                     y: { repeat: Infinity, duration: 2, ease: "easeInOut" }
                                 }}
-                                className="mt-12 mb-10 flex flex-col items-center gap-2 cursor-pointer text-muted-foreground hover:text-primary transition-colors"
+                                className="mt-12 mb-10 flex flex-col items-center gap-3 cursor-pointer text-muted-foreground hover:text-primary transition-colors group"
                                 onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
                             >
                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Mehr erfahren</span>
-                                <div className="p-2 rounded-full border border-border bg-card shadow-sm">
-                                    <ArrowRight className="h-4 w-4 rotate-90" />
+                                <div className="p-4 rounded-full border border-border bg-card shadow-sm group-hover:border-primary transition-colors">
+                                    {/* Увеличили иконку до h-6 w-6 как в нижней кнопке */}
+                                    <ArrowRight className="h-6 w-6 rotate-90" />
                                 </div>
                             </motion.div>
                         </motion.div>
@@ -167,6 +171,30 @@ const LandingPage = () => {
                                 </motion.div>
                             ))}
                         </div>
+                        <motion.div
+                            className="py-16 flex justify-center w-full"
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                        >
+                            <motion.button
+                                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                                // Анимация прыжка:
+                                animate={{ y: [0, -10, 0] }}
+                                transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeInOut"
+                                }}
+                                className="flex flex-col items-center gap-3 text-muted-foreground hover:text-primary transition-all group"
+                            >
+                                <div className="p-4 rounded-full border border-border bg-card group-hover:border-primary transition-colors shadow-sm">
+                                    {/* Иконка смотрит вверх (-rotate-90) */}
+                                    <ArrowRight className="h-6 w-6 -rotate-90" />
+                                </div>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Zum Anfang</span>
+                            </motion.button>
+                        </motion.div>
                     </div>
                 </section>
             </main>

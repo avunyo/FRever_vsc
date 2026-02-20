@@ -54,7 +54,7 @@ const ScanPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen pt-20 bg-background">
       <AppHeader />
       <main className="container px-4 py-8 max-w-2xl mx-auto">
         <div className="mb-8">
