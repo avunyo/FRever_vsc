@@ -23,7 +23,7 @@ export const AppHeader = () => {
 if (!isLandingPage) {
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-[100] h-16 !border-none bg-background/60 backdrop-blur-md p-0 m-0">
+      <header className="fixed top-0 left-0 right-0 z-[100] h-16 border-b border-black/10 dark:border-white/10 bg-background/60 backdrop-blur-md p-0 m-0">
   <div className="container flex h-full items-center justify-between px-4 mx-auto">
 
           {/* Логотип: поджали по высоте */}
@@ -100,7 +100,7 @@ if (!isLandingPage) {
   );
 }
 return (
-  <header className="fixed top-0 z-50 border-none bg-card/80 backdrop-blur-lg w-full">
+  <header className="fixed top-0 z-50 border-b border-black/10 dark:border-white/10 bg-card/80 backdrop-blur-lg w-full">
     <div className="container flex h-16 items-center justify-between px-4">
       {/* ЛОГОТИП — ТЕПЕРЬ БУДЕТ МЕНЯТЬСЯ ПРАВИЛЬНО */}
       <Link to="/" className="flex items-center" style={{ height: '100%' }}>
