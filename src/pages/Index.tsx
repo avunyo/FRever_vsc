@@ -28,7 +28,7 @@ const LandingPage = () => {
     const { theme } = useTheme();
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen pt-20 bg-background">
             {/* Шапка Landing Page — Кнопку темы отсюда тоже убрали, так как она есть в AppHeader */}
             <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
                 {/* Увеличили высоту контейнера до h-20 */}
