@@ -137,16 +137,7 @@ const Dashboard = () => {
                   Zuletzt hinzugefügt
                 </h2>
 
-                <motion.button
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setShowFilters(!showFilters)}
-                  className={`p-2 rounded-xl border transition-all ${showFilters
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-muted text-muted-foreground border-border hover:bg-accent"
-                    }`}
-                >
-                  <Settings2 className="h-5 w-5" />
-                </motion.button>
+                
               </div>
 
               {/* Выпадающий список кнопок-фильтров */}
@@ -194,63 +185,34 @@ const Dashboard = () => {
                       variants={itemVariants}
                       exit="exit"
                       layout
-                      className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-4 group hover:border-primary/30 transition-all duration-200"
+                      className="flex items-center gap-3 rounded-xl border border-border/60 shadow-sm dark:bg-muted/20 dark:border-white/10 bg-card p-2 group hover:border-primary/30 transition-all duration-200"
                     >
-                      <motion.div
-                        whileHover={{ rotate: 10, scale: 1.1 }}
-                        className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted text-muted-foreground shrink-0"
-                      >
-                        <product.categoryIcon className="h-5 w-5" />
-                      </motion.div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-medium truncate">{product.name}</p>
-                          <motion.span
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${status.className}`}
-                          >
-                            <span className={`h-1.5 w-1.5 rounded-full ${status.dotColor} ${product.status === "expired" ? "animate-pulse" : ""}`} />
-                            {status.label}
-                          </motion.span>
+                      {/* Иконка стала меньше (h-9 w-9) */}
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground shrink-0">
+                        <product.categoryIcon className="h-4 w-4" />
+                      </div>
+
+                      {/* Контент в одну строку */}
+                      <div className="flex-1 min-w-0 flex items-center justify-between">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-sm truncate leading-none mb-1">{product.name}</p>
+                          <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                            <span className="flex items-center gap-0.5"><CalendarDays className="h-3 w-3" /> {new Date(product.expiryDate).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" })}</span>
+                            <span>{product.quantity}x</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                          <span className="flex items-center gap-1">
-                            <CalendarDays className="h-3.5 w-3.5" />
-                            {new Date(product.expiryDate).toLocaleDateString("de-DE", { day: "numeric", month: "long" })}
-                          </span>
-                          <span className="text-xs bg-muted px-2 py-0.5 rounded-md">{product.quantity}x</span>
-                          <span className="text-xs text-muted-foreground">{product.category}</span>
+
+                        {/* Маленький статус справа */}
+                        <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${status.className}`}>
+                          <span className={`h-1 w-1 rounded-full ${status.dotColor}`} />
+                          {status.label}
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200">
-                        <motion.button
-                          whileHover={{ scale: 1.15 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => markConsumed(product.id)}
-                          className="flex h-9 w-9 items-center justify-center rounded-lg text-primary hover:bg-primary/10 transition-colors"
-                          title="Verbraucht"
-                        >
-                          <Check className="h-4 w-4" />
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.15 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => setEditingId(product.id)}
-                          className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          title="Bearbeiten"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </motion.button>
-                        <motion.button
-                          whileHover={{ scale: 1.15 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => deleteProduct(product.id)}
-                          className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                          title="Löschen"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </motion.button>
+
+                      {/* Кнопки управления (только самые важные) */}
+                      <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => markConsumed(product.id)} className="p-1.5 text-primary"><Check className="h-4 w-4" /></button>
+                        <button onClick={() => setEditingId(product.id)} className="p-1.5 text-muted-foreground"><Pencil className="h-4 w-4" /></button>
                       </div>
                     </motion.div>
                   );
@@ -406,7 +368,7 @@ const Dashboard = () => {
             </motion.div>
 
           </div>
-       </div>
+        </div>
       </main>
     </div>
   );

@@ -12,11 +12,20 @@ import RecipesPage from "./pages/RecipesPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
+import { useState } from "react";
+import { AppHeader } from "@/components/AppHeader";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const App = () => {
+  const [shoppingList, setShoppingList] = useState<any[]>([]);
+
+  const addToShoppingList = (productName: string) => {
+    setShoppingList((prev) => [...prev, { id: Date.now().toString(), name: productName }]);
+  };
+
+  return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <TooltipProvider>
         <Toaster />
@@ -26,8 +35,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/scan" element={<ScanPage />} />
-            <Route path="/inventory" element={<InventoryPage />} />
-            <Route path="/recipes" element={<RecipesPage />} />
+            <Route path="/inventory" element={<InventoryPage shoppingItems={shoppingList} />} />
+            <Route path="/recipes" element={<RecipesPage onAddProduct={(name) => console.log(name + " added")} />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
@@ -36,6 +45,7 @@ const App = () => (
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
-);
+    );
+};
 
 export default App;

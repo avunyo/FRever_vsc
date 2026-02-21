@@ -135,7 +135,7 @@ const ScanPage = () => {
             >
               <div className="flex items-center justify-between">
                 <h2 className="font-heading text-xl font-bold">Erkannte Produkte überprüfen</h2>
-                <span className="text-sm text-muted-foreground">{products.length} Produkte</span>
+                <span className="text-sm pr-4 text-muted-foreground whitespace-nowrap">{products.length} Produkte</span>
               </div>
 
               <p className="text-sm text-muted-foreground">

@@ -1,86 +1,119 @@
 import { AppHeader } from "@/components/AppHeader";
-import { motion } from "framer-motion";
-import { ChefHat, Clock, Users, Check, Lock } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChefHat, Clock, Users, Check, Lock, Plus } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
-const recipes = [
-  { id: 1, name: "Cremige Tomatensuppe", time: "25 Min", servings: 4, hasAll: true, image: "🍅" },
-  { id: 2, name: "Bananen-Pancakes", time: "15 Min", servings: 2, hasAll: true, image: "🥞" },
-  { id: 3, name: "Käse-Toast Deluxe", time: "10 Min", servings: 1, hasAll: true, image: "🧀" },
-  { id: 4, name: "Spaghetti Carbonara", time: "20 Min", servings: 2, hasAll: false, missing: 2, image: "🍝" },
-  { id: 5, name: "Gemüse-Curry", time: "30 Min", servings: 3, hasAll: false, missing: 3, image: "🍛" },
-  { id: 6, name: "Apfelkuchen", time: "45 Min", servings: 8, hasAll: false, missing: 4, image: "🍰" },
+// 1. Списки продуктов (чтобы рецепты видели, что у нас есть)
+const mockProducts = [
+  { id: "1", name: "Vollmilch 1,5%", category: "Milchprodukte" },
+  { id: "4", name: "Bio Bananen", category: "Obst & Gemüse" },
+  { id: "5", name: "Cheddar Scheiben", category: "Milchprodukte" },
+  { id: "6", name: "Butter", category: "Milchprodukte" },
+  { id: "7", name: "Äpfel Braeburn", category: "Obst & Gemüse" },
 ];
 
-const RecipesPage = () => (
-  <div className="min-h-screen bg-background pt-20
-   pb-24 md:pb-8">
-    <AppHeader />
-    <main className="container px-4 py-8 max-w-5xl">
-      <div className="mb-8">
-        <h1 className="font-heading text-2xl font-bold mb-2">Rezeptvorschläge</h1>
-        <p className="text-muted-foreground">Basierend auf deinen vorhandenen Zutaten</p>
-      </div>
+// 2. База рецептов
+const recipes = [
+  { id: 1, name: "Cremige Tomatensuppe", time: "25 Min", servings: 4, image: "🍅", ingredients: ["Tomaten", "Sahne"] },
+  { id: 2, name: "Bananen-Pancakes", time: "15 Min", servings: 2, image: "🥞", ingredients: ["Bio Bananen", "Eier"] },
+  { id: 3, name: "Käse-Toast Deluxe", time: "10 Min", servings: 1, image: "🧀", ingredients: ["Dinkel Toastbrot", "Cheddar Scheiben"] },
+  { id: 4, name: "Spaghetti Carbonara", time: "20 Min", servings: 2, image: "🍝", ingredients: ["Spaghetti", "Eier", "Speck"] },
+  { id: 5, name: "Gemüse-Curry", time: "30 Min", servings: 3, image: "🍛", ingredients: ["Reis", "Kokosmilch", "Karotten"] },
+  { id: 6, name: "Apfelkuchen", time: "45 Min", servings: 8, image: "🍰", ingredients: ["Äpfel Braeburn", "Butter", "Mehl", "Zucker"] },
+];
 
-      {/* Filter chips */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        {["Alle", "Du hast alles", "Schnell", "Vegetarisch"].map((f, i) => (
-          <button
-            key={f}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              i === 0 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
+const RecipesPage = ({ onAddProduct }: { onAddProduct: (name: string) => void }) => {
+  const [addedItems, setAddedItems] = useState<string[]>([]); 
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {recipes.map((recipe, i) => (
-          <motion.div
-            key={recipe.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
-            className="rounded-2xl border border-border bg-card p-5 hover:shadow-lg transition-shadow cursor-pointer group"
-          >
-            <div className="text-4xl mb-4">{recipe.image}</div>
-            <h3 className="font-heading font-semibold mb-2 group-hover:text-primary transition-colors">{recipe.name}</h3>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
-              <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{recipe.time}</span>
-              <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" />{recipe.servings} Port.</span>
-            </div>
-            {recipe.hasAll ? (
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 rounded-full px-2.5 py-1">
-                <Check className="h-3 w-3" /> Du hast alle Zutaten!
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-warning bg-warning/10 rounded-full px-2.5 py-1">
-                Fehlende Zutaten: {recipe.missing}
-              </span>
-            )}
-          </motion.div>
-        ))}
-      </div>
+  const hasIngredient = (ingName: string) => {
+    return mockProducts.some(p => p.name.toLowerCase().includes(ingName.toLowerCase()));
+  };
 
-      {/* Premium banner */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="mt-8 rounded-2xl bg-primary/5 border border-primary/20 p-8 text-center"
-      >
-        <Lock className="h-8 w-8 text-primary mx-auto mb-3" />
-        <h3 className="font-heading text-lg font-bold mb-2">Unbegrenzte Rezepte mit Premium</h3>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto mb-4">
-          Erhalte personalisierte Rezepte, smarte Einkaufslisten und exklusive KI-Vorschläge.
-        </p>
-        <button className="rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg shadow-primary/25">
-          Premium entdecken
-        </button>
-      </motion.div>
-    </main>
-  </div>
-);
+  return (
+    <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
+      <AppHeader />
+      <main className="container px-4 py-8 max-w-5xl mx-auto">
+        <div className="mb-8 text-center md:text-left">
+          <h1 className="font-heading text-3xl font-bold mb-2">Rezeptvorschläge</h1>
+          <p className="text-muted-foreground">Basierend auf deinen vorhandenen Zutaten</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {recipes.map((recipe, i) => (
+            <motion.div
+              key={recipe.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="group relative rounded-3xl border border-border bg-card p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+            >
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 w-fit">
+                {recipe.image}
+              </div>
+
+              <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
+                {recipe.name}
+              </h3>
+
+              <div className="flex flex-wrap gap-2 mb-6">
+                <AnimatePresence>
+                  {recipe.ingredients.map(ing => {
+                    const isMissing = !hasIngredient(ing);
+                    const isAdded = addedItems.includes(ing);
+
+                    // Если ингредиент добавлен, он "исчезает" через анимацию exit
+                    if (isAdded) return null;
+
+                    return (
+                      <motion.button
+                        key={ing}
+                        layout
+                        initial={{ opacity: 1, scale: 1 }}
+                        exit={{ 
+                          opacity: 0, 
+                          scale: 0.8, 
+                          y: -10,
+                          transition: { duration: 0.4 } 
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          if (isMissing) {
+                            onAddProduct(ing);
+                            setAddedItems(prev => [...prev, ing]);
+                            toast({
+                              description: `${ing} wurde hinzugefügt`,
+                              duration: 2000,
+                            });
+                          }
+                        }}
+                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border transition-all ${
+                          !isMissing
+                            ? "bg-primary/10 text-primary border-primary/20 cursor-default"
+                            : "bg-muted text-muted-foreground border-transparent hover:bg-primary/20 hover:text-primary hover:border-primary/30 cursor-pointer"
+                        }`}
+                      >
+                        {!isMissing ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                        {ing}
+                      </motion.button>
+                    );
+                  })}
+                </AnimatePresence>
+                
+                {/* Отображаем "купленные" ингредиенты просто как текст с галочкой, если нужно, чтобы они не пропадали совсем */}
+                {recipe.ingredients.filter(ing => hasIngredient(ing)).map(ing => (
+                   <div key={`${ing}-owned`} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border bg-primary/10 text-primary border-primary/20 cursor-default">
+                      <Check className="h-3 w-3" />
+                      {ing}
+                   </div>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+};
 
 export default RecipesPage;
