@@ -4,6 +4,7 @@ import { Box, ShoppingCart, Plus, CalendarDays, Check, Trash2, Camera, Milk, App
 import { AppHeader } from "@/components/AppHeader";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { isMatch } from "node_modules/date-fns/isMatch";
 
 const mockProducts = [
   { id: "1", name: "Vollmilch 1,5%", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-20", status: "expiring", quantity: 2 },
@@ -31,6 +32,7 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
+  const [showRecent, setShowRecent] = useState(true);
 
 
   // Авто-раскрытие категории при поиске
@@ -136,7 +138,20 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
 
         {/* ПЛАВАЮЩАЯ КНОПКА ФИЛЬТРА (Появляется ниже табов справа) */}
 
-
+        {/* Кнопка отметить всё как купленное */}
+        {activeTab === "shopping" && shoppingItems.length > 0 && (
+          <motion.button
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={() => {
+              toast({ title: "Alles eingekauft! ✅", description: "Alle Produkte wurden ins Inventar verschoben." });
+              // Здесь должна быть логика переноса всех shoppingItems в основной массив products
+            }}
+            className="w-full mb-4 flex items-center justify-center gap-2 py-3 bg-primary/10 text-primary border border-primary/20 rounded-xl font-semibold text-sm hover:bg-primary/20 transition-colors"
+          >
+            <CheckCheck className="h-4 w-4" /> Alles als gekauft markieren
+          </motion.button>
+        )}
         {/* КОНТЕНТ */}
         <AnimatePresence mode="wait">
           {activeTab === "products" ? (
@@ -147,6 +162,47 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-3"
             >
+              {!searchQuery && (
+  <div className="mb-6">
+    <div className="flex items-center justify-between mb-3 px-1">
+      <h2 className="text-lg font-bold text-foreground">Zuletzt hinzugefügt</h2>
+      <button 
+        onClick={() => setShowRecent(!showRecent)}
+        className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider hover:text-primary transition-colors"
+      >
+        {showRecent ? "Verstecken" : "Anzeigen"}
+      </button>
+    </div>
+
+    {showRecent && (
+      <motion.div 
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: "auto" }}
+        exit={{ opacity: 0, height: 0 }}
+        className="space-y-2"
+      >
+        {products.slice(0, 2).map((recentItem) => (
+          <div key={`recent-${recentItem.id}`} className="flex items-center justify-between p-3 bg-card border border-border rounded-xl shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center">
+                {recentItem.categoryIcon && <recentItem.categoryIcon className="h-5 w-5 text-muted-foreground" />}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">{recentItem.name}</p>
+                <p className="text-[10px] text-muted-foreground">{recentItem.expiryDate} • {recentItem.quantity}x</p>
+              </div>
+            </div>
+            <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold border border-emerald-500/20">
+              Frisch
+            </div>
+          </div>
+        ))}
+      </motion.div>
+    )}
+    <div className="h-[1px] bg-border/50 my-6" />
+  </div>
+)}
+
               {/* Сюда позже перенесем твой маппинг продуктов из Dashboard */}
 
               {Object.entries(groupedProducts).map(([category, items]) => {
@@ -174,6 +230,7 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
                         <Plus className={`h-5 w-5 ${isExpanded ? "text-primary" : "text-muted-foreground"}`} />
                       </motion.div>
                     </button>
+
 
                     <AnimatePresence>
                       {isExpanded && (
@@ -269,55 +326,7 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
 
               className="space-y-3"
             >
-              <div className="flex gap-2 mb-4 relative" ref={filterRef}>
-                <button
-                  onClick={() => {
-                    // 1. Показываем уведомление
-                    toast({
-                      title: "Geräumt! ✅",
-                      description: "Alle Produkte wurden als gekauft markiert und in den Inventar verschoben."
-                    });
 
-                    // 2. Находим все элементы списка покупок и скрываем их
-                    shoppingItems.forEach(item => {
-                      const el = document.getElementById(`shop-${item.id}`);
-                      if (el) {
-                        el.style.display = 'none';
-                      }
-                    });
-
-                    // Если у тебя есть локальный стейт для списка покупок, 
-                    // здесь можно вызвать функцию его очистки, например: setShoppingItems([]);
-                  }}
-                  className="flex-1 flex items-center justify-center gap-2 h-10 bg-card border border-border rounded-xl text-[11px] font-semibold hover:bg-accent transition-colors"
-                >
-                  <CheckCheck className="h-4 w-4 text-primary" />
-                  Alles als gekauft markieren
-                </button>
-
-                {/* Выпадающее меню */}
-                <AnimatePresence>
-                  {showFilters && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95, y: 5 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: 5 }}
-                      className="absolute right-0 top-12 w-48 bg-card border border-border rounded-2xl shadow-xl overflow-hidden z-[100]"
-                    >
-                      {["Alle", "Obst & Gemüse", "Milchprodukte", "Backwaren"].map((f) => (
-                        <button
-                          key={f}
-                          onClick={() => { setActiveFilter(f); setShowFilters(false); }}
-                          className={`w-full text-left px-4 py-3 text-xs transition-colors hover:bg-muted ${activeFilter === f ? "text-primary font-bold bg-primary/5" : "text-foreground"
-                            }`}
-                        >
-                          {f}
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
               <div className="flex flex-col gap-2">
                 {shoppingItems.length > 0 ? (
                   <div className="flex flex-col gap-2">
@@ -351,9 +360,18 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
                             }}
                             className="relative z-10 flex items-center justify-between p-3 bg-white dark:bg-[#1A1F1E] border border-border shadow-sm rounded-xl"
                           >
-                            <div className="flex flex-col">
-                              <span className="text-sm font-semibold text-foreground">{item.name}</span>
-                              <span className="text-[10px] text-muted-foreground">Einkaufsliste</span>
+                            <div className="flex flex-col relative">
+                              {/* Оранжевый значок */}
+                              <div className="absolute -left-3 -top-1 h-3 w-3 bg-orange-500 rounded-full flex items-center justify-center ring-2 ring-white dark:ring-[#1A1F1E] z-10">
+                                <span className="text-[8px] text-white font-bold">!</span>
+                              </div>
+
+                              <span className="text-sm font-semibold text-foreground">
+                                {item.name}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground">
+                                {item.quantity}x • {item.expiryDate}
+                              </span>
                             </div>
 
                             <div className="flex items-center gap-1">

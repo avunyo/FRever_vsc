@@ -7,20 +7,19 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
 
   return (
-    <Sonner
-      theme={theme as ToasterProps["theme"]}
-      className="toaster group"
-      toastOptions={{
-        classNames: {
-          toast:
-            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
-          description: "group-[.toast]:text-muted-foreground",
-          actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-          cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
-        },
-      }}
-      {...props}
-    />
+    <Sonner 
+  duration={2000}
+  toastOptions={{
+    style: {
+      fontSize: '12px',            // Делаем текст меньше
+      padding: '8px 12px',         // Уменьшаем отступы (само уведомление станет меньше)
+      background: '#f8f9fa',       // Светло-серый фон (чтобы не сливался с чисто белым)
+      border: '1px solid #e9ecef', // Тонкая граница
+      borderRadius: '10px',        // Округлые углы
+    },
+    className: "dark:bg-[#1A1F1E] dark:text-white dark:border-white/10" // Для темной темы
+  }}
+/>
   );
 };
 

@@ -14,8 +14,9 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      "fixed top-14 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[350px]",
-      className,
+      // Изменил top-0 на top-20, чтобы оно не пряталось за краем экрана
+      "fixed top-[50px] z-[200] flex max-h-screen w-full flex-col-reverse p-4 sm:top-10 sm:right-6 sm:flex-col md:max-w-[420px] left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0",
+      className
     )}
     {...props}
   />
@@ -23,18 +24,25 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-2xl border py-2 px-3 pr-6 shadow-2xl transition-all " +
+  // ПОЯВЛЕНИЕ: Вылет сверху (slide-in-from-top), увеличение (zoom-in) и легкий наклон в начале
+  "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-90 data-[state=open]:slide-in-from-top-10 " +
+  // ИСЧЕЗНОВЕНИЕ: Схлопывание вверх с ускорением
+  "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:scale-95 data-[state=closed]:slide-out-to-top-full " +
+  // Пружина стала еще более выраженной
+  "duration-500 data-[state=open]:[transition-timing-function:cubic-bezier(0.68,-0.55,0.265,1.55)]",
   {
     variants: {
       variant: {
-        default: "border bg-background text-foreground",
-        destructive: "destructive group border-destructive bg-destructive text-destructive-foreground",
+        // Добавил тонкую светящуюся рамку для эффекта "премиум"
+        default: "border-white/40 bg-white/80 backdrop-blur-2xl text-foreground shadow-[0_20px_50px_rgba(0,0,0,0.15)] ring-1 ring-black/5 dark:bg-zinc-900/90 dark:border-white/10 dark:ring-white/10",
+        destructive: "destructive group border-destructive bg-destructive text-destructive-foreground shadow-lg",
       },
     },
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
 const Toast = React.forwardRef<
@@ -82,15 +90,16 @@ const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Title>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Title ref={ref} className={cn("text-sm font-semibold", className)} {...props} />
+  // text-[12px] вместо 13px и плотный межстрочный интервал
+  <ToastPrimitives.Title ref={ref} className={cn("text-[12px] font-bold leading-tight", className)} {...props} />
 ));
-ToastTitle.displayName = ToastPrimitives.Title.displayName;
 
 const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Description ref={ref} className={cn("text-sm opacity-90", className)} {...props} />
+  // text-[10px] вместо 11px
+  <ToastPrimitives.Description ref={ref} className={cn("text-[10px] opacity-80 leading-tight", className)} {...props} />
 ));
 ToastDescription.displayName = ToastPrimitives.Description.displayName;
 
