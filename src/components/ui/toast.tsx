@@ -24,19 +24,14 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-2xl border py-2 px-3 pr-6 shadow-2xl transition-all " +
-  // ПОЯВЛЕНИЕ: Вылет сверху (slide-in-from-top), увеличение (zoom-in) и легкий наклон в начале
-  "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-90 data-[state=open]:slide-in-from-top-10 " +
-  // ИСЧЕЗНОВЕНИЕ: Схлопывание вверх с ускорением
-  "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:scale-95 data-[state=closed]:slide-out-to-top-full " +
-  // Пружина стала еще более выраженной
-  "duration-500 data-[state=open]:[transition-timing-function:cubic-bezier(0.68,-0.55,0.265,1.55)]",
+  // py-1 (вертикальный отступ) сделает её очень узкой. 
+  // Убрали сложные тени и блюр, чтобы телефон не лагал.
+  "group pointer-events-auto relative flex w-full items-center justify-between space-x-2 overflow-hidden rounded-md border py-1 px-3 pr-6 shadow-sm transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:scale-95 data-[state=closed]:slide-out-to-top-full data-[state=open]:slide-in-from-top-full duration-200",
   {
     variants: {
       variant: {
-        // Добавил тонкую светящуюся рамку для эффекта "премиум"
-        default: "border-white/40 bg-white/80 backdrop-blur-2xl text-foreground shadow-[0_20px_50px_rgba(0,0,0,0.15)] ring-1 ring-black/5 dark:bg-zinc-900/90 dark:border-white/10 dark:ring-white/10",
-        destructive: "destructive group border-destructive bg-destructive text-destructive-foreground shadow-lg",
+        default: "border-black/10 bg-white text-foreground dark:bg-zinc-900 dark:border-white/10",
+        destructive: "destructive group border-destructive bg-destructive text-destructive-foreground",
       },
     },
     defaultVariants: {

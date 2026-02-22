@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Upload, ArrowLeft, Plus, X, Pencil, Trash2, CalendarDays } from "lucide-react";
+import { Camera, Upload, ArrowLeft, Plus, X, Pencil, Trash2, CalendarDays, Check } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { toast } from "@/hooks/use-toast";
@@ -27,6 +27,7 @@ const ScanPage = () => {
   const [products, setProducts] = useState<ScannedProduct[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const navigate = useNavigate();
+  const [showList, setShowList] = useState(true);
 
   const handleUpload = useCallback(() => {
     setIsScanning(true);
@@ -73,11 +74,10 @@ const ScanPage = () => {
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
             onClick={handleUpload}
-            className={`cursor-pointer rounded-2xl border-2 border-dashed p-16 text-center transition-all ${
-              isDragging
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/50 hover:bg-primary/5"
-            }`}
+            className={`cursor-pointer rounded-2xl border-2 border-dashed p-16 text-center transition-all ${isDragging
+              ? "border-primary bg-primary/5"
+              : "border-border hover:border-primary/50 hover:bg-primary/5"
+              }`}
           >
             <div className="flex flex-col items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -130,61 +130,115 @@ const ScanPage = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
               className="space-y-4"
             >
-              <div className="flex items-center justify-between">
-                <h2 className="font-heading text-xl font-bold">Erkannte Produkte überprüfen</h2>
-                <span className="text-sm pr-4 text-muted-foreground whitespace-nowrap">{products.length} Produkte</span>
+              {/* Заголовок с кнопкой Скрыть/Показать */}
+              <div className="flex items-center justify-between border-b border-border pb-2">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-heading text-lg font-bold">Erkannte Produkte</h2>
+                  <span className="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-bold">
+                    {products.length}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setShowList(!showList)}
+                  className="text-xs font-medium text-primary hover:text-primary/80 transition-colors uppercase tracking-wider"
+                >
+                  {showList ? "Verstecken" : "Anzeigen"}
+                </button>
               </div>
 
-              <p className="text-sm text-muted-foreground">
-                Das Ablaufdatum wird basierend auf typischen Haltbarkeiten geschätzt. Bitte prüfe es kurz!
-              </p>
-
-              <div className="space-y-3">
-                {products.map((product) => (
+              <AnimatePresence>
+                {showList && (
                   <motion.div
-                    key={product.id}
-                    layout
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    className="flex items-center gap-4 rounded-xl border border-border bg-card p-4"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden space-y-2"
                   >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{product.name}</p>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                        <span>{product.category}</span>
-                        <span className="flex items-center gap-1">
-                          <CalendarDays className="h-3 w-3" />
-                          {new Date(product.expiryDate).toLocaleDateString("de-DE")}
-                        </span>
-                        <span>{product.quantity}x</span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => removeProduct(product.id)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </motion.div>
-                ))}
-              </div>
+                    <p className="text-[11px] text-muted-foreground mb-3 leading-tight">
+                      Ablaufdaten wurden geschätzt. Bitte kurz prüfen.
+                    </p>
 
-              <div className="flex gap-3 pt-4">
+                    <div className="space-y-2 mt-4">
+                      {products.map((product) => (
+    <motion.div
+      key={product.id}
+      layout
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="relative overflow-hidden rounded-xl mb-2" // Убрали внешние границы
+    >
+      {/* 1. ПОДЛОЖКА: Тот самый пастельный красно-коричневый из инвентаря */}
+      <div 
+        className="absolute inset-0 flex items-center justify-end px-6"
+        style={{ backgroundColor: '#2D1B1B' }} // Цвет один-в-один как на скрине
+      >
+        <div className="flex flex-col items-center gap-1">
+          <Trash2 className="h-5 w-5 text-red-500/80" />
+          <span className="text-[9px] font-bold text-red-500/80 uppercase tracking-wider">Löschen</span>
+        </div>
+      </div>
+
+      {/* 2. КАРТОЧКА: Темная, без светлой обводки */}
+      <motion.div
+        drag="x"
+        dragConstraints={{ left: -80, right: 0 }}
+        dragSnapToOrigin
+        onDragEnd={(_, info) => {
+          if (info.offset.x < -50) removeProduct(product.id);
+        }}
+        // bg-[#1A1F1E] — это глубокий темно-зеленый/серый фон со скрина
+        // border-white/5 — делаем обводку почти невидимой, чтобы не "резало" глаз
+        className="relative z-10 flex items-center justify-between p-4 bg-[#1A1F1E] border border-white/5 shadow-sm rounded-xl"
+      >
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm font-medium text-white/90">
+            {product.name}
+          </span>
+          <div className="flex items-center gap-2 text-[11px] text-white/40">
+            <span>{product.category}</span>
+            <span>•</span>
+            <div className="flex items-center gap-1">
+              <CalendarDays className="h-3 w-3" />
+              <span>{product.expiryDate}</span>
+            </div>
+            <span>•</span>
+            <span>{product.quantity}x</span>
+          </div>
+        </div>
+
+        {/* 3. КНОПКА ПРАВКИ: Тонкая и неяркая */}
+        <div className="flex items-center">
+          <button 
+            className="p-2 text-white/20 hover:text-white/60 transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Кнопки действий снизу */}
+              <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => { setShowReview(false); setProducts([]); }}
-                  className="flex-1 rounded-xl -mt-2 border border-border bg-card px-6 py-2 font-medium transition-colors hover:bg-accent"
+                  className="flex-1 rounded-xl border border-border bg-card py-2.5 text-sm font-medium hover:bg-accent transition-colors"
                 >
                   Abbrechen
                 </button>
                 <button
                   onClick={confirmProducts}
-                  className="flex-1 rounded-xl -mt-2 bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-shadow hover:shadow-xl"
+                  className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground shadow-md hover:opacity-90 transition-all"
                 >
-                  Alle hinzufügen
+                  Alle ({products.length})
                 </button>
               </div>
             </motion.div>

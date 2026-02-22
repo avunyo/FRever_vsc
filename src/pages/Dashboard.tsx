@@ -99,33 +99,38 @@ const Dashboard = () => {
       <AppHeader />
       <main className="container max-w-5xl mx-auto px-4 py-8">
         {/* Welcome Widget */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="mb-8 rounded-2xl bg-card border border-border p-6"
-        >
-          <h1 className="font-heading text-2xl font-bold mb-1">Hallo! 👋</h1>
-          <p className="text-muted-foreground">
-            Du hast aktuell <span className="font-semibold text-foreground">{products.length}</span> Produkte im Blick.
-          </p>
-          <div className="flex flex-wrap gap-4 mt-4">
-            <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-2 rounded-xl bg-primary/10 px-4 py-2 cursor-pointer">
-              <span className="h-2 w-2 rounded-full bg-primary" />
-              <span className="text-sm font-medium text-primary">{freshCount} Frisch</span>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-2 rounded-xl bg-warning/10 px-4 py-2 cursor-pointer">
-              <span className="h-2 w-2 rounded-full bg-warning animate-pulse" />
-              <span className="text-sm font-medium text-warning">{expiringCount} Bald ablaufend</span>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-2 rounded-xl bg-destructive/10 px-4 py-2 cursor-pointer">
-              <span className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
-              <span className="text-sm font-medium text-destructive">
-                {products.filter(p => p.status === "expired").length} Abgelaufen
-              </span>
-            </motion.div>
-          </div>
-        </motion.div>
+        {/* Welcome Widget */}
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, ease: "easeOut" }}
+  className="mb-8 rounded-2xl bg-card border border-border p-6 shadow-sm"
+>
+  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h1 className="font-heading text-2xl font-bold mb-1">Hallo! 👋</h1>
+      <p className="text-muted-foreground text-sm">
+        Du hast aktuell <span className="font-semibold text-foreground">{products.length}</span> Produkte im Blick.
+      </p>
+    </div>
+
+    {/* Компактные индикаторы как в инвентаре */}
+    <div className="flex gap-2">
+      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/10">
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+        <span className="text-xs font-bold">{freshCount} Frisch</span>
+      </div>
+      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-600 border border-orange-500/10">
+        <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+        <span className="text-xs font-bold">{expiringCount} Bald ab!</span>
+      </div>
+      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-600 border border-red-500/10">
+        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+        <span className="text-xs font-bold">{products.filter(p => p.status === "expired").length} Abgelaufen</span>
+      </div>
+    </div>
+  </div>
+</motion.div>
 
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
           {/* Products Column */}

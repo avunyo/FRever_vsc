@@ -24,8 +24,10 @@ const mockProducts = [
 
 ];
 
-const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
-  const [products, setProducts] = useState(mockProducts); // Теперь данные живут в стейте
+const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingItems?: any[] }) => {
+  const [products, setProducts] = useState(mockProducts);
+
+  const [shoppingItems, setShoppingItems] = useState(initialShoppingItems || []);
   const [activeTab, setActiveTab] = useState<"products" | "shopping">("products");
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("Alle");
@@ -33,6 +35,12 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
   const [showFilters, setShowFilters] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const [showRecent, setShowRecent] = useState(true);
+
+  const markAsBought = (item: any) => {
+    setProducts(prev => [...prev, { ...item, id: Date.now().toString(), status: 'fresh' }]);
+    setShoppingItems(prev => prev.filter(i => i.id !== item.id));
+    toast({ title: "Gekauft! ✅", description: `${item.name} im Inventar` });
+  };
 
 
   // Авто-раскрытие категории при поиске
@@ -44,6 +52,11 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
       if (firstMatch) setExpandedCategory(firstMatch.category);
     }
   }, [searchQuery, products]);
+  const stats = {
+  fresh: products.filter(p => p.status === 'fresh').length,
+  expiring: products.filter(p => p.status === 'expiring').length,
+  expired: products.filter(p => p.status === 'expired').length,
+};
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -103,8 +116,29 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
       <AppHeader />
       <main className="container max-w-2xl mx-auto px-4 py-8">
         {/* Заголовок и поиск в одну колонну */}
+        {/* Заголовок и Компактная Статистика */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold font-heading mb-4 text-foreground">Mein Inventar</h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold font-heading text-foreground">Mein Inventar</h1>
+            
+            {/* Маленькие индикаторы в ряд */}
+            <div className="flex gap-1.5">
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/10">
+                <span className="w-1 h-1 rounded-full bg-emerald-500" />
+                <span className="text-[10px] font-bold">{stats.fresh}</span>
+              </div>
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-orange-500/10 text-orange-600 border border-orange-500/10">
+                <span className="w-1 h-1 rounded-full bg-orange-500" />
+                <span className="text-[10px] font-bold">{stats.expiring}</span>
+              </div>
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-red-500/10 text-red-600 border border-red-500/10">
+                <span className="w-1 h-1 rounded-full bg-red-500" />
+                <span className="text-[10px] font-bold">{stats.expired}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Поиск */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
@@ -112,7 +146,7 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
               placeholder="Suchen..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-card border border-border shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-card border border-border shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
             />
           </div>
         </div>
@@ -144,8 +178,13 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             onClick={() => {
+              setProducts(prev => [...prev, ...shoppingItems.map(item => ({
+                ...item,
+                id: Math.random().toString(),
+                status: 'fresh'
+              }))]);
+              setShoppingItems([]);
               toast({ title: "Alles eingekauft! ✅", description: "Alle Produkte wurden ins Inventar verschoben." });
-              // Здесь должна быть логика переноса всех shoppingItems в основной массив products
             }}
             className="w-full mb-4 flex items-center justify-center gap-2 py-3 bg-primary/10 text-primary border border-primary/20 rounded-xl font-semibold text-sm hover:bg-primary/20 transition-colors"
           >
@@ -163,45 +202,45 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
               className="space-y-3"
             >
               {!searchQuery && (
-  <div className="mb-6">
-    <div className="flex items-center justify-between mb-3 px-1">
-      <h2 className="text-lg font-bold text-foreground">Zuletzt hinzugefügt</h2>
-      <button 
-        onClick={() => setShowRecent(!showRecent)}
-        className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider hover:text-primary transition-colors"
-      >
-        {showRecent ? "Verstecken" : "Anzeigen"}
-      </button>
-    </div>
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-3 px-1">
+                    <h2 className="text-lg font-bold text-foreground">Zuletzt hinzugefügt</h2>
+                    <button
+                      onClick={() => setShowRecent(!showRecent)}
+                      className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider hover:text-primary transition-colors"
+                    >
+                      {showRecent ? "Verstecken" : "Anzeigen"}
+                    </button>
+                  </div>
 
-    {showRecent && (
-      <motion.div 
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: "auto" }}
-        exit={{ opacity: 0, height: 0 }}
-        className="space-y-2"
-      >
-        {products.slice(0, 2).map((recentItem) => (
-          <div key={`recent-${recentItem.id}`} className="flex items-center justify-between p-3 bg-card border border-border rounded-xl shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center">
-                {recentItem.categoryIcon && <recentItem.categoryIcon className="h-5 w-5 text-muted-foreground" />}
-              </div>
-              <div>
-                <p className="text-sm font-bold text-foreground">{recentItem.name}</p>
-                <p className="text-[10px] text-muted-foreground">{recentItem.expiryDate} • {recentItem.quantity}x</p>
-              </div>
-            </div>
-            <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold border border-emerald-500/20">
-              Frisch
-            </div>
-          </div>
-        ))}
-      </motion.div>
-    )}
-    <div className="h-[1px] bg-border/50 my-6" />
-  </div>
-)}
+                  {showRecent && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="space-y-2"
+                    >
+                      {products.slice(0, 2).map((recentItem) => (
+                        <div key={`recent-${recentItem.id}`} className="flex items-center justify-between p-3 bg-card border border-border rounded-xl shadow-sm">
+                          <div className="flex items-center gap-3">
+                            <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center">
+                              {recentItem.categoryIcon && <recentItem.categoryIcon className="h-5 w-5 text-muted-foreground" />}
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-foreground">{recentItem.name}</p>
+                              <p className="text-[10px] text-muted-foreground">{recentItem.expiryDate} • {recentItem.quantity}x</p>
+                            </div>
+                          </div>
+                          <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold border border-emerald-500/20">
+                            Frisch
+                          </div>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                  <div className="h-[1px] bg-border/50 my-6" />
+                </div>
+              )}
 
               {/* Сюда позже перенесем твой маппинг продуктов из Dashboard */}
 
@@ -379,11 +418,7 @@ const InventoryPage = ({ shoppingItems }: { shoppingItems: any[] }) => {
                               <motion.button
                                 whileTap={{ scale: 0.9 }}
                                 className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors"
-                                onClick={() => {
-                                  const el = document.getElementById(`shop-${item.id}`);
-                                  if (el) el.style.display = 'none';
-                                  toast({ title: "Gekauft! ✅", description: `${item.name} im Inventar` });
-                                }}
+                                onClick={() => markAsBought(item)}
                               >
                                 <Check className="h-4 w-4" />
                               </motion.button>
