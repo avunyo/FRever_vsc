@@ -14,11 +14,16 @@ interface ScannedProduct {
 }
 
 const mockProducts: ScannedProduct[] = [
-  { id: "1", name: "Bio Joghurt Erdbeer", category: "Milchprodukte", expiryDate: "2024-04-28", quantity: 1 },
-  { id: "2", name: "Vollmilch 1,5%", category: "Milchprodukte", expiryDate: "2024-04-26", quantity: 1 },
-  { id: "3", name: "Cheddar Scheiben", category: "Milchprodukte", expiryDate: "2024-05-10", quantity: 1 },
-  { id: "4", name: "Dinkel Toastbrot", category: "Backwaren", expiryDate: "2024-04-25", quantity: 1 },
-  { id: "5", name: "Bio Bananen", category: "Obst & Gemüse", expiryDate: "2024-04-27", quantity: 6 },
+  { id: "1", name: "Bio Joghurt Erdbeer", category: "Milchprodukte", expiryDate: "2026-04-28", quantity: 1 },
+  { id: "2", name: "Vollmilch 1,5%", category: "Milchprodukte", expiryDate: "2026-04-26", quantity: 1 },
+  { id: "3", name: "Cheddar Scheiben", category: "Milchprodukte", expiryDate: "2026-05-10", quantity: 1 },
+  { id: "4", name: "Dinkel Toastbrot", category: "Backwaren", expiryDate: "2026-04-25", quantity: 1 },
+  { id: "5", name: "Bio Bananen", category: "Obst & Gemüse", expiryDate: "2026-04-27", quantity: 6 },
+  { id: "6", name: "Avocado Medium", category: "Obst & Gemüse", expiryDate: "2026-04-30", quantity: 2 },
+  { id: "7", name: "Hähnchenbrust", category: "Fleisch", expiryDate: "2026-04-25", quantity: 1 },
+  { id: "8", name: "Mineralwasser 1,5L", category: "Getränke", expiryDate: "2026-12-31", quantity: 6 },
+  { id: "9", name: "Eier Freilandhaltung", category: "Eier", expiryDate: "2026-05-05", quantity: 10 },
+  { id: "10", name: "Pasta Fusilli", category: "Vorratsschrank", expiryDate: "2026-01-01", quantity: 1 },
 ];
 
 const ScanPage = () => {
@@ -57,7 +62,7 @@ const ScanPage = () => {
   return (
     <div className="min-h-screen pt-20 bg-background">
       <AppHeader />
-      <main className="container px-4 py-8 max-w-2xl mx-auto">
+      <main className="container px-4 pt-4 pb-24 max-w-2xl mx-auto flex flex-col min-h-[calc(100vh-80px)]">
         <div className="mb-8">
           <h1 className="font-heading text-2xl font-bold mb-2">Produkte hinzufügen</h1>
           <p className="text-muted-foreground">
@@ -154,7 +159,7 @@ const ScanPage = () => {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden space-y-2"
+                    className="overflow-y-auto max-h-[50vh] pr-1 -mr-1 space-y-2 scrollbar-hide"
                   >
                     <p className="text-[11px] text-muted-foreground mb-3 leading-tight">
                       Ablaufdaten wurden geschätzt. Bitte kurz prüfen.
@@ -162,72 +167,73 @@ const ScanPage = () => {
 
                     <div className="space-y-2 mt-4">
                       {products.map((product) => (
-    <motion.div
-      key={product.id}
-      layout
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className="relative overflow-hidden rounded-xl mb-2" // Убрали внешние границы
-    >
-      {/* 1. ПОДЛОЖКА: Тот самый пастельный красно-коричневый из инвентаря */}
-      <div 
-        className="absolute inset-0 flex items-center justify-end px-6"
-        style={{ backgroundColor: '#2D1B1B' }} // Цвет один-в-один как на скрине
-      >
-        <div className="flex flex-col items-center gap-1">
-          <Trash2 className="h-5 w-5 text-red-500/80" />
-          <span className="text-[9px] font-bold text-red-500/80 uppercase tracking-wider">Löschen</span>
-        </div>
-      </div>
+                        <motion.div
+                          key={product.id}
+                          layout
+                          initial={{ opacity: 0, scale: 0.98 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className="relative overflow-hidden rounded-xl mb-2" // Убрали внешние границы
+                        >
+                          
+                          {/* 1. ПОДЛОЖКА: Тот самый пастельный красно-коричневый из инвентаря */}
+                          <div
+                            className="absolute inset-0 flex items-center justify-end px-6"
+                            style={{ backgroundColor: '#2D1B1B' }} // Цвет один-в-один как на скрине
+                          >
+                            <div className="flex flex-col items-center gap-1">
+                              <Trash2 className="h-5 w-5 text-red-500/80" />
+                              <span className="text-[9px] font-bold text-red-500/80 uppercase tracking-wider">Löschen</span>
+                            </div>
+                          </div>
 
-      {/* 2. КАРТОЧКА: Темная, без светлой обводки */}
-      <motion.div
-        drag="x"
-        dragConstraints={{ left: -80, right: 0 }}
-        dragSnapToOrigin
-        onDragEnd={(_, info) => {
-          if (info.offset.x < -50) removeProduct(product.id);
-        }}
-        // bg-[#1A1F1E] — это глубокий темно-зеленый/серый фон со скрина
-        // border-white/5 — делаем обводку почти невидимой, чтобы не "резало" глаз
-        className="relative z-10 flex items-center justify-between p-4 bg-[#1A1F1E] border border-white/5 shadow-sm rounded-xl"
-      >
-        <div className="flex flex-col gap-0.5">
-          <span className="text-sm font-medium text-white/90">
-            {product.name}
-          </span>
-          <div className="flex items-center gap-2 text-[11px] text-white/40">
-            <span>{product.category}</span>
-            <span>•</span>
-            <div className="flex items-center gap-1">
-              <CalendarDays className="h-3 w-3" />
-              <span>{product.expiryDate}</span>
-            </div>
-            <span>•</span>
-            <span>{product.quantity}x</span>
-          </div>
-        </div>
+                          {/* 2. КАРТОЧКА: Темная, без светлой обводки */}
+                          <motion.div
+                            drag="x"
+                            dragConstraints={{ left: -80, right: 0 }}
+                            dragSnapToOrigin
+                            onDragEnd={(_, info) => {
+                              if (info.offset.x < -50) removeProduct(product.id);
+                            }}
+                            // bg-[#1A1F1E] — это глубокий темно-зеленый/серый фон со скрина
+                            // border-white/5 — делаем обводку почти невидимой, чтобы не "резало" глаз
+                            className="relative z-10 flex items-center justify-between p-4 bg-[#1A1F1E] border border-white/5 shadow-sm rounded-xl"
+                          >
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-sm font-medium text-white/90">
+                                {product.name}
+                              </span>
+                              <div className="flex items-center gap-2 text-[11px] text-white/40">
+                                <span>{product.category}</span>
+                                <span>•</span>
+                                <div className="flex items-center gap-1">
+                                  <CalendarDays className="h-3 w-3" />
+                                  <span>{product.expiryDate}</span>
+                                </div>
+                                <span>•</span>
+                                <span>{product.quantity}x</span>
+                              </div>
+                            </div>
 
-        {/* 3. КНОПКА ПРАВКИ: Тонкая и неяркая */}
-        <div className="flex items-center">
-          <button 
-            className="p-2 text-white/20 hover:text-white/60 transition-colors"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Pencil className="h-4 w-4" />
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  ))}
+                            {/* 3. КНОПКА ПРАВКИ: Тонкая и неяркая */}
+                            <div className="flex items-center">
+                              <button
+                                className="p-2 text-white/20 hover:text-white/60 transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </motion.div>
+                        </motion.div>
+                      ))}
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
               {/* Кнопки действий снизу */}
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-2 pt-4 mt-2 bg-background/80 backdrop-blur-md sticky bottom-0 z-20">
                 <button
                   onClick={() => { setShowReview(false); setProducts([]); }}
                   className="flex-1 rounded-xl border border-border bg-card py-2.5 text-sm font-medium hover:bg-accent transition-colors"
