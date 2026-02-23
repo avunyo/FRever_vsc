@@ -26,6 +26,12 @@ const mockProducts: ScannedProduct[] = [
   { id: "10", name: "Pasta Fusilli", category: "Vorratsschrank", expiryDate: "2026-01-01", quantity: 1 },
 ];
 
+const itemVariants = {
+  hidden: { opacity: 0, x: 20 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+  exit: { opacity: 0, x: -20, transition: { duration: 0.2 } },
+};
+
 const ScanPage = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [showReview, setShowReview] = useState(false);
@@ -60,7 +66,7 @@ const ScanPage = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 bg-background">
+    <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
       <AppHeader />
       <main className="container px-4 pt-4 pb-24 max-w-2xl mx-auto flex flex-col min-h-[calc(100vh-80px)]">
         <div className="mb-8">
@@ -169,43 +175,34 @@ const ScanPage = () => {
                       {products.map((product) => (
                         <motion.div
                           key={product.id}
-                          layout
-                          initial={{ opacity: 0, scale: 0.98 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          className="relative overflow-hidden rounded-xl mb-2" // Убрали внешние границы
+                          variants={itemVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          className="relative mb-3" // Фиксированный отступ вместо сложных структур
                         >
-                          
-                          {/* 1. ПОДЛОЖКА: Тот самый пастельный красно-коричневый из инвентаря */}
-                          <div
-                            className="absolute inset-0 flex items-center justify-end px-6"
-                            style={{ backgroundColor: '#2D1B1B' }} // Цвет один-в-один как на скрине
-                          >
-                            <div className="flex flex-col items-center gap-1">
-                              <Trash2 className="h-5 w-5 text-red-500/80" />
-                              <span className="text-[9px] font-bold text-red-500/80 uppercase tracking-wider">Löschen</span>
-                            </div>
+                          {/* Фон при свайпе (подложка) */}
+                          <div className="absolute inset-0 bg-destructive/10 dark:bg-red-900/20 flex items-center justify-end px-6 rounded-xl">
+                            <Trash2 className="h-5 w-5 text-destructive dark:text-red-400 opacity-40" />
                           </div>
 
-                          {/* 2. КАРТОЧКА: Темная, без светлой обводки */}
+                          {/* Сама карточка */}
                           <motion.div
                             drag="x"
-                            dragConstraints={{ left: -80, right: 0 }}
-                            dragSnapToOrigin
+                            dragConstraints={{ left: -100, right: 0 }}
+                            dragElastic={0.1}
                             onDragEnd={(_, info) => {
-                              if (info.offset.x < -50) removeProduct(product.id);
+                              if (info.offset.x < -70) removeProduct(product.id);
                             }}
-                            // bg-[#1A1F1E] — это глубокий темно-зеленый/серый фон со скрина
-                            // border-white/5 — делаем обводку почти невидимой, чтобы не "резало" глаз
-                            className="relative z-10 flex items-center justify-between p-4 bg-[#1A1F1E] border border-white/5 shadow-sm rounded-xl"
+                            // Убираем layout отсюда, чтобы не лагало при свайпе
+                            className="relative z-10 flex items-center justify-between p-3 border rounded-xl bg-white dark:bg-[#242C2B] border-border dark:border-white/5 shadow-sm touch-pan-y"
                           >
-                            <div className="flex flex-col gap-0.5">
-                              <span className="text-sm font-medium text-white/90">
+                            <div className="flex flex-col gap-1 min-w-0">
+                              <span className="text-sm font-bold text-foreground truncate">
                                 {product.name}
                               </span>
-                              <div className="flex items-center gap-2 text-[11px] text-white/40">
-                                <span>{product.category}</span>
-                                <span>•</span>
+                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium">
+                                <span className="bg-muted px-1.5 py-0.5 rounded text-[9px]">{product.category}</span>
                                 <div className="flex items-center gap-1">
                                   <CalendarDays className="h-3 w-3" />
                                   <span>{product.expiryDate}</span>
@@ -215,15 +212,9 @@ const ScanPage = () => {
                               </div>
                             </div>
 
-                            {/* 3. КНОПКА ПРАВКИ: Тонкая и неяркая */}
-                            <div className="flex items-center">
-                              <button
-                                className="p-2 text-white/20 hover:text-white/60 transition-colors"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </button>
-                            </div>
+                            <button className="p-2 text-muted-foreground/50 hover:text-primary transition-colors">
+                              <Pencil className="h-4 w-4" />
+                            </button>
                           </motion.div>
                         </motion.div>
                       ))}
@@ -233,16 +224,16 @@ const ScanPage = () => {
               </AnimatePresence>
 
               {/* Кнопки действий снизу */}
-              <div className="flex gap-2 pt-4 mt-2 bg-background/80 backdrop-blur-md sticky bottom-0 z-20">
+              <div className="flex gap-3 pt-4 mt-2 bg-background sticky bottom-0 z-20 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)] dark:shadow-none">
                 <button
                   onClick={() => { setShowReview(false); setProducts([]); }}
-                  className="flex-1 rounded-xl border border-border bg-card py-2.5 text-sm font-medium hover:bg-accent transition-colors"
+                  className="flex-1 rounded-xl border border-border bg-card py-3 text-sm font-medium hover:bg-accent transition-colors text-muted-foreground"
                 >
                   Abbrechen
                 </button>
                 <button
                   onClick={confirmProducts}
-                  className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground shadow-md hover:opacity-90 transition-all"
+                  className="flex-1 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground shadow-md shadow-primary/20 hover:opacity-90 transition-all"
                 >
                   Alle ({products.length})
                 </button>

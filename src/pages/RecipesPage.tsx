@@ -1,6 +1,6 @@
 import { AppHeader } from "@/components/AppHeader";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChefHat, Clock, Users, Check, Lock, Plus } from "lucide-react";
+import { ChefHat, Clock, Users, Check, Lock, Plus, ArrowRight } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { useState } from "react";
 
@@ -24,7 +24,7 @@ const recipes = [
 ];
 
 const RecipesPage = ({ onAddProduct }: { onAddProduct: (name: string) => void }) => {
-  const [addedItems, setAddedItems] = useState<string[]>([]); 
+  const [addedItems, setAddedItems] = useState<string[]>([]);
 
   const hasIngredient = (ingName: string) => {
     return mockProducts.some(p => p.name.toLowerCase().includes(ingName.toLowerCase()));
@@ -41,80 +41,94 @@ const RecipesPage = ({ onAddProduct }: { onAddProduct: (name: string) => void })
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {recipes.map((recipe, i) => (
-            <motion.div
-              key={recipe.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="group relative rounded-3xl border border-border bg-card p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+  <motion.div
+    key={recipe.id}
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: i * 0.1 }}
+    // Добавили relative здесь, чтобы кнопка позиционировалась относительно КАРТОЧКИ
+    className="relative bg-white dark:bg-[#242C2B] border border-border dark:border-white/5 rounded-xl overflow-hidden shadow-sm p-3 flex flex-col h-fit"
+  >
+    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 w-fit">
+      {recipe.image}
+    </div>
+
+    <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
+      {recipe.name}
+    </h3>
+
+    {/* Список ингредиентов */}
+    <div className="flex flex-wrap gap-2 mb-6"> {/* Увеличили нижний отступ mb-12, чтобы кнопка не перекрывала текст */}
+      <AnimatePresence mode="popLayout">
+        {recipe.ingredients.map((ing) => {
+          const isMissing = !hasIngredient(ing);
+          const isAdded = addedItems.includes(ing);
+          if (isAdded) return null;
+
+          return (
+            <motion.button
+              key={ing}
+              layout
+              initial={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5, y: -10 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                if (isMissing) {
+                  onAddProduct(ing);
+                  setAddedItems((prev) => [...prev, ing]);
+                  toast({
+                    description: `${ing} wurde hinzugefügt`,
+                    duration: 2000,
+                  });
+                }
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border transition-all ${
+                !isMissing
+                  ? "bg-primary/10 text-primary border-primary/20 cursor-default"
+                  : "bg-muted text-muted-foreground border-transparent hover:bg-primary/20 hover:text-primary cursor-pointer"
+              }`}
             >
-              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 w-fit">
-                {recipe.image}
-              </div>
+              {!isMissing ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+              {ing}
+            </motion.button>
+          );
+        })}
+      </AnimatePresence>
 
-              <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
-                {recipe.name}
-              </h3>
+      {recipe.ingredients
+        .filter((ing) => hasIngredient(ing))
+        .map((ing) => (
+          <div
+            key={`${ing}-owned`}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border bg-primary/10 text-primary border-primary/20 cursor-default"
+          >
+            <Check className="h-3 w-3" />
+            {ing}
+          </div>
+        ))}
+    </div>
 
-              <div className="flex flex-wrap gap-2 mb-6">
-  <AnimatePresence mode="popLayout">
-    {recipe.ingredients.map((ing) => {
-      const isMissing = !hasIngredient(ing);
-      const isAdded = addedItems.includes(ing);
-
-      // Если мы уже нажали "добавить", этот элемент анимированно исчезает
-      if (isAdded) return null;
-
-      return (
-        <motion.button
-          key={ing}
-          layout
-          initial={{ opacity: 1, scale: 1 }}
-          exit={{ 
-            opacity: 0, 
-            scale: 0.5, 
-            y: -10,
-            transition: { duration: 0.3 } 
-          }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => {
-            if (isMissing) {
-              onAddProduct(ing); // Теперь это вызовет addToShoppingList из App.tsx
-              setAddedItems((prev) => [...prev, ing]);
-              toast({
-                description: `${ing} wurde hinzugefügt`,
-                duration: 2000,
-              });
-            }
-          }}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border transition-all ${
-            !isMissing
-              ? "bg-primary/10 text-primary border-primary/20 cursor-default"
-              : "bg-muted text-muted-foreground border-transparent hover:bg-primary/20 hover:text-primary cursor-pointer"
-          }`}
-        >
-          {!isMissing ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
-          {ing}
-        </motion.button>
-      );
-    })}
-  </AnimatePresence>
-
-  {/* Отдельно рендерим те, что УЖЕ есть в инвентаре, чтобы они не пропадали */}
-  {recipe.ingredients
-    .filter((ing) => hasIngredient(ing))
-    .map((ing) => (
-      <div
-        key={`${ing}-owned`}
-        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border bg-primary/10 text-primary border-primary/20 cursor-default"
-      >
-        <Check className="h-3 w-3" />
-        {ing}
+    {/* Кнопка Kochen — теперь она ПЕРЕД закрывающим тегом основной карточки */}
+    <AnimatePresence>
+  {recipe.ingredients.every(ing => 
+    hasIngredient(ing) || addedItems.some(added => added.toLowerCase() === ing.toLowerCase())
+  ) && (
+    <motion.button
+      initial={{ opacity: 0, scale: 0.8, x: 10 }}
+      animate={{ opacity: 1, scale: 1, x: 0 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      whileTap={{ scale: 0.9 }}
+      className="absolute bottom-3 right-3 bg-primary text-primary-foreground px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-lg flex items-center gap-2 z-30 hover:bg-primary/90 transition-colors"
+    >
+      <span>Kochen</span>
+      <div className="bg-white/20 rounded-md p-0.5">
+        <ArrowRight className="h-3 w-3" /> {/* Теперь здесь стрелочка */}
       </div>
-    ))}
-</div>
-            </motion.div>
-          ))}
+    </motion.button>
+  )}
+</AnimatePresence>
+  </motion.div>
+))}
         </div>
       </main>
     </div>

@@ -122,7 +122,7 @@ const Dashboard = () => {
       </div>
       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-600 border border-orange-500/10">
         <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
-        <span className="text-xs font-bold">{expiringCount} Bald ab!</span>
+        <span className="text-xs font-bold">{expiringCount} Laufen Bald ab!</span>
       </div>
       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-600 border border-red-500/10">
         <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
