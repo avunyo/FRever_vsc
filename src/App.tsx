@@ -14,6 +14,7 @@ import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
+import AccountPage from "./pages/AccountPage";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,8 @@ const App = () => {
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/account" element={<AccountPage />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

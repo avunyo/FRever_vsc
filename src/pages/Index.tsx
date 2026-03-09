@@ -1,8 +1,8 @@
-import { motion } from "framer-motion";
-import { ArrowRight, ShieldCheck, TrendingDown, Lightbulb } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { ArrowRight, ShieldCheck, TrendingDown, Lightbulb, Shield, Camera } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "@/components/ThemeProvider";
-// Импортируем оба варианта логотипа
 import logoLight from "@/assets/logo-light.png";
 import logoDark from "@/assets/logo-dark.png";
 
@@ -26,19 +26,79 @@ const features = [
 
 const LandingPage = () => {
     const { theme } = useTheme();
+    const [showWelcome, setShowWelcome] = useState(false);
+    const [showCameraModal, setShowCameraModal] = useState(false);
+
+    useEffect(() => {
+        const hasAccepted = localStorage.getItem("frever_consent");
+        if (!hasAccepted) {
+            setShowWelcome(true);
+        }
+    }, []);
+
+    const handleAccept = () => {
+        localStorage.setItem("frever_consent", "true");
+        setShowWelcome(false);
+    };
 
     return (
         <div className="relative min-h-[100dvh] bg-background flex flex-col overflow-x-hidden">
-            {/* Шапка Landing Page — Кнопку темы отсюда тоже убрали, так как она есть в AppHeader */}
+            <AnimatePresence>
+                {showWelcome && (
+                    <>
+                        {/* Размытый фон */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[100] bg-background/60 backdrop-blur-xl"
+                        />
+
+                        {/* Контент модалки */}
+                        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                className="bg-card border border-border p-8 rounded-[32px] max-w-sm w-full shadow-2xl text-center"
+                            >
+                                <div className="inline-flex p-4 bg-primary/10 rounded-2xl text-primary mb-6">
+                                    <Shield className="h-8 w-8" />
+                                </div>
+
+                                <h2 className="text-2xl font-bold mb-3 font-heading text-foreground">Datenschutz</h2>
+                                <p className="text-sm text-muted-foreground mb-8 leading-relaxed">
+                                    Willkommen bei <span className="text-primary font-bold">FRever</span>. Wir nutzen Cookies, um dein Erlebnis zu verbessern. Mit der Nutzung stimmst du unseren Richtlinien zu.
+                                </p>
+
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={handleAccept}
+                                        className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold shadow-lg shadow-primary/20 active:scale-95 transition-all"
+                                    >
+                                        Akzeptieren & Starten
+                                    </button>
+                                    <button
+                                        onClick={() => setShowWelcome(false)}
+                                        className="w-full py-4 bg-secondary text-secondary-foreground rounded-2xl font-medium text-sm hover:bg-muted transition-colors"
+                                    >
+                                        Nur Notwendige
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </>
+                )}
+            </AnimatePresence>
             <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-                {/* Увеличили высоту контейнера до h-20 */}
+
                 <div className="container flex h-16 items-center justify-between px-4">
                     <div className="flex items-center gap-2">
                         <img
-                            /* Логика темы остается */
+                            /* Логика темы */
                             src={theme === "light" ? logoDark : logoLight}
                             alt="FRever"
-                            /* УВЕЛИЧЕННЫЙ РАЗМЕР: h-12 на мобильных, h-14 на компах */
+
                             className="h-10 md:h-12 w-auto object-contain"
                         />
                     </div>
@@ -47,13 +107,13 @@ const LandingPage = () => {
 
             <main className="pt-20 md:pt-20">
                 <section className="relative overflow-hidden">
-                    {/* МОБИЛЬНУЮ КНОПКУ ОТСЮДА УДАЛИЛИ */}
+
 
                     <div className="absolute inset-0 -z-10">
                         <div className="absolute top-20 left-1/2 -translate-x-1/2 h-[600px] w-[600px] rounded-full bg-primary/5 blur-3xl" />
                     </div>
 
-                    {/* --- ЗАМЕНИТЬ ОТСЮДА --- */}
+
                     <div className="container flex flex-col items-center mt-5 md:pt-0 px-4 text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
@@ -79,10 +139,11 @@ const LandingPage = () => {
                                 Geld zu sparen und bewusster zu leben.
                             </p>
 
-                            {/* Кнопки — теперь они будут всегда ровные */}
+                            {/* Кнопки */}
                             <div className="flex flex-col sm:flex-row gap-6 w-full max-w-lg justify-center items-stretch sm:items-center px-4">
-                                <Link to="/scan" className="flex-1">
+                                
                                     <motion.button
+                                        onClick={() => setShowCameraModal(true)} // Теперь открываем модалку
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
                                         className="w-full h-16 inline-flex items-center justify-center gap-3 rounded-2xl bg-primary px-8 text-lg font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all"
@@ -90,7 +151,7 @@ const LandingPage = () => {
                                         Produkte hinzufügen
                                         <ArrowRight className="h-5 w-5" />
                                     </motion.button>
-                                </Link>
+                               
 
                                 <Link to="/dashboard" className="flex-1">
                                     <motion.button
@@ -104,9 +165,9 @@ const LandingPage = () => {
                             </div>
                             <motion.div
                                 initial={{ opacity: 0 }}
-                                animate={{ 
-                                    opacity: 1, 
-                                    y: [0, 10, 0] // Прыжок вниз на 10px
+                                animate={{
+                                    opacity: 1,
+                                    y: [0, 10, 0]
                                 }}
                                 transition={{
                                     opacity: { delay: 0.5, duration: 0.8 },
@@ -117,19 +178,19 @@ const LandingPage = () => {
                             >
                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Mehr erfahren</span>
                                 <div className="p-4 rounded-full border border-border bg-card shadow-sm group-hover:border-primary transition-colors">
-                                    {/* Увеличили иконку до h-6 w-6 как в нижней кнопке */}
+
                                     <ArrowRight className="h-6 w-6 rotate-90" />
                                 </div>
                             </motion.div>
                         </motion.div>
                     </div>
-                    {/* --- ДО СЮДА --- */}
+
                 </section>
 
-                {/* Features */}
-                {/* Секция преимуществ */}
+
+
                 <section className="py-24 border-t border-border">
-                    <div className="container px-4 flex flex-col items-center"> {/* Центрируем всё содержимое */}
+                    <div className="container px-4 flex flex-col items-center">
 
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -138,18 +199,18 @@ const LandingPage = () => {
                             transition={{ duration: 0.5 }}
                             className="text-center mb-20 w-full"
                         >
-                            {/* Заголовок выше, центрирован */}
+
                             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-6">
                                 Warum FRever?
                             </h2>
 
-                            {/* Текст в одну строку, центрирован */}
+
                             <p className="text-muted-foreground text-lg md:text-xl max-w-3xl mx-auto">
                                 Drei einfache Gründe, warum du FRever lieben wirst.
                             </p>
                         </motion.div>
 
-                        {/* Сетка карточек — исправляем "лесенку" */}
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
                             {features.map((feature, i) => (
                                 <motion.div
@@ -160,7 +221,7 @@ const LandingPage = () => {
                                     transition={{ duration: 0.5, delay: i * 0.15 }}
                                     className="flex flex-col items-center text-center p-8 rounded-3xl bg-card border border-border hover:border-primary/50 transition-colors"
                                 >
-                                    {/* Увеличенные иконки, чтобы их было видно */}
+
                                     <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-6">
                                         <feature.icon className="h-8 w-8 stroke-[2px]" />
                                     </div>
@@ -179,7 +240,7 @@ const LandingPage = () => {
                         >
                             <motion.button
                                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                                // Анимация прыжка:
+
                                 animate={{ y: [0, -10, 0] }}
                                 transition={{
                                     duration: 2,
@@ -189,7 +250,7 @@ const LandingPage = () => {
                                 className="flex flex-col items-center gap-3 text-muted-foreground hover:text-primary transition-all group"
                             >
                                 <div className="p-4 rounded-full border border-border bg-card group-hover:border-primary transition-colors shadow-sm">
-                                    {/* Иконка смотрит вверх (-rotate-90) */}
+
                                     <ArrowRight className="h-6 w-6 -rotate-90" />
                                 </div>
                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Zum Anfang</span>
@@ -197,6 +258,48 @@ const LandingPage = () => {
                         </motion.div>
                     </div>
                 </section>
+            <AnimatePresence>
+    {showCameraModal && (
+        <>
+            <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => setShowCameraModal(false)}
+                className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div 
+                initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+                className="fixed bottom-0 left-0 right-0 z-[130] bg-card border-t border-border rounded-t-[32px] p-8 pb-12 max-w-2xl mx-auto shadow-2xl"
+            >
+                <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-8" />
+                
+                <div className="flex flex-col items-center text-center">
+                    <div className="p-4 bg-primary/10 rounded-2xl text-primary mb-6">
+                        <Camera className="h-10 w-10" />
+                    </div>
+                    
+                    <h2 className="text-2xl font-bold mb-3">Kamera-Zugriff</h2>
+                    <p className="text-muted-foreground mb-8 text-sm leading-relaxed max-w-xs">
+                        Um Barcodes zu scannen und Produkte automatisch hinzuzufügen, benötigen wir Zugriff auf deine Kamera. Keine Sorge, deine Privatsphäre ist uns wichtig und die Kamera wird nur für diesen Zweck verwendet.
+                    </p>
+
+                    <div className="flex flex-col w-full gap-3">
+                        <Link to="/scan" className="w-full">
+                            <button className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold active:scale-95 transition-all">
+                                Kamera aktivieren
+                            </button>
+                        </Link>
+                        <button 
+                            onClick={() => setShowCameraModal(false)}
+                            className="w-full py-4 bg-muted text-muted-foreground rounded-2xl font-medium text-sm hover:bg-accent transition-colors"
+                        >
+                            Vielleicht später
+                        </button>
+                    </div>
+                </div>
+            </motion.div>
+        </>
+    )}
+</AnimatePresence>
             </main>
         </div>
     );
