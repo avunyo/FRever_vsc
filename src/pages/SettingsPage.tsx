@@ -1,6 +1,6 @@
 import { AppHeader } from "@/components/AppHeader";
 import { AnimatePresence, motion } from "framer-motion";
-import { User, Bell, Target, Sliders, Crown, Shield, Info, Sun, Moon, Lock, EyeOff, FileText, Clock, Zap, Minus, Plus } from "lucide-react";
+import { User, Bell, Target, Sliders, Crown, Shield, Info, Sun, Moon, Lock, EyeOff, FileText, Clock, Zap, Minus, Plus, Github, Mail } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { Link } from "react-router-dom";
 import logoLight from "@/assets/logo-light.png";
@@ -521,17 +521,119 @@ const SettingsPage = () => {
                   </div>
                 </div>
               )}
-              {/* --- КОНТЕНТ ДЛЯ HEURISTIKEN --- */}
-              
-              {/* Кнопка закрытия для всех, кроме премиума (там обычно своя кнопка оплаты) */}
-              {/* Кнопка закрытия только для простых модалок */}
+
+              {activeModal === "Über FRever" && (
+                <div
+                  className="flex flex-col gap-4 px-1 pb-4 overflow-y-auto max-h-[65vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                  style={{ scrollbarWidth: 'none' }}
+                >
+                  {/* Заголовок */}
+                  <div className="text-center pt-4 flex-shrink-0">
+                    <h2 className="text-2xl font-bold tracking-tight text-white">
+                      Schulprojekt <span className="text-[#2dd498] font-serif italic">FRever</span>
+                    </h2>
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-[#2dd498] font-bold mt-1 opacity-80">
+                      Sustainability First
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-4">
+                    {/* Секция: Team & Mitwirkende */}
+                    <div className="space-y-3 flex-shrink-0">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-2">Unser Team</p>
+
+                      <div className="rounded-[18px] bg-[#24332f] border border-[#2dd498]/20 overflow-hidden shadow-lg">
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-[#2dd498]/10 bg-[#2dd498]/5">
+                          <div className="flex flex-col">
+                            <span className="text-[15px] font-bold text-white">Polina Tymchyshyna</span>
+                            <span className="text-[9px] font-bold text-[#2dd498] uppercase tracking-tighter">Zuständig für die App</span>
+                          </div>
+
+                          <div className="flex gap-2">
+                            {/* КНОПКА ПОЧТЫ ПОЛИНЫ */}
+                            <a
+                              href="mailto:polina.tymchyshyna@jack-steinberger-gymnasium.de"
+                              className="h-8 w-11 rounded-xl bg-[#374151] flex items-center justify-center border border-white/5 shadow-inner hover:bg-[#4b5563] transition-all active:scale-90"
+                            >
+                              <Mail className="h-3.5 w-3.5 text-gray-200" />
+                            </a>
+                            {/* КНОПКА ГИТХАБА ПОЛИНЫ */}
+                            <a
+                              href="https://github.com/avunyo"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="h-8 w-11 rounded-xl bg-[#374151] flex items-center justify-center border border-white/5 shadow-inner hover:bg-[#4b5563] transition-all active:scale-90"
+                            >
+                              <Github className="h-3.5 w-3.5 text-gray-200" />
+                            </a>
+                          </div>
+                        </div>
+                        <div className="bg-transparent">
+                          {["Lead Dev", "Lead UI/UX Design", "Lead Backend/Frontend"].map((role, i) => (
+                            <div key={i} className="px-5 py-3 border-b last:border-0 border-[#2dd498]/5 flex items-center gap-3">
+                              <div className="h-1 w-1 rounded-full bg-[#2dd498] shadow-[0_0_5px_#2dd498]" />
+                              <span className="text-[13px] font-medium text-gray-300">{role}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                   
+                    <div className="flex-shrink-0 rounded-[18px] bg-[#24332f] border border-[#2dd498]/20 overflow-hidden shadow-lg">
+                      <div className="divide-y divide-[#2dd498]/5">
+                        {[
+                          { n: "Maryam Akraa", e: "maryam.akraa@jack-steinberger-gymnasium.de" }, 
+                          { n: "Jakob Seufert", e: "jakob.seufert@jack-steinberger-gymnasium.de" }, 
+                          { n: "Hanna Herrmann", e: "hanna.herrmann@jack-steinberger-gymnasium.de" } 
+                        ].map((member, idx) => (
+                          <div key={idx} className="flex items-center justify-between px-5 py-4">
+                            <span className="text-[14px] font-semibold text-gray-200">{member.n}</span>
+
+                            {/* КНОПКА ПОЧТЫ (теперь работает для каждого отдельно) */}
+                            <a
+                              href={`mailto:${member.e}`}
+                              className="h-7 w-10 rounded-lg bg-[#374151]/50 flex items-center justify-center hover:bg-[#4b5563] transition-all active:scale-90"
+                            >
+                              <Mail className="h-3.5 w-3.5 text-gray-400" />
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                      {/* Конец списка имен */}
+
+                      <div className="bg-[#2dd498]/5 p-4 border-t border-[#2dd498]/10">
+                        <p className="text-[13px] font-bold text-[#2dd498]">* Die besten Ratschlageber und Helfer!</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
+                          Willst mit uns in Kontakt kommen? Klicke auf die Symbole Rechts!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Секция репозитория */}
+                  <div className="flex flex-col gap-2 mt-2 flex-shrink-0">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-2">Source Code</p>
+                    {/* КНОПКА РЕПОЗИТОРИЯ */}
+                    <a
+                      href="https://github.com/avunyo/FRever_vsc.git"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-full py-4 rounded-[16px] bg-[#2dd498] text-[#1a2421] font-extrabold uppercase tracking-widest text-[13px] shadow-[0_5px_15px_rgba(45,212,152,0.2)] active:scale-95 transition-all text-center"
+                    >
+                      repository
+                    </a>
+                  </div>
+                </div>
+              )}
+
               {["Datenschutz", "Über FRever", "Mein Konto", "Heuristiken"].includes(activeModal || "") && (
                 <button
                   onClick={() => {
                     setActiveModal(null);
                     setIsConfiguringHeuristics(false); // Сбрасываем шаг, чтобы при следующем открытии снова были "Цели"
                   }}
-                  className="w-full mt-8 py-4 bg-secondary rounded-2xl font-bold active:scale-95 transition-transform"
+                  className="w-full py-4 rounded-[16px] bg-[#24332f] border border-white/5 text-white text-[14px] font-bold active:bg-white/10 transition-all"
                 >
                   Verstanden
                 </button>
