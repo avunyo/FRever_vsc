@@ -12,7 +12,6 @@ const sections = [
   { icon: User, label: "Mein Konto", description: "E-Mail, Passwort, Name verwalten" },
   { icon: Bell, label: "Benachrichtigungen", description: "Push-Zeiten und Warnungen einstellen" },
   { icon: Target, label: "Ziele", description: "Monatsziel für weniger Abfall anpassen" },
-  { icon: Sliders, label: "Heuristiken", description: "Haltbarkeiten für deine Produkte anpassen" },
   { icon: Shield, label: "Datenschutz", description: "Deine Daten und Privatsphäre" },
   { icon: Info, label: "Über FRever", description: "Version, Team und Kontakt" },
 ];
@@ -28,6 +27,8 @@ const SettingsPage = () => {
   const [morningCheck, setMorningCheck] = useState(true);
   const [weeklyReport, setWeeklyReport] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<string | null>("eco");
+  const [isConfiguringHeuristics, setIsConfiguringHeuristics] = useState(false);
 
   const [heuristicsData, setHeuristicsData] = useState([
     { id: 'milk', label: "Milchprodukte", icon: "🥛", days: 4, color: "bg-blue-500" },
@@ -401,32 +402,92 @@ const SettingsPage = () => {
                 </div>
               )}
               {activeModal === "Ziele" && (
-                <div>
-                  <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                    <Target className="text-primary" /> Deine Ziele
-                  </h2>
-                  <p className="text-muted-foreground text-sm mb-8">Wähle deine Mission für diesen Monat:</p>
+                <div className="flex flex-col h-full">
+                  {!isConfiguringHeuristics ? (
+                    // --- ЭТАП 1: ВЫБОР ЦЕЛИ ---
+                    <>
+                      <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                        <Target className="text-primary" /> Deine Mission
+                      </h2>
+                      <p className="text-muted-foreground text-sm mb-6">Wähle dein Ziel für diesen Monat:</p>
 
-                  <div className="space-y-3">
-                    {[
-                      { l: "Starter", p: "10%", c: "bg-blue-500/10", t: "Einfach mal anfangen" },
-                      { l: "Eco-Warrior", p: "30%", c: "bg-primary/10", t: "Spürbare Veränderung", hot: true },
-                      { l: "Zero Hero", p: "60%", c: "bg-amber-500/10", t: "Maximale Wirkung" }
-                    ].map((goal) => (
-                      <button key={goal.l} className={`w-full p-4 rounded-2xl border transition-all text-left flex items-center justify-between group ${goal.hot ? 'border-primary shadow-sm' : 'border-border hover:border-primary/50'}`}>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold">{goal.l}</span>
-                            {goal.hot && <span className="text-[8px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded uppercase">Beliebt</span>}
-                          </div>
-                          <p className="text-xs text-muted-foreground">{goal.t}</p>
-                        </div>
-                        <div className={`h-12 w-12 rounded-full ${goal.c} flex items-center justify-center font-black text-sm`}>
-                          -{goal.p}
-                        </div>
+                      <div className="space-y-3 mb-8">
+                        {[
+                          { id: 'starter', l: "Starter", p: "10%", c: "bg-blue-500/10", t: "Einfach mal anfangen" },
+                          { id: 'eco', l: "Eco-Warrior", p: "30%", c: "bg-primary/10", t: "Spürbare Veränderung", hot: true },
+                          { id: 'zero', l: "Zero Hero", p: "60%", c: "bg-amber-500/10", t: "Maximale Wirkung" }
+                        ].map((goal) => {
+                          const isSelected = selectedGoal === goal.id;
+                          return (
+                            <button
+                              key={goal.id}
+                              onClick={() => setSelectedGoal(goal.id)}
+                              className={`w-full p-4 rounded-2xl border transition-all text-left flex items-center justify-between group relative overflow-hidden ${isSelected ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-border bg-card'
+                                }`}
+                            >
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className={`font-bold ${isSelected ? 'text-primary' : ''}`}>{goal.l}</span>
+                                  {goal.hot && <span className="text-[8px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded uppercase font-black">Beliebt</span>}
+                                </div>
+                                <p className="text-xs text-muted-foreground">{goal.t}</p>
+                              </div>
+                              <div className={`h-10 w-10 rounded-full ${goal.c} flex items-center justify-center font-black text-xs`}>
+                                -{goal.p}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <button
+                        onClick={() => setIsConfiguringHeuristics(true)}
+                        className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
+                      >
+                        Weiter zur Konfiguration 🚀
                       </button>
-                    ))}
-                  </div>
+                    </>
+                  ) : (
+                    // --- ЭТАП 2: НАСТРОЙКА СРОКОВ (HEURISTIKEN) ---
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                      <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                        <Sliders className="text-primary" /> Strategie anpassen
+                      </h2>
+                      <p className="text-muted-foreground text-sm mb-6">Wie optimieren wir deine Haltbarkeit?</p>
+
+                      <div className="space-y-4 mb-8">
+                        {heuristicsData.map((cat) => (
+                          <div key={cat.id} className="p-4 rounded-2xl border border-border bg-card/50">
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-bold flex items-center gap-2">{cat.icon} {cat.label}</span>
+                              <span className="text-xs font-black text-primary">{cat.days} Tage</span>
+                            </div>
+                            <input
+                              type="range" min="1" max="30" value={cat.days}
+                              onChange={(e) => updateDays(cat.id, parseInt(e.target.value) - cat.days)}
+                              className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
+                            />
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          setActiveModal(null);
+                          setIsConfiguringHeuristics(false);
+                        }}
+                        className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg active:scale-[0.98] transition-all"
+                      >
+                        Alles bereit!
+                      </button>
+                      <button
+                        onClick={() => setIsConfiguringHeuristics(false)}
+                        className="w-full mt-2 py-2 text-xs text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        ← Zurück zu den Zielen
+                      </button>
+                    </motion.div>
+                  )}
                 </div>
               )}
 
@@ -461,68 +522,15 @@ const SettingsPage = () => {
                 </div>
               )}
               {/* --- КОНТЕНТ ДЛЯ HEURISTIKEN --- */}
-              {activeModal === "Heuristiken" && (
-  <div className="flex flex-col gap-2">
-    <div className="mb-4">
-      <h2 className="text-2xl font-bold flex items-center gap-2">
-        <Sliders className="text-primary" /> Heuristiken
-      </h2>
-      <p className="text-muted-foreground text-xs italic">Intelligente Haltbarkeits-Logik</p>
-    </div>
-
-    {heuristicsData.map((cat) => (
-      <div key={cat.id} className="p-4 rounded-[22px] border border-border bg-card/50 mb-4 transition-all hover:border-primary/30">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">{cat.icon}</span>
-            <p className="font-bold text-sm">{cat.label}</p>
-          </div>
-
-          <div className="flex items-center gap-3 bg-muted/30 rounded-xl p-1 border border-white/5">
-            <button
-              onClick={() => updateDays(cat.id, -1)}
-              className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-primary/20 hover:text-primary transition-all active:scale-90"
-            >
-              <Minus className="h-4 w-4" />
-            </button>
-            <span className="text-primary font-black min-w-[65px] text-center text-xs">
-              {cat.days} Tage
-            </span>
-            <button
-              onClick={() => updateDays(cat.id, 1)}
-              className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-primary/20 hover:text-primary transition-all active:scale-90"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-
-        <div className="relative h-6 flex items-center">
-          <input
-            type="range"
-            min="1"
-            max="30"
-            value={cat.days}
-            onChange={(e) => {
-              const val = parseInt(e.target.value);
-              setHeuristicsData(prev => prev.map(item => item.id === cat.id ? { ...item, days: val } : item));
-            }}
-            className="absolute w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer accent-primary z-10"
-          />
-          <div
-            className={`absolute h-1.5 rounded-full transition-all pointer-events-none ${cat.color}`}
-            style={{ width: `${(cat.days / 30) * 100}%`, boxShadow: `0 0 10px ${cat.color}44` }}
-          />
-        </div>
-      </div>
-    ))}
-  </div>
-)}
+              
               {/* Кнопка закрытия для всех, кроме премиума (там обычно своя кнопка оплаты) */}
               {/* Кнопка закрытия только для простых модалок */}
               {["Datenschutz", "Über FRever", "Mein Konto", "Heuristiken"].includes(activeModal || "") && (
                 <button
-                  onClick={() => setActiveModal(null)}
+                  onClick={() => {
+                    setActiveModal(null);
+                    setIsConfiguringHeuristics(false); // Сбрасываем шаг, чтобы при следующем открытии снова были "Цели"
+                  }}
                   className="w-full mt-8 py-4 bg-secondary rounded-2xl font-bold active:scale-95 transition-transform"
                 >
                   Verstanden
