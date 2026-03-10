@@ -10,7 +10,7 @@ import { useState } from "react";
 const sections = [
   { icon: Crown, label: "Premium", description: "Abo verwalten und upgraden" },
   { icon: User, label: "Mein Konto", description: "E-Mail, Passwort, Name verwalten" },
-  { icon: Bell, label: "Benachrichtigungen", description: "Push-Zeiten und Warnungen einstellen" },
+  { icon: Bell, label: "Benachrichtigungen", description: "Push-Zeiten, Warnungen und Heuristiken einstellen" },
   { icon: Target, label: "Ziele", description: "Monatsziel für weniger Abfall anpassen" },
   { icon: Shield, label: "Datenschutz", description: "Deine Daten und Privatsphäre" },
   { icon: Info, label: "Über FRever", description: "Version, Team und Kontakt" },
