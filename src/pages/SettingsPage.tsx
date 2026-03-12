@@ -616,7 +616,7 @@ const SettingsPage = () => {
                     <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-2">Source Code</p>
                     {/* КНОПКА РЕПОЗИТОРИЯ */}
                     <a
-                      href="https://github.com/avunyo/FRever_vsc.git"
+                      href="https://github.com/avunyo/FRever_vsc"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center justify-center w-full py-4 rounded-[16px] bg-[#2dd498] text-[#1a2421] font-extrabold uppercase tracking-widest text-[13px] shadow-[0_5px_15px_rgba(45,212,152,0.2)] active:scale-95 transition-all text-center"
