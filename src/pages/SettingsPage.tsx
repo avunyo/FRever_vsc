@@ -29,6 +29,7 @@ const SettingsPage = () => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<string | null>("eco");
   const [isConfiguringHeuristics, setIsConfiguringHeuristics] = useState(false);
+  const [emailMenu, setEmailMenu] = useState<{ name: string, email: string } | null>(null);
 
   const [heuristicsData, setHeuristicsData] = useState([
     { id: 'milk', label: "Milchprodukte", icon: "🥛", days: 4, color: "bg-blue-500" },
@@ -41,6 +42,12 @@ const SettingsPage = () => {
     setHeuristicsData(prev => prev.map(item =>
       item.id === id ? { ...item, days: Math.max(1, Math.min(30, item.days + delta)) } : item
     ));
+  };
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    // Вместо alert можно сделать красивый тост, но пока оставим так:
+    alert("Email kopiert: " + text);
+    setEmailMenu(null);
   };
   return (
     <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
@@ -523,16 +530,13 @@ const SettingsPage = () => {
               )}
 
               {activeModal === "Über FRever" && (
-                <div
-                  className="flex flex-col gap-4 px-1 pb-4 overflow-y-auto max-h-[65vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-                  style={{ scrollbarWidth: 'none' }}
-                >
+                <div className="flex flex-col gap-4 px-1 pb-4 overflow-y-auto max-h-[65vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-[#DBE6E0] dark:bg-[#1E2423] transition-colors" style={{ scrollbarWidth: 'none' }}>
                   {/* Заголовок */}
                   <div className="text-center pt-4 flex-shrink-0">
-                    <h2 className="text-2xl font-bold tracking-tight text-white">
-                      Schulprojekt <span className="text-[#2dd498] font-serif italic">FRever</span>
+                    <h2 className="text-[28px] font-bold tracking-tight text-gray-900 dark:text-white">
+                      Schulprojekt <span className="text-[#1a9e6e] dark:text-[#2dd498] font-bold">FRever</span>
                     </h2>
-                    <p className="text-[10px] uppercase tracking-[0.2em] text-[#2dd498] font-bold mt-1 opacity-80">
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-[#1a9e6e] dark:text-[#2dd498] font-bold mt-0 opacity-80">
                       Sustainability First
                     </p>
                   </div>
@@ -540,71 +544,68 @@ const SettingsPage = () => {
                   <div className="flex flex-col gap-4">
                     {/* Секция: Team & Mitwirkende */}
                     <div className="space-y-3 flex-shrink-0">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-2">Unser Team</p>
+                      <p className="text-[12px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 ml-2">Unser Team</p>
 
-                      <div className="rounded-[18px] bg-[#24332f] border border-[#2dd498]/20 overflow-hidden shadow-lg">
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-[#2dd498]/10 bg-[#2dd498]/5">
+                      <div className="rounded-[24px] bg-[#f2f2f2] dark:bg-[#24332f] border-2 border-[#1a9e6e]/20 dark:border-[#2dd498]/20 overflow-hidden shadow-sm transition-all">
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1a9e6e]/15 dark:border-[#2dd498]/10 bg-[#1a9e6e]/8 dark:bg-[#2dd498]/5">
                           <div className="flex flex-col">
-                            <span className="text-[15px] font-bold text-white">Polina Tymchyshyna</span>
-                            <span className="text-[9px] font-bold text-[#2dd498] uppercase tracking-tighter">Zuständig für die App</span>
+                            <span className="text-[15px] font-bold text-gray-900 dark:text-white">Polina Tymchyshyna</span>
+                            <span className="text-[9px] font-bold text-[#1a9e6e] dark:text-[#2dd498] uppercase tracking-tighter">Zuständig für die App</span>
                           </div>
 
                           <div className="flex gap-2">
-                            {/* КНОПКА ПОЧТЫ ПОЛИНЫ */}
-                            <a
-                              href="mailto:polina.tymchyshyna@jack-steinberger-gymnasium.de"
-                              className="h-8 w-11 rounded-xl bg-[#374151] flex items-center justify-center border border-white/5 shadow-inner hover:bg-[#4b5563] transition-all active:scale-90"
+
+                            <button
+                              onClick={() => setEmailMenu({ name: "Polina Tymchyshyna", email: "polina.tymchyshyna@jack-steinberger-gymnasium.de" })}
+                              className="h-8 w-11 rounded-xl bg-gray-100 dark:bg-[#374151] flex items-center justify-center border border-gray-200 dark:border-white/5 shadow-sm hover:bg-gray-200 dark:hover:bg-[#4b5563] transition-all active:scale-90"
                             >
-                              <Mail className="h-3.5 w-3.5 text-gray-200" />
-                            </a>
-                            {/* КНОПКА ГИТХАБА ПОЛИНЫ */}
+                              <Mail className="h-3.5 w-3.5 text-gray-600 dark:text-gray-200" />
+                            </button>
+
                             <a
                               href="https://github.com/avunyo"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="h-8 w-11 rounded-xl bg-[#374151] flex items-center justify-center border border-white/5 shadow-inner hover:bg-[#4b5563] transition-all active:scale-90"
+                              className="h-8 w-11 rounded-xl bg-gray-100 dark:bg-[#374151] flex items-center justify-center border border-gray-200 dark:border-white/5 shadow-sm hover:bg-gray-200 dark:hover:bg-[#4b5563] transition-all active:scale-90"
                             >
-                              <Github className="h-3.5 w-3.5 text-gray-200" />
+                              <Github className="h-3.5 w-3.5 text-gray-600 dark:text-gray-200" />
                             </a>
                           </div>
                         </div>
                         <div className="bg-transparent">
                           {["Lead Dev", "Lead UI/UX Design", "Lead Backend/Frontend"].map((role, i) => (
-                            <div key={i} className="px-5 py-3 border-b last:border-0 border-[#2dd498]/5 flex items-center gap-3">
-                              <div className="h-1 w-1 rounded-full bg-[#2dd498] shadow-[0_0_5px_#2dd498]" />
-                              <span className="text-[13px] font-medium text-gray-300">{role}</span>
+                            <div key={i} className="px-5 py-3 border-b last:border-0 border-gray-100 dark:border-[#2dd498]/5 flex items-center gap-3">
+                              <div className="h-1 w-1 rounded-full bg-[#1a9e6e] dark:bg-[#2dd498] shadow-[0_0_5px_#1a9e6e] dark:shadow-[0_0_5px_#2dd498]" />
+                              <span className="text-[13px] font-medium text-gray-700 dark:text-gray-300">{role}</span>
                             </div>
                           ))}
                         </div>
                       </div>
                     </div>
 
-                   
-                    <div className="flex-shrink-0 rounded-[18px] bg-[#24332f] border border-[#2dd498]/20 overflow-hidden shadow-lg">
-                      <div className="divide-y divide-[#2dd498]/5">
+                    <div className="rounded-[24px] bg-[#f2f2f2] dark:bg-[#24332f] border-2 border-[#1a9e6e]/20 dark:border-[#2dd498]/20 overflow-hidden shadow-sm transition-all">
+                      <div className="divide-y divide-gray-100 dark:divide-[#2dd498]/5">
                         {[
-                          { n: "Maryam Akraa", e: "maryam.akraa@jack-steinberger-gymnasium.de" }, 
-                          { n: "Jakob Seufert", e: "jakob.seufert@jack-steinberger-gymnasium.de" }, 
-                          { n: "Hanna Herrmann", e: "hanna.herrmann@jack-steinberger-gymnasium.de" } 
+                          { n: "Maryam Akraa", e: "maryam.akraa@jack-steinberger-gymnasium.de" },
+                          { n: "Jakob Seufert", e: "jakob.seufert@jack-steinberger-gymnasium.de" },
+                          { n: "Hanna Herrmann", e: "hanna.herrmann@jack-steinberger-gymnasium.de" }
                         ].map((member, idx) => (
                           <div key={idx} className="flex items-center justify-between px-5 py-4">
-                            <span className="text-[14px] font-semibold text-gray-200">{member.n}</span>
+                            <span className="text-[14px] font-semibold text-gray-900 dark:text-white">{member.n}</span>
 
-                            {/* КНОПКА ПОЧТЫ (теперь работает для каждого отдельно) */}
-                            <a
-                              href={`mailto:${member.e}`}
-                              className="h-7 w-10 rounded-lg bg-[#374151]/50 flex items-center justify-center hover:bg-[#4b5563] transition-all active:scale-90"
+                            <button
+                              onClick={() => setEmailMenu({ name: member.n, email: member.e })}
+                              className="h-7 w-10 rounded-lg bg-gray-100 dark:bg-[#374151]/50 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-[#4b5563] transition-all active:scale-90 border border-gray-200 dark:border-transparent"
                             >
-                              <Mail className="h-3.5 w-3.5 text-gray-400" />
-                            </a>
+                              <Mail className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" />
+                            </button>
                           </div>
                         ))}
                       </div>
-                      {/* Конец списка имен */}
 
-                      <div className="bg-[#2dd498]/5 p-4 border-t border-[#2dd498]/10">
-                        <p className="text-[13px] font-bold text-[#2dd498]">* Die besten Ratschlageber und Helfer!</p>
-                        <p className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
+                      <div className="bg-[#1a9e6e]/8 dark:bg-[#2dd498]/5 p-4 border-t border-[#1a9e6e]/15 dark:border-[#2dd498]/10">
+                        <p className="text-[13px] font-bold text-[#1a9e6e] dark:text-[#2dd498]">* Die besten Ratschlageber und Helfer!</p>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">
                           Willst mit uns in Kontakt kommen? Klicke auf die Symbole Rechts!
                         </p>
                       </div>
@@ -613,13 +614,13 @@ const SettingsPage = () => {
 
                   {/* Секция репозитория */}
                   <div className="flex flex-col gap-2 mt-2 flex-shrink-0">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-2">Source Code</p>
-                    {/* КНОПКА РЕПОЗИТОРИЯ */}
+                    <p className="text-[12px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 ml-2">Source Code</p>
+
                     <a
                       href="https://github.com/avunyo/FRever_vsc"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center w-full py-4 rounded-[16px] bg-[#2dd498] text-[#1a2421] font-extrabold uppercase tracking-widest text-[13px] shadow-[0_5px_15px_rgba(45,212,152,0.2)] active:scale-95 transition-all text-center"
+                      className="flex items-center justify-center w-full py-4 rounded-[16px] bg-[#1a9e6e] dark:bg-[#2dd498] text-white dark:text-[#1a2421] font-extrabold uppercase tracking-widest text-[13px] shadow-[0_5px_15px_rgba(26,158,110,0.25)] dark:shadow-[0_5px_15px_rgba(45,212,152,0.2)] active:scale-95 transition-all text-center"
                     >
                       repository
                     </a>
@@ -638,7 +639,31 @@ const SettingsPage = () => {
                   Verstanden
                 </button>
               )}
+              {/* МЕНЮ ВЫБОРА (Вставить сюда) */}
+              {emailMenu && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 rounded-[24px]">
+                  <div className="bg-white dark:bg-[#24332f] w-full max-w-[260px] rounded-2xl shadow-2xl border border-gray-200 dark:border-[#2dd498]/30 overflow-hidden animate-in fade-in zoom-in duration-200">
+                    <div className="p-4 border-b border-gray-100 dark:border-[#2dd498]/10 text-center">
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">{emailMenu.name}</p>
+                    </div>
+                    <div className="flex flex-col">
 
+                      <button
+                        onClick={() => copyToClipboard(emailMenu.email)}
+                        className="flex items-center justify-center py-4 text-[13px] font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#2dd498]/10 transition-colors border-t border-gray-100 dark:border-[#2dd498]/5"
+                      >
+                        Email kopieren
+                      </button>
+                      <button
+                        onClick={() => setEmailMenu(null)}
+                        className="flex items-center justify-center py-4 text-[13px] font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors border-t border-gray-100 dark:border-[#2dd498]/5"
+                      >
+                        Abbrechen
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
           </>
         )}
