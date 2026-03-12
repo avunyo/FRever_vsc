@@ -406,19 +406,20 @@ const SettingsPage = () => {
                         </div>
                       </div>
                     ))}
-                  
-                  {/* КНОПКА ПОДТВЕРЖДЕНИЯ */}
-<div className="mt-4 flex-shrink-0">
-  <button
-    onClick={() => setActiveModal(null)}
-    className="w-full py-4 rounded-[20px] bg-primary text-primary-foreground font-black uppercase tracking-widest text-[13px] shadow-[0_10px_20px_rgba(var(--primary),0.2)] hover:shadow-[0_15px_25px_rgba(var(--primary),0.3)] active:scale-95 transition-all"
-  >
-    Speichern
-  </button>
-  <p className="text-center text-[10px] text-muted-foreground mt-3 opacity-60">
-    Deine Einstellungen werden automatisch übernommen
-  </p>
-</div></div>
+
+                    {/* КНОПКА ПОДТВЕРЖДЕНИЯ */}
+                    <div className="mt-4 flex-shrink-0">
+                      <button
+                        onClick={() => setActiveModal(null)}
+                        className="w-full py-4 rounded-[20px] bg-primary text-primary-foreground font-black uppercase tracking-widest text-[13px] shadow-[0_10px_20px_rgba(var(--primary),0.2)] hover:shadow-[0_15px_25px_rgba(var(--primary),0.3)] active:scale-95 transition-all"
+                      >
+                        Speichern
+                      </button>
+                      <p className="text-center text-[10px] text-muted-foreground mt-3 opacity-60">
+                        Deine Einstellungen werden automatisch übernommen
+                      </p>
+                    </div>
+                    </div>
                 </div>
               )}
               {activeModal === "Ziele" && (
