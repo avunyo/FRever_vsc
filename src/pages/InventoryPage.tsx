@@ -35,6 +35,7 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
   const [showFilters, setShowFilters] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const [showRecent, setShowRecent] = useState(true);
+  const [showCameraModal, setShowCameraModal] = useState(false);
 
   const markAsBought = (item: any) => {
     setProducts(prev => [...prev, { ...item, id: Date.now().toString(), status: 'fresh' }]);
@@ -412,16 +413,15 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
     >
       {/* Если вкладка "Инвентарь" — камера, если "Список покупок" — плюс */}
       {activeTab === "products" ? (
-        <Link to="/scan">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
-          >
-            <Camera className="h-8 w-8" />
-          </motion.button>
-        </Link>
-      ) : (
+  <motion.button
+    onClick={() => setShowCameraModal(true)} // Теперь открывает модалку
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
+  >
+    <Camera className="h-8 w-8" />
+  </motion.button>
+) : (
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -434,6 +434,54 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
     </motion.div>
   )}
 </AnimatePresence>
+    {/* Модалка разрешения камеры */}
+      <AnimatePresence>
+        {showCameraModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCameraModal(false)}
+              className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 left-0 right-0 z-[130] bg-card border-t border-border rounded-t-[32px] p-8 pb-12 max-w-2xl mx-auto shadow-2xl"
+            >
+              <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-8" />
+
+              <div className="flex flex-col items-center text-center">
+                <div className="p-4 bg-primary/10 rounded-2xl text-primary mb-6">
+                  <Camera className="h-10 w-10" />
+                </div>
+
+                <h2 className="text-2xl font-bold mb-3">Kamera-Zugriff</h2>
+                <p className="text-muted-foreground mb-8 text-sm leading-relaxed max-w-xs">
+                  Um Barcodes zu scannen und Produkte automatisch hinzuzufügen, benötigen wir Zugriff auf deine Kamera.
+                </p>
+
+                <div className="flex flex-col w-full gap-3">
+                  <Link to="/scan" className="w-full">
+                    <button className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold active:scale-95 transition-all shadow-lg shadow-primary/20">
+                      Kamera aktivieren
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => setShowCameraModal(false)}
+                    className="w-full py-4 bg-muted text-muted-foreground rounded-2xl font-medium text-sm hover:bg-accent transition-colors"
+                  >
+                    Vielleicht später
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -323,6 +323,7 @@ const SettingsPage = () => {
                   </div>
                 </div>
               )}
+
               {activeModal === "Benachrichtigungen" && (
                 <div className="flex flex-col gap-8">
                   <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -405,7 +406,19 @@ const SettingsPage = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
+                  
+                  {/* КНОПКА ПОДТВЕРЖДЕНИЯ */}
+<div className="mt-4 flex-shrink-0">
+  <button
+    onClick={() => setActiveModal(null)}
+    className="w-full py-4 rounded-[20px] bg-primary text-primary-foreground font-black uppercase tracking-widest text-[13px] shadow-[0_10px_20px_rgba(var(--primary),0.2)] hover:shadow-[0_15px_25px_rgba(var(--primary),0.3)] active:scale-95 transition-all"
+  >
+    Speichern
+  </button>
+  <p className="text-center text-[10px] text-muted-foreground mt-3 opacity-60">
+    Deine Einstellungen werden automatisch übernommen
+  </p>
+</div></div>
                 </div>
               )}
               {activeModal === "Ziele" && (
@@ -606,7 +619,7 @@ const SettingsPage = () => {
                       <div className="bg-[#1a9e6e]/8 dark:bg-[#2dd498]/5 p-4 border-t border-[#1a9e6e]/15 dark:border-[#2dd498]/10">
                         <p className="text-[13px] font-bold text-[#1a9e6e] dark:text-[#2dd498]">* Die besten Ratschlageber und Helfer!</p>
                         <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">
-                          Willst mit uns in Kontakt kommen? Klicke auf die Symbole Rechts!
+                          Willst mit uns ins Kontakt kommen dann klicke auf die Symbole Rechts!
                         </p>
                       </div>
                     </div>
