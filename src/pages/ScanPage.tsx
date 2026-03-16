@@ -68,46 +68,45 @@ const ScanPage = () => {
   return (
     <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
       <AppHeader />
-      <main className="container px-2 pt-2 pb-24 max-w-2xl mx-auto flex flex-col min-h-[calc(100vh-80px)]">
-        <div className="mb-6 p-6 bg-primary/10 border border-primary/10 rounded-2xl">
-          <h1 className="font-heading text-2xl font-bold mb-2 text-foreground">
-            Produkte hinzufügen
-          </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Scanne deinen Kassenbon, um Produkte automatisch zu erkennen.
-          </p>
-        </div>
+      <main className="container px-2  pb-24 max-w-2xl mx-auto flex flex-col min-h-[calc(100vh-80px)]">
+        {/* Этот блок будет виден ТОЛЬКО когда ничего не происходит (до сканирования) */}
+        {!isScanning && !showReview && (
+          <div className="mb-6 p-6 bg-primary/10 border border-primary/10 rounded-2xl">
+            
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Scanne deinen Kassenbon, um Produkte automatisch zu erkennen.
+            </p>
+          </div>
+        )}
 
         {/* Dropzone */}
+        {/* Это появится ТОЛЬКО в самом начале */}
         {!isScanning && !showReview && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleDrop}
-            onClick={handleUpload}
-            className={`cursor-pointer rounded-2xl border-2 border-dashed p-16 text-center transition-all ${isDragging
-              ? "border-primary bg-primary/5"
-              : "border-border hover:border-primary/50 hover:bg-primary/5"
+          <>
+            
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={handleDrop}
+              onClick={handleUpload}
+              className={`cursor-pointer rounded-2xl border-2 border-dashed p-16 text-center transition-all ${
+                isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50 hover:bg-primary/5"
               }`}
-          >
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <Camera className="h-8 w-8" />
+            >
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Camera className="h-8 w-8" />
+                </div>
+                <div>
+                  <p className="font-heading font-semibold text-lg mb-1">Kassenbon scannen</p>
+                  <p className="text-sm text-muted-foreground">Klicke oder per Drag & Drop als PDF, JPEG, PNG</p>
+                </div>
               </div>
-              <div>
-                <p className="font-heading font-semibold text-lg mb-1">Kassenbon scannen</p>
-                <p className="text-sm text-muted-foreground">
-                  Klicke hier oder ziehe ein Bild deines Kassenbons per Drag & Drop
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Upload className="h-3 w-3" />
-                JPG, PNG, PDF
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
 
         {/* Scanning animation */}
@@ -145,10 +144,29 @@ const ScanPage = () => {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-4"
             >
+              {/* Твоя новая широкая карточка — она появится только ТУТ */}
+              <div className="mb-6 pl-1 py-5 bg-white dark:bg-[#1A1F1E] border border-border shadow-sm rounded-2xl relative overflow-hidden">
+                <div className="absolute -right-4 -top-4 h-24 w-24 bg-primary/10 rounded-full blur-2xl" />
+                <div className="relative z-10 flex items-center gap-0">
+                  <div className="flex-shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <h1 className="font-heading text-xl font-bold text-foreground leading-none mb-1">
+                      Produkte hinzufügen
+                    </h1>
+                    <p className="text-sm text-muted-foreground leading-snug">
+                     Wir haben {products.length} Produkte auf dem Kassenbon gefunden.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Заголовок с кнопкой Скрыть/Показать */}
+              <div className="flex items-center justify-between border-b border-border pb-2"></div>
               {/* Заголовок с кнопкой Скрыть/Показать */}
               <div className="flex items-center justify-between border-b border-border pb-2">
                 <div className="flex items-center gap-2">
-                  <h2 className="font-heading text-lg font-bold">Erkannte Produkte</h2>
+                  <h2 className="font-heading text-lg font-bold">  Erkannte Produkte</h2>
                   <span className="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-bold">
                     {products.length}
                   </span>
