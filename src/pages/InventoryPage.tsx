@@ -276,10 +276,10 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
                                       className={`relative z-10 flex items-center justify-between p-3 border-[3px] transition-colors duration-200 rounded-xl ${isMatch
                                           ? "bg-card border-primary shadow-lg"
                                           : item.status === 'expiring'
-                                            ? "bg-[#FBFBFB] dark:bg-[#202D2B] border-orange-500/40"
+                                            ? "bg-[#FFFFFF] dark:bg-[#202D2B] border-orange-500/40"
                                             : item.status === 'expired'
-                                              ? "bg-[#FBFBFB] dark:bg-[#202D2B] border-red-600/40"
-                                              : "bg-[#FBFBFB] dark:bg-[#202D2B] border-[#E4E4E4] dark:border-[#202D2B] shadow-sm"
+                                              ? "bg-[#FFFFFF] dark:bg-[#202D2B] border-red-600/40"
+                                              : "bg-[#FFFFFF] dark:bg-[#202D2B] border-[#E4E4E4] dark:border-[#202D2B] shadow-sm"
                                         }`}
                                     >
                                       <div className="flex flex-col">
