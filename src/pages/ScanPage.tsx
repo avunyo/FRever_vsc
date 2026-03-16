@@ -68,10 +68,12 @@ const ScanPage = () => {
   return (
     <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
       <AppHeader />
-      <main className="container px-4 pt-4 pb-24 max-w-2xl mx-auto flex flex-col min-h-[calc(100vh-80px)]">
-        <div className="mb-8">
-          <h1 className="font-heading text-2xl font-bold mb-2">Produkte hinzufügen</h1>
-          <p className="text-muted-foreground">
+      <main className="container px-2 pt-2 pb-24 max-w-2xl mx-auto flex flex-col min-h-[calc(100vh-80px)]">
+        <div className="mb-6 p-6 bg-primary/10 border border-primary/10 rounded-2xl">
+          <h1 className="font-heading text-2xl font-bold mb-2 text-foreground">
+            Produkte hinzufügen
+          </h1>
+          <p className="text-sm text-muted-foreground leading-relaxed">
             Scanne deinen Kassenbon, um Produkte automatisch zu erkennen.
           </p>
         </div>
@@ -202,7 +204,7 @@ const ScanPage = () => {
                                 {product.name}
                               </span>
                               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium">
-                                <span className="bg-muted px-1.5 py-0.5 rounded text-[9px]">{product.category}</span>
+                                <span className="bg-primary/20 px-1.5 py-0.5 rounded text-[9px]">{product.category}</span>
                                 <div className="flex items-center gap-1">
                                   <CalendarDays className="h-3 w-3" />
                                   <span>{product.expiryDate}</span>
