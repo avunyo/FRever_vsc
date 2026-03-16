@@ -38,9 +38,9 @@ const mockProducts: Product[] = [
 ];
 
 const statusConfig: Record<ProductStatus, { label: string; className: string; dotColor: string }> = {
-  fresh: { label: "Frisch", className: "bg-primary/15 text-primary border border-primary/20", dotColor: "bg-primary" },
-  expiring: { label: "Läuft bald ab!", className: "bg-warning/15 text-warning border border-warning/20", dotColor: "bg-warning" },
-  expired: { label: "Abgelaufen", className: "bg-destructive/15 text-destructive border border-destructive/20", dotColor: "bg-destructive" },
+  fresh: { label: " ", className: "bg-primary/15 text-primary border border-primary/20", dotColor: "bg-primary" },
+  expiring: { label: " ", className: "bg-warning/15 text-warning border border-warning/20", dotColor: "bg-warning" },
+  expired: { label: " ", className: "bg-destructive/15 text-destructive border border-destructive/20", dotColor: "bg-destructive" },
 };
 
 const filters = ["Alle", "Nach Ablaufdatum", "Nach Kategorie", "Abgelaufen"];

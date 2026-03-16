@@ -54,10 +54,10 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
     }
   }, [searchQuery, products]);
   const stats = {
-  fresh: products.filter(p => p.status === 'fresh').length,
-  expiring: products.filter(p => p.status === 'expiring').length,
-  expired: products.filter(p => p.status === 'expired').length,
-};
+    fresh: products.filter(p => p.status === 'fresh').length,
+    expiring: products.filter(p => p.status === 'expiring').length,
+    expired: products.filter(p => p.status === 'expired').length,
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -121,7 +121,7 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold font-heading text-foreground">Mein Inventar</h1>
-            
+
             {/* Маленькие индикаторы в ряд */}
             <div className="flex gap-1.5">
               <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/10">
@@ -202,7 +202,7 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
               exit={{ opacity: 0, y: -10 }}
               className="space-y-3"
             >
-              
+
 
               {/* Сюда позже перенесем твой маппинг продуктов из Dashboard */}
 
@@ -211,14 +211,14 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
                 const CategoryIcon = items[0].categoryIcon;
 
                 return (
-                  <div key={category} className="rounded-2xl border border-border/60 shadow-sm dark:bg-muted/20 dark:border-white/10 bg-card overflow-hidden transition-all h-fit mb-3">
+                  <div key={category} className="rounded-2xl border border-border/60 shadow-sm dark:bg-muted/75 dark:border-white/10 bg-card overflow-hidden transition-all h-fit mb-3">
                     <button
                       onClick={() => setExpandedCategory(isExpanded ? null : category)}
                       className={`w-full flex items-center justify-between p-4 transition-colors ${isExpanded ? "bg-primary/5" : "hover:bg-muted/50"
                         }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-colors ${isExpanded ? "bg-primary text-white" : "bg-muted text-muted-foreground"
+                        <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-colors ${isExpanded ? "bg-primary text-white" : "bg-muted/100 text-muted-foreground"
                           }`}>
                           <CategoryIcon className="h-5 w-5" />
                         </div>
@@ -273,9 +273,13 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
                                       onDragEnd={(_, info) => {
                                         if (info.offset.x < -40) deleteProduct(item.id);
                                       }}
-                                      className={`relative z-10 flex items-center justify-between p-3 border-2 transition-colors duration-200 rounded-xl ${isMatch
-                                        ? "bg-card ring-2 ring-primary/20 shadow-lg border-primary"
-                                        : "bg-white dark:bg-[#1A1F1E] shadow-sm border-transparent"
+                                      className={`relative z-10 flex items-center justify-between p-3 border-[3px] transition-colors duration-200 rounded-xl ${isMatch
+                                          ? "bg-card border-primary shadow-lg"
+                                          : item.status === 'expiring'
+                                            ? "bg-[#EBEBEB] dark:bg-[#202D2B] border-orange-500/40"
+                                            : item.status === 'expired'
+                                              ? "bg-[#EBEBEB] dark:bg-[#202D2B] border-red-600/40"
+                                              : "bg-[#EBEBEB] dark:bg-[#202D2B] border-[#E4E4E4] dark:border-[#202D2B] shadow-sm"
                                         }`}
                                     >
                                       <div className="flex flex-col">
@@ -403,38 +407,38 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
         </AnimatePresence>
       </main>
       <AnimatePresence>
-  {isVisible && (
-    <motion.div
-      initial={{ scale: 0, opacity: 0, y: 20 }}
-      animate={{ scale: 1, opacity: 1, y: 0 }}
-      exit={{ scale: 0, opacity: 0, y: 20 }}
-      transition={{ duration: 0.2 }}
-      className="fixed bottom-24 right-6 z-[60] md:bottom-10 md:right-10"
-    >
-      {/* Если вкладка "Инвентарь" — камера, если "Список покупок" — плюс */}
-      {activeTab === "products" ? (
-  <motion.button
-    onClick={() => setShowCameraModal(true)} // Теперь открывает модалку
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
-  >
-    <Camera className="h-8 w-8" />
-  </motion.button>
-) : (
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => toast({ description: "Neues Item hinzufügen" })}
-          className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
-        >
-          <Plus className="h-8 w-8" />
-        </motion.button>
-      )}
-    </motion.div>
-  )}
-</AnimatePresence>
-    {/* Модалка разрешения камеры */}
+        {isVisible && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0, opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-24 right-6 z-[60] md:bottom-10 md:right-10"
+          >
+            {/* Если вкладка "Инвентарь" — камера, если "Список покупок" — плюс */}
+            {activeTab === "products" ? (
+              <motion.button
+                onClick={() => setShowCameraModal(true)} // Теперь открывает модалку
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
+              >
+                <Camera className="h-8 w-8" />
+              </motion.button>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => toast({ description: "Neues Item hinzufügen" })}
+                className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
+              >
+                <Plus className="h-8 w-8" />
+              </motion.button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Модалка разрешения камеры */}
       <AnimatePresence>
         {showCameraModal && (
           <>
