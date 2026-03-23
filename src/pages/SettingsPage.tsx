@@ -653,7 +653,7 @@ const SettingsPage = () => {
                       <div className="bg-[#1a9e6e]/8 dark:bg-[#2dd498]/5 p-4 border-t border-[#1a9e6e]/15 dark:border-[#2dd498]/10">
                         <p className="text-[13px] font-bold text-[#1a9e6e] dark:text-[#2dd498]">* Die besten Ratschlaggeber und Helfer!</p>
                         <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">
-                          Willst mit uns ins Kontakt kommen? Dann klicke auf die Symbole Rechts!
+                          Du willst mit uns in Kontakt kommen? Dann klicke auf die Symbole rechts!
                         </p>
                       </div>
                     </div>
