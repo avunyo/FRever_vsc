@@ -268,7 +268,7 @@ const SettingsPage = () => {
               {/* --- КОНТЕНТ МЕНЯЕТСЯ ТУТ --- */}
 
               {activeModal === "Premium" && (
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-3">
                   {/* Заголовок с короной */}
                   <div className="text-center mb-4">
                     <div className="inline-flex p-4 bg-primary/20 rounded-[24px] mb-4 shadow-[0_0_30px_rgba(var(--primary),0.2)]">
@@ -313,7 +313,7 @@ const SettingsPage = () => {
                   <div className="space-y-4">
                     <button
                       className="w-full bg-primary text-primary-foreground font-bold py-4 rounded-[20px] shadow-lg shadow-primary/30 active:scale-95 transition-all text-base"
-                      onClick={() => alert("Backend Integration kommt bald!")}
+                      onClick={() => setActiveModal(null)}
                     >
                       Für 3,99 € / Monat sichern
                     </button>
@@ -325,7 +325,7 @@ const SettingsPage = () => {
               )}
 
               {activeModal === "Benachrichtigungen" && (
-                <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-6">
                   <h2 className="text-2xl font-bold flex items-center gap-2">
                     <Bell className="text-primary" /> Benachrichtigungen
                   </h2>
@@ -419,7 +419,7 @@ const SettingsPage = () => {
                         Deine Einstellungen werden automatisch übernommen
                       </p>
                     </div>
-                    </div>
+                  </div>
                 </div>
               )}
               {activeModal === "Ziele" && (
@@ -512,69 +512,69 @@ const SettingsPage = () => {
                 </div>
               )}
 
-            {activeModal === "Datenschutz" && (
-  <div className="flex flex-col gap-4 px-1 pb-4 overflow-y-auto max-h-[65vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-[#DBE6E0] dark:bg-[#1E2423] transition-colors">
-    
-    {/* Заголовок */}
-    <div className="flex items-center justify-between px-2 pt-4 flex-shrink-0">
-      <h2 className="text-[24px] font-bold flex items-center gap-2 text-gray-900 dark:text-white">
-        <Shield className="text-[#1a9e6e] dark:text-[#2dd498]" /> Datenschutz
-      </h2>
-      <span className="bg-[#1a9e6e]/10 dark:bg-[#2dd498]/10 text-[#1a9e6e] dark:text-[#2dd498] text-[10px] font-bold px-2 py-1 rounded-full animate-pulse">
-        GESICHERT
-      </span>
-    </div>
+              {activeModal === "Datenschutz" && (
+                <div className="flex flex-col gap-4 px-1 pb-4 overflow-y-auto max-h-[50vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-[#DBE6E0] dark:bg-[#1E2423] transition-colors">
 
-    {/* Основные карточки */}
-    <div className="grid gap-3 flex-shrink-0">
-      {[
-        { i: Lock, t: "Lokale Speicherung", d: "Deine Bestandsdaten werden nur auf diesem Gerät gespeichert." },
-        { i: EyeOff, t: "Kein Tracking", d: "Wir analysieren dein Nutzungsverhalten nicht." },
-        { i: FileText, t: "Schulprojekt", d: "Diese App dient nur zu Bildungszwecken." }
-      ].map((item, idx) => (
-        <div key={idx} className="p-4 rounded-[24px] bg-[#f2f2f2] dark:bg-[#24332f] border-2 border-[#1a9e6e]/20 dark:border-[#2dd498]/20 flex gap-4 items-start shadow-sm">
-          <div className="p-2 bg-white dark:bg-[#1E2423] rounded-xl shadow-sm">
-            <item.i className="h-5 w-5 text-[#1a9e6e] dark:text-[#2dd498]" />
-          </div>
-          <div>
-            <p className="font-bold text-sm text-gray-900 dark:text-white">{item.t}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{item.d}</p>
-          </div>
-        </div>
-      ))}
-    </div>
+                  {/* Заголовок */}
+                  <div className="flex items-center justify-between px-2 pt-4 flex-shrink-0">
+                    <h2 className="text-[24px] font-bold flex items-center gap-2 text-gray-900 dark:text-white">
+                      <Shield className="text-[#1a9e6e] dark:text-[#2dd498]" /> Datenschutz
+                    </h2>
+                    <span className="bg-[#1a9e6e]/10 dark:bg-[#2dd498]/10 text-[#1a9e6e] dark:text-[#2dd498] text-[10px] font-bold px-2 py-1 rounded-full animate-pulse">
+                      GESICHERT
+                    </span>
+                  </div>
 
-    {/* Юридические детали (Аккордеоны) */}
-    <div className="space-y-2 flex-shrink-0">
-      <details className="group border-2 border-[#1a9e6e]/10 dark:border-[#2dd498]/10 rounded-[20px] overflow-hidden bg-[#f2f2f2] dark:bg-[#24332f]">
-        <summary className="list-none p-4 text-[13px] font-bold text-gray-700 dark:text-gray-300 cursor-pointer flex justify-between items-center group-open:bg-[#1a9e6e]/5 transition-colors">
-          Impressum & Kontakt
-          <Plus className="h-4 w-4 transition-transform group-open:rotate-45 text-[#1a9e6e] dark:text-[#2dd498]" />
-        </summary>
-        <div className="p-4 text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed space-y-2 border-t border-[#1a9e6e]/10 dark:border-[#2dd498]/10">
-          <p><strong>Verantwortlich:</strong> Jack-Steinberger-Gymnasium, vertreten durch die Schulleitung</p>
-          <p>Steinstraße 4, 97688 Bad Kissingen</p>
-          <p>E-Mail: eichelsdoerferr@jack-steinberger-gymnasium.de</p>
-        </div>
-      </details>
+                  {/* Основные карточки */}
+                  <div className="grid gap-3 flex-shrink-0">
+                    {[
+                      { i: Lock, t: "Lokale Speicherung", d: "Deine Bestandsdaten werden nur auf diesem Gerät gespeichert." },
+                      { i: EyeOff, t: "Kein Tracking", d: "Wir analysieren dein Nutzungsverhalten nicht." },
+                      { i: FileText, t: "Schulprojekt", d: "Diese App dient nur zu Bildungszwecken." }
+                    ].map((item, idx) => (
+                      <div key={idx} className="p-4 rounded-[24px] bg-[#f2f2f2] dark:bg-[#24332f] border-2 border-[#1a9e6e]/20 dark:border-[#2dd498]/20 flex gap-4 items-start shadow-sm">
+                        <div className="p-2 bg-white dark:bg-[#1E2423] rounded-xl shadow-sm">
+                          <item.i className="h-5 w-5 text-[#1a9e6e] dark:text-[#2dd498]" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-sm text-gray-900 dark:text-white">{item.t}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{item.d}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-      <details className="group border-2 border-[#1a9e6e]/10 dark:border-[#2dd498]/10 rounded-[20px] overflow-hidden bg-[#f2f2f2] dark:bg-[#24332f]">
-        <summary className="list-none p-4 text-[13px] font-bold text-gray-700 dark:text-gray-300 cursor-pointer flex justify-between items-center group-open:bg-[#1a9e6e]/5 transition-colors">
-          Rechtliche Hinweise
-          <Plus className="h-4 w-4 transition-transform group-open:rotate-45 text-[#1a9e6e] dark:text-[#2dd498]" />
-        </summary>
-        <div className="p-4 text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed space-y-2 border-t border-[#1a9e6e]/10 dark:border-[#2dd498]/10">
-          <p>Dies ist ein Schulprojekt und wird für keine kommerziellen Zwecke verwendet.</p>
-        </div>
-      </details>
-    </div>
+                  {/* Юридические детали (Аккордеоны) */}
+                  <div className="space-y-2 flex-shrink-0">
+                    <details className="group border-2 border-[#1a9e6e]/10 dark:border-[#2dd498]/10 rounded-[20px] overflow-hidden bg-[#f2f2f2] dark:bg-[#24332f]">
+                      <summary className="list-none p-4 text-[13px] font-bold text-gray-700 dark:text-gray-300 cursor-pointer flex justify-between items-center group-open:bg-[#1a9e6e]/5 transition-colors">
+                        Impressum & Kontakt
+                        <Plus className="h-4 w-4 transition-transform group-open:rotate-45 text-[#1a9e6e] dark:text-[#2dd498]" />
+                      </summary>
+                      <div className="p-4 text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed space-y-2 border-t border-[#1a9e6e]/10 dark:border-[#2dd498]/10">
+                        <p><strong>Verantwortlich:</strong> Jack-Steinberger-Gymnasium, vertreten durch die Schulleitung</p>
+                        <p>Steinstraße 4, 97688 Bad Kissingen</p>
+                        <p>E-Mail: eichelsdoerferr@jack-steinberger-gymnasium.de</p>
+                      </div>
+                    </details>
 
-    {/* ТА САМАЯ КНОПКА (как в Repository) */}
-    <div className="mt-2 flex-shrink-0">
-      
-    </div>
-  </div>
-)}
+                    <details className="group border-2 border-[#1a9e6e]/10 dark:border-[#2dd498]/10 rounded-[20px] overflow-hidden bg-[#f2f2f2] dark:bg-[#24332f]">
+                      <summary className="list-none p-4 text-[13px] font-bold text-gray-700 dark:text-gray-300 cursor-pointer flex justify-between items-center group-open:bg-[#1a9e6e]/5 transition-colors">
+                        Rechtliche Hinweise
+                        <Plus className="h-4 w-4 transition-transform group-open:rotate-45 text-[#1a9e6e] dark:text-[#2dd498]" />
+                      </summary>
+                      <div className="p-4 text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed space-y-2 border-t border-[#1a9e6e]/10 dark:border-[#2dd498]/10">
+                        <p>Dies ist ein Schulprojekt und wird für keine kommerzielle Zwecke verwendet.</p>
+                      </div>
+                    </details>
+                  </div>
+
+                  {/* ТА САМАЯ КНОПКА (как в Repository) */}
+                  <div className="mt-2 flex-shrink-0 ">
+
+                  </div>
+                </div>
+              )}
 
               {activeModal === "Über FRever" && (
                 <div className="flex flex-col gap-4 px-1 pb-4 overflow-y-auto max-h-[65vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-[#DBE6E0] dark:bg-[#1E2423] transition-colors" style={{ scrollbarWidth: 'none' }}>
@@ -681,7 +681,7 @@ const SettingsPage = () => {
                     setActiveModal(null);
                     setIsConfiguringHeuristics(false); // Сбрасываем шаг, чтобы при следующем открытии снова были "Цели"
                   }}
-                  className="w-full py-4 rounded-[16px] bg-[#24332f] border border-white/5 text-white text-[14px] font-bold active:bg-white/10 transition-all"
+                  className="w-full py-4 rounded-[16px] bg-[#396A54] dark:bg-[#2dd498] border border-white/5 text-white text-[14px] font-bold active:bg-white/10 transition-all"
                 >
                   Verstanden
                 </button>

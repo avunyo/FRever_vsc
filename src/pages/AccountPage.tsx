@@ -115,9 +115,13 @@ const AccountPage = () => {
         </div>
 
         {/* КНОПКА СОХРАНЕНИЯ */}
-        <button className="w-full mt-8 py-4 bg-primary text-primary-foreground rounded-2xl font-black shadow-lg shadow-primary/20 active:scale-95 transition-all">
-          Änderungen speichern
-        </button>
+        {/* КНОПКА СОХРАНЕНИЯ */}
+<button 
+  onClick={() => navigate(-1)} // Добавляем переход назад
+  className="w-full mt-8 py-4 bg-primary text-primary-foreground rounded-2xl font-black shadow-lg shadow-primary/20 active:scale-95 transition-all"
+>
+  Änderungen speichern
+</button>
       </main>
     </div>
   );
