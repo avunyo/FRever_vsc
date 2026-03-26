@@ -261,7 +261,7 @@ const SettingsPage = () => {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 bg-background border-t border-primary/20 rounded-t-[32px] z-[80] p-6 pb-10 max-w-2xl mx-auto shadow-2xl overflow-y-auto max-h-[90vh]"
+              className="fixed bottom-0 left-0 right-0 bg-background border-t border-primary/20 rounded-t-[32px] z-[80] p-6 pb-10 max-w-2xl mx-auto shadow-2xl overflow-y-auto max-h-[80vh]"
             >
               <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-8" />
 
@@ -331,7 +331,7 @@ const SettingsPage = () => {
                   </h2>
 
                   {/* КАРТОЧКА НАСТРОЕК ВРЕМЕНИ */}
-                  <div className="bg-card/50 border border-border rounded-[24px] p-5">
+                  <div className="bg-card/50 border border-border rounded-[18px] p-5">
                     <div className="flex items-center justify-between mb-8">
                       <div className="flex items-center gap-4">
                         <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -577,7 +577,7 @@ const SettingsPage = () => {
               )}
 
               {activeModal === "Über FRever" && (
-                <div className="flex flex-col gap-4 px-1 pb-4 overflow-y-auto max-h-[65vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-[#DBE6E0] dark:bg-[#1E2423] transition-colors" style={{ scrollbarWidth: 'none' }}>
+                <div className="flex flex-col gap-4 px-1 pb-4 overflow-y-auto max-h-[50vh] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden bg-[#DBE6E0] dark:bg-[#1E2423] transition-colors" style={{ scrollbarWidth: 'none' }}>
                   {/* Заголовок */}
                   <div className="text-center pt-4 flex-shrink-0">
                     <h2 className="text-[28px] font-bold tracking-tight text-gray-900 dark:text-white">
@@ -631,21 +631,54 @@ const SettingsPage = () => {
                     </div>
 
                     <div className="rounded-[24px] bg-[#f2f2f2] dark:bg-[#24332f] border-2 border-[#1a9e6e]/20 dark:border-[#2dd498]/20 overflow-hidden shadow-sm transition-all">
-                      <div className="divide-y divide-gray-100 dark:divide-[#2dd498]/5">
+                      <div className="flex flex-col gap-5"> {/* Увеличил отступ между карточками до 5 для чистоты */}
                         {[
-                          { n: "Maryam Akraa", e: "maryam.akraa@jack-steinberger-gymnasium.de" },
-                          { n: "Jakob Seufert", e: "jakob.seufert@jack-steinberger-gymnasium.de" },
-                          { n: "Hanna Herrmann", e: "hanna.herrmann@jack-steinberger-gymnasium.de" }
+                          {
+                            n: "Maryam Akraa",
+                            e: "maryam.akraa@jack-steinberger-gymnasium.de",
+                            roles: ["Business Development Manager", "Co-Designer"]
+                          },
+                          {
+                            n: "Jakob Seufert",
+                            e: "jakob.seufert@jack-steinberger-gymnasium.de",
+                            roles: ["Tax Accountant", "Data Analyst"]
+                          },
+                          {
+                            n: "Hanna Herrmann",
+                            e: "hanna.herrmann@jack-steinberger-gymnasium.de",
+                            roles: ["CEO", "Founder"]
+                          }
                         ].map((member, idx) => (
-                          <div key={idx} className="flex items-center justify-between px-5 py-4">
-                            <span className="text-[14px] font-semibold text-gray-900 dark:text-white">{member.n}</span>
+                          <div key={idx} className="overflow-hidden transition-all shadow-sm">
 
-                            <button
-                              onClick={() => setEmailMenu({ name: member.n, email: member.e })}
-                              className="h-7 w-10 rounded-lg bg-gray-100 dark:bg-[#374151]/50 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-[#4b5563] transition-all active:scale-90 border border-gray-200 dark:border-transparent"
-                            >
-                              <Mail className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" />
-                            </button>
+                            {/* Теперь стили рамки и фона применяются к КАЖДОМУ участнику отдельно */}
+                            <div className="rounded-none bg-[#f2f2f2] dark:bg-[#24332f] border-2 border-[#1a9e6e]/20 dark:border-[#2dd498]/20">
+
+                              {/* Верхняя часть карточки */}
+                              <div className="flex items-center justify-between px-5 py-4 border-b border-[#1a9e6e]/15 dark:border-[#2dd498]/10 bg-[#1a9e6e]/8 dark:bg-[#2dd498]/5">
+                                <div className="flex flex-col">
+                                  <span className="text-[15px] font-bold text-gray-900 dark:text-white">{member.n}</span>
+                                  <span className="text-[9px] font-bold text-[#1a9e6e] dark:text-[#2dd498] uppercase tracking-tighter">Teammitglied</span>
+                                </div>
+
+                                <button
+                                  onClick={() => setEmailMenu({ name: member.n, email: member.e })}
+                                  className="h-8 w-11 rounded-xl bg-gray-100 dark:bg-[#374151] flex items-center justify-center border border-gray-200 dark:border-white/5 shadow-sm hover:bg-gray-200 dark:hover:bg-[#4b5563] transition-all active:scale-90"
+                                >
+                                  <Mail className="h-3.5 w-3.5 text-gray-600 dark:text-gray-200" />
+                                </button>
+                              </div>
+
+                              {/* Список профессий внутри карточки */}
+                              <div className="bg-transparent">
+                                {member.roles.map((role, i) => (
+                                  <div key={i} className="px-5 py-3 border-b last:border-0 border-gray-100 dark:border-[#2dd498]/5 flex items-center gap-3">
+                                    <div className="h-1 w-1 rounded-full bg-[#1a9e6e] dark:bg-[#2dd498] shadow-[0_0_5px_#1a9e6e] dark:shadow-[0_0_5px_#2dd498]" />
+                                    <span className="text-[13px] font-medium text-gray-700 dark:text-gray-300">{role}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
