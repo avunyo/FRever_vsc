@@ -216,8 +216,8 @@ const Dashboard = () => {
 
                       {/* Кнопки управления (только самые важные) */}
                       <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => markConsumed(product.id)} className="p-1.5 text-primary"><Check className="h-4 w-4" /></button>
-                        <button onClick={() => setEditingId(product.id)} className="p-1.5 text-muted-foreground"><Pencil className="h-4 w-4" /></button>
+                        
+                        
                       </div>
                     </motion.div>
                   );

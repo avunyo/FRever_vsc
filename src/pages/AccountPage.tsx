@@ -63,11 +63,11 @@ const AccountPage = () => {
         </motion.div>
 
         {/* БЫСТРАЯ СТАТИСТИКА (Креативный блок) */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-2 mb-4">
           {[
             { icon: Leaf, val: "60€", label: "Gespart", color: "text-emerald-500" },
-            { icon: Zap, val: "52", label: "Streak", color: "text-amber-500" },
-            { icon: Award, val: "3", label: "Badges", color: "text-blue-500" },
+            { icon: Zap, val: "52", label: "Lebensmittel gerettet", color: "text-amber-500" },
+           
           ].map((stat, i) => (
             <motion.div 
               key={i} 

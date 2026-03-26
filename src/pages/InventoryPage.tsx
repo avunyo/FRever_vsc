@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import { Box, ShoppingCart, Plus, CalendarDays, Check, Trash2, Camera, Milk, Apple, Croissant, Pencil, Settings2, Search, CheckCheck, Filter } from "lucide-react";
+import { Box, ShoppingCart, Plus, CalendarDays, Check, Trash2, Camera, Milk, Apple, Croissant, Pencil, Settings2, Search, CheckCheck, Utensils } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
@@ -106,7 +106,7 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
     setProducts((prev) => prev.filter((product) => product.id !== id));
 
     toast({
-      title: "Gelöscht🗑️ ",
+      
       description: "Produkte wurde von deinem Inventar entfernt.",
 
     });
@@ -274,12 +274,12 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
                                         if (info.offset.x < -40) deleteProduct(item.id);
                                       }}
                                       className={`relative z-10 flex items-center justify-between p-3 border-[3px] transition-colors duration-200 rounded-xl ${isMatch
-                                          ? "bg-card border-primary shadow-lg"
-                                          : item.status === 'expiring'
-                                            ? "bg-[#F6F6F6] dark:bg-[#202D2B] border-orange-500/40"
-                                            : item.status === 'expired'
-                                              ? "bg-[#F6F6F6] dark:bg-[#202D2B] border-red-600/40"
-                                              : "bg-[#F6F6F6] dark:bg-[#202D2B] border-[#F6F6F6] dark:border-[#202D2B] shadow-sm"
+                                        ? "bg-card border-primary shadow-lg"
+                                        : item.status === 'expiring'
+                                          ? "bg-[#F6F6F6] dark:bg-[#202D2B] border-orange-500/40"
+                                          : item.status === 'expired'
+                                            ? "bg-[#F6F6F6] dark:bg-[#202D2B] border-red-600/40"
+                                            : "bg-[#F6F6F6] dark:bg-[#202D2B] border-[#F6F6F6] dark:border-[#202D2B] shadow-sm"
                                         }`}
                                     >
                                       <div className="flex flex-col">
@@ -292,23 +292,47 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
                                       </div>
 
                                       {/* Кнопки управления (Галочка и Карандаш) */}
-                                      <div className="flex items-center gap-1">
-                                        <motion.button
-                                          whileTap={{ scale: 0.9 }}
-                                          className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors"
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
-                                          <Check className="h-4 w-4" />
-                                        </motion.button>
+                                      {/* Кнопки управления (Вилка/Нож, Галочка, Карандаш) */}
+                                      {/* Кнопки управления (Вилка/Нож, Галочка, Карандаш) */}
+<div className="flex items-center gap-1">
+  
+  {/* Кнопка: Вилка и Нож (Продукт открыт) */}
+  {/* Кнопка: Вилка и Нож */}
+<motion.button
+  whileTap={{ scale: 0.9 }}
+  className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+  onClick={(e) => {
+    e.stopPropagation();
+    toast({ description: "Das Produkt wurde geöffnet" });
+  }}
+>
+  <Utensils className="h-4 w-4" />
+</motion.button>
 
-                                        <motion.button
-                                          whileTap={{ scale: 0.9 }}
-                                          className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
-                                          <Pencil className="h-4 w-4" />
-                                        </motion.button>
-                                      </div>
+{/* Кнопка: Галочка */}
+<motion.button
+  whileTap={{ scale: 0.9 }}
+  className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors"
+  onClick={(e) => {
+    e.stopPropagation();
+    toast({ description: "Das Produkt wurde verbraucht" });
+  }}
+>
+  <Check className="h-4 w-4" />
+</motion.button>
+
+{/* Кнопка: Карандаш */}
+<motion.button
+  whileTap={{ scale: 0.9 }}
+  className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+  onClick={(e) => {
+    e.stopPropagation();
+    toast({ description: "Das Ablaufdatum wurde geändert" });
+  }}
+>
+  <Pencil className="h-4 w-4" />
+</motion.button>
+</div>
                                     </motion.div>
                                   </motion.div>
                                 );

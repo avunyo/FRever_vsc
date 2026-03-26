@@ -530,7 +530,7 @@ const SettingsPage = () => {
                     {[
                       { i: Lock, t: "Lokale Speicherung", d: "Deine Bestandsdaten werden nur auf diesem Gerät gespeichert." },
                       { i: EyeOff, t: "Kein Tracking", d: "Wir analysieren dein Nutzungsverhalten nicht." },
-                      { i: FileText, t: "Schulprojekt", d: "Diese App dient nur zu Bildungszwecken." }
+                      { i: FileText, t: "Schulprojekt", d: "Diese Demo-App dient nur zu Bildungszwecken." }
                     ].map((item, idx) => (
                       <div key={idx} className="p-4 rounded-[24px] bg-[#f2f2f2] dark:bg-[#24332f] border-2 border-[#1a9e6e]/20 dark:border-[#2dd498]/20 flex gap-4 items-start shadow-sm">
                         <div className="p-2 bg-white dark:bg-[#1E2423] rounded-xl shadow-sm">
