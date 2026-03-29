@@ -58,55 +58,50 @@ const RecipesPage = ({ onAddProduct }: { onAddProduct: (name: string) => void })
     </h3>
 
     {/* Список ингредиентов */}
-    <div className="flex flex-wrap gap-2 mb-6"> {/* Увеличили нижний отступ mb-12, чтобы кнопка не перекрывала текст */}
-      <AnimatePresence mode="popLayout">
-        {recipe.ingredients.map((ing) => {
-          const isMissing = !hasIngredient(ing);
-          const isAdded = addedItems.includes(ing);
-          if (isAdded) return null;
+    {/* Список ингредиентов */}
+<div className="flex flex-wrap gap-2 mb-6">
+  <AnimatePresence mode="popLayout">
+    {recipe.ingredients.map((ing) => {
+  const isOwned = hasIngredient(ing); // Продукт уже есть в холодильнике
+  const isAddedRecently = addedItems.includes(ing); // Продукт только что добавили кликом
+  
+  // Продукт считается "в наличии", если он либо был, либо только что нажат
+  const hasItNow = isOwned || isAddedRecently;
 
-          return (
-            <motion.button
-              key={ing}
-              layout
-              initial={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5, y: -10 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                if (isMissing) {
-                  onAddProduct(ing);
-                  setAddedItems((prev) => [...prev, ing]);
-                  toast({
-                    description: `${ing} wurde hinzugefügt`,
-                    duration: 2000,
-                  });
-                }
-              }}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border transition-all ${
-                !isMissing
-                  ? "bg-primary/10 text-primary border-primary/20 cursor-default"
-                  : "bg-muted text-muted-foreground border-transparent hover:bg-primary/20 hover:text-primary cursor-pointer"
-              }`}
-            >
-              {!isMissing ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
-              {ing}
-            </motion.button>
-          );
-        })}
-      </AnimatePresence>
+  return (
+    <motion.button
+      key={ing}
+      layout
+      initial={{ opacity: 1, scale: 1 }}
+      // Убрали exit, так как элемент теперь не исчезает
+      whileTap={!hasItNow ? { scale: 0.95 } : {}}
+      onClick={() => {
+        if (!hasItNow) {
+          onAddProduct(ing);
+          setAddedItems((prev) => [...prev, ing]);
+          toast({
+            description: `"${ing}" wurde zur Einkaufsliste hinzugefügt`,
+            duration: 2000,
+          });
+        }
+      }}
+      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border transition-all ${
+        hasItNow
+          ? "bg-primary/10 text-primary border-primary/20 cursor-default"
+          : "bg-muted text-muted-foreground border-transparent hover:bg-primary/20 hover:text-primary cursor-pointer"
+      }`}
+    >
+      {hasItNow ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+      {ing}
+    </motion.button>
+  );
+})}
+  </AnimatePresence>
+  
+  {/* УДАЛИ ОТСЮДА ВТОРОЙ ЦИКЛ recipe.ingredients.filter(...).map(...) */}
+</div>
 
-      {recipe.ingredients
-        .filter((ing) => hasIngredient(ing))
-        .map((ing) => (
-          <div
-            key={`${ing}-owned`}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium border bg-primary/10 text-primary border-primary/20 cursor-default"
-          >
-            <Check className="h-3 w-3" />
-            {ing}
-          </div>
-        ))}
-    </div>
+      
 
     {/* Кнопка Kochen — теперь она ПЕРЕД закрывающим тегом основной карточки */}
     <AnimatePresence>

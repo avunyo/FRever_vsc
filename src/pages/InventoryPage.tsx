@@ -7,20 +7,20 @@ import { toast } from "@/hooks/use-toast";
 import { isMatch } from "node_modules/date-fns/isMatch";
 
 const mockProducts = [
-  { id: "1", name: "Vollmilch 1,5%", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-20", status: "expiring", quantity: 2 },
-  { id: "2", name: "Bio Joghurt Erdbeer", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-28", status: "fresh", quantity: 1 },
-  { id: "3", name: "Dinkel Toastbrot", category: "Backwaren", categoryIcon: Croissant, expiryDate: "2026-05-25", status: "expiring", quantity: 1 },
-  { id: "4", name: "Bio Bananen", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-27", status: "fresh", quantity: 6 },
-  { id: "5", name: "Cheddar Scheiben", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-10", status: "fresh", quantity: 3 },
-  { id: "6", name: "Butter", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-15", status: "fresh", quantity: 1 },
-  { id: "7", name: "Äpfel Braeburn", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-02", status: "fresh", quantity: 6 },
-  { id: "8", name: "Magerquark", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-20", status: "expiring", quantity: 4 },
+  { id: "1", name: "Vollmilch 1,5%", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-04-16", status: "expiring", quantity: 2 },
+  { id: "2", name: "Bio Joghurt Erdbeer", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-16", status: "fresh", quantity: 1 },
+  { id: "3", name: "Dinkel Toastbrot", category: "Backwaren", categoryIcon: Croissant, expiryDate: "2026-04-15", status: "expiring", quantity: 1 },
+  { id: "4", name: "Bio Bananen", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-04-23", status: "fresh", quantity: 6 },
+  { id: "5", name: "Cheddar Scheiben", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-06-24", status: "fresh", quantity: 3 },
+  { id: "6", name: "Butter", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-06-26", status: "fresh", quantity: 1 },
+  { id: "7", name: "Äpfel Braeburn", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-04-26", status: "fresh", quantity: 6 },
+  { id: "8", name: "Magerquark", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-04-15", status: "expiring", quantity: 4 },
   { id: "9", name: "Karotten", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-20", status: "fresh", quantity: 1 },
-  { id: "10", name: "Protein Brötchen", category: "Backwaren", categoryIcon: Croissant, expiryDate: "2026-05-20", status: "expiring", quantity: 4 },
-  { id: "11", name: "Mango", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-20", status: "expired", quantity: 2 },
-  { id: "12", name: "Kiwi", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-20", status: "fresh", quantity: 3 },
-  { id: "13", name: "Süßkartoffel", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-05-20", status: "fresh", quantity: 2 },
-  { id: "14", name: "Frischkäse", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-05-20", status: "expired", quantity: 2 },
+  { id: "10", name: "Protein Brötchen", category: "Backwaren", categoryIcon: Croissant, expiryDate: "2026-04-16", status: "expiring", quantity: 4 },
+  { id: "11", name: "Mango", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-04-10", status: "expired", quantity: 2 },
+  { id: "12", name: "Kiwi", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-04-22", status: "fresh", quantity: 3 },
+  { id: "13", name: "Süßkartoffel", category: "Obst & Gemüse", categoryIcon: Apple, expiryDate: "2026-04-28", status: "fresh", quantity: 2 },
+  { id: "14", name: "Frischkäse", category: "Milchprodukte", categoryIcon: Milk, expiryDate: "2026-04-09", status: "expired", quantity: 2 },
 
 ];
 
@@ -103,15 +103,15 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
     }
   });
   const deleteProduct = (id: string) => {
-    setProducts((prev) => prev.filter((product) => product.id !== id));
-
-    toast({
-      
-      description: "Produkte wurde von deinem Inventar entfernt.",
-
-    });
-  };
-
+  setProducts((prev) => prev.filter((product) => product.id !== id));
+  toast({
+    description: "Das Produkt wurde entsorgt", // "Продукт был выброшен"
+  });
+};
+// Эта функция просто удаляет, не показывая уведомление
+const deleteProductSilently = (id: string) => {
+  setProducts((prev) => prev.filter((product) => product.id !== id));
+};
   return (
     <div className="min-h-screen bg-background pt-20 pb-24 md:pb-8">
       <AppHeader />
@@ -206,7 +206,12 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
 
               {/* Сюда позже перенесем твой маппинг продуктов из Dashboard */}
 
-              {Object.entries(groupedProducts).map(([category, items]) => {
+              {Object.entries(groupedProducts)
+  .sort(([nameA], [nameB]) => {
+    const order = ["Milchprodukte", "Backwaren", "Obst & Gemüse"];
+    return order.indexOf(nameA) - order.indexOf(nameB);
+  })
+  .map(([category, items]) => {
                 const isExpanded = expandedCategory === category;
                 const CategoryIcon = items[0].categoryIcon;
 
@@ -246,97 +251,109 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
 
                             {/* 1. Оборачиваем маппинг в AnimatePresence с mode="popLayout" */}
                             <AnimatePresence mode="popLayout">
-                              {items.map((item) => {
-                                const isMatch = searchQuery.length > 1 &&
-                                  item.name.toLowerCase().includes(searchQuery.toLowerCase());
+                              {items
+                                .sort((a, b) => {
+                                  const priority = { expired: 1, expiring: 2, fresh: 3 };
+                                  return (priority[a.status as keyof typeof priority] || 4) -
+                                    (priority[b.status as keyof typeof priority] || 4);
+                                })
+                                .map((item) => {
+                                  const isMatch = searchQuery.length > 1 &&
+                                    item.name.toLowerCase().includes(searchQuery.toLowerCase());
 
-                                return (
-                                  <motion.div
-                                    key={item.id}
-                                    layout // 2. Важно! Этот атрибут заставит соседей плавно съезжаться
-                                    initial={{ opacity: 0, scale: 0.96 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-                                    id={`prod-${item.id}`}
-                                    className="relative overflow-hidden rounded-xl mb-2"
-                                  >
-                                    {/* Фон с корзиной (розовая подложка) */}
-                                    <div className="absolute inset-0 bg-destructive/10 dark:bg-red-900/20 flex items-center justify-end px-6 rounded-xl">
-                                      <Trash2 className="h-5 w-5 text-destructive dark:text-red-400 opacity-40" />
-                                    </div>
-
-                                    {/* Сама карточка (белая/темная часть) */}
+                                  return (
                                     <motion.div
-                                      drag="x"
-                                      dragConstraints={{ left: -70, right: 0 }}
-                                      dragSnapToOrigin
-                                      onDragEnd={(_, info) => {
-                                        if (info.offset.x < -40) deleteProduct(item.id);
-                                      }}
-                                      className={`relative z-10 flex items-center justify-between p-3 border-[3px] transition-colors duration-200 rounded-xl ${isMatch
-                                        ? "bg-card border-primary shadow-lg"
-                                        : item.status === 'expiring'
-                                          ? "bg-[#F6F6F6] dark:bg-[#202D2B] border-orange-500/40"
-                                          : item.status === 'expired'
-                                            ? "bg-[#F6F6F6] dark:bg-[#202D2B] border-red-600/40"
-                                            : "bg-[#F6F6F6] dark:bg-[#202D2B] border-[#F6F6F6] dark:border-[#202D2B] shadow-sm"
-                                        }`}
+                                      key={item.id}
+                                      layout // 2. Важно! Этот атрибут заставит соседей плавно съезжаться
+                                      initial={{ opacity: 0, scale: 0.96 }}
+                                      animate={{ opacity: 1, scale: 1 }}
+                                      exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                                      id={`prod-${item.id}`}
+                                      className="relative overflow-hidden rounded-xl mb-2"
                                     >
-                                      <div className="flex flex-col">
-                                        <span className={`text-sm font-semibold ${isMatch ? "text-primary" : "text-foreground"}`}>
-                                          {item.name}
-                                        </span>
-                                        <span className="text-[10px] text-muted-foreground">
-                                          {item.quantity}x • {item.expiryDate}
-                                        </span>
+                                      {/* Фон с корзиной (розовая подложка) */}
+                                      <div className="absolute inset-0 bg-destructive/10 dark:bg-red-900/20 flex items-center justify-end px-6 rounded-xl">
+                                        <Trash2 className="h-5 w-5 text-destructive dark:text-red-400 opacity-40" />
                                       </div>
 
-                                      {/* Кнопки управления (Галочка и Карандаш) */}
-                                      {/* Кнопки управления (Вилка/Нож, Галочка, Карандаш) */}
-                                      {/* Кнопки управления (Вилка/Нож, Галочка, Карандаш) */}
-<div className="flex items-center gap-1">
-  
-  {/* Кнопка: Вилка и Нож (Продукт открыт) */}
-  {/* Кнопка: Вилка и Нож */}
-<motion.button
-  whileTap={{ scale: 0.9 }}
-  className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
-  onClick={(e) => {
-    e.stopPropagation();
-    toast({ description: "Das Produkt wurde geöffnet" });
-  }}
->
-  <Utensils className="h-4 w-4" />
-</motion.button>
+                                      {/* Сама карточка (белая/темная часть) */}
+                                      <motion.div
+                                        drag="x"
+                                        dragConstraints={{ left: -70, right: 0 }}
+                                        dragSnapToOrigin
+                                        onDragEnd={(_, info) => {
+                                          if (info.offset.x < -40) deleteProduct(item.id);
+                                        }}
+                                        className={`relative z-10 flex items-center justify-between p-3 border-[3px] transition-colors duration-200 rounded-xl ${isMatch
+                                          ? "bg-card border-primary shadow-lg"
+                                          : item.status === 'expiring'
+                                            ? "bg-[#F6F6F6] dark:bg-[#202D2B] border-orange-500/40"
+                                            : item.status === 'expired'
+                                              ? "bg-[#F6F6F6] dark:bg-[#202D2B] border-red-600/40"
+                                              : "bg-[#F6F6F6] dark:bg-[#202D2B] border-[#F6F6F6] dark:border-[#202D2B] shadow-sm"
+                                          }`}
+                                      >
+                                        <div className="flex flex-col">
+                                          <span className={`text-sm font-semibold ${isMatch ? "text-primary" : "text-foreground"}`}>
+                                            {item.name}
+                                          </span>
+                                          <span className="text-[10px] text-muted-foreground">
+                                            {item.quantity}x • {item.expiryDate}
+                                          </span>
+                                        </div>
 
-{/* Кнопка: Галочка */}
+                                        {/* Кнопки управления (Галочка и Карандаш) */}
+                                        {/* Кнопки управления (Вилка/Нож, Галочка, Карандаш) */}
+                                        {/* Кнопки управления (Вилка/Нож, Галочка, Карандаш) */}
+                                        <div className="flex items-center gap-1">
+
+                                          {/* Кнопка: Вилка и Нож (Продукт открыт) */}
+                                          {/* Кнопка: Вилка и Нож */}
+                                          <motion.button
+                                            whileTap={{ scale: 0.9 }}
+                                            className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              toast({ description: "Das Produkt wurde geöffnet" });
+                                            }}
+                                          >
+                                            <Utensils className="h-4 w-4" />
+                                          </motion.button>
+
+                                          {/* Кнопка: Галочка */}
 <motion.button
   whileTap={{ scale: 0.9 }}
   className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors"
   onClick={(e) => {
     e.stopPropagation();
-    toast({ description: "Das Produkt wurde verbraucht" });
+    
+    // Свое сообщение для галочки
+    toast({ description: "Das Produkt wurde verwendet" }); // "Продукт был использован"
+    
+    setTimeout(() => {
+      deleteProductSilently(item.id); // Вызываем удаление без повторного тоста
+    }, 100);
   }}
 >
   <Check className="h-4 w-4" />
 </motion.button>
 
-{/* Кнопка: Карандаш */}
-<motion.button
-  whileTap={{ scale: 0.9 }}
-  className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
-  onClick={(e) => {
-    e.stopPropagation();
-    toast({ description: "Das Ablaufdatum wurde geändert" });
-  }}
->
-  <Pencil className="h-4 w-4" />
-</motion.button>
-</div>
+                                          {/* Кнопка: Карандаш */}
+                                          <motion.button
+                                            whileTap={{ scale: 0.9 }}
+                                            className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              toast({ description: "Das Ablaufdatum wurde geändert" });
+                                            }}
+                                          >
+                                            <Pencil className="h-4 w-4" />
+                                          </motion.button>
+                                        </div>
+                                      </motion.div>
                                     </motion.div>
-                                  </motion.div>
-                                );
-                              })}
+                                  );
+                                })}
                             </AnimatePresence>
                           </div>
                         </motion.div>

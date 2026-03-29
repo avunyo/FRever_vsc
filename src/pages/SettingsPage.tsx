@@ -564,7 +564,7 @@ const SettingsPage = () => {
                         <Plus className="h-4 w-4 transition-transform group-open:rotate-45 text-[#1a9e6e] dark:text-[#2dd498]" />
                       </summary>
                       <div className="p-4 text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed space-y-2 border-t border-[#1a9e6e]/10 dark:border-[#2dd498]/10">
-                        <p>Dies ist ein Schulprojekt und wird für keine kommerzielle Zwecke verwendet.</p>
+                        <p>Dies ist ein Schulprojekt und wird für keine kommerziellen Zwecke verwendet.</p>
                       </div>
                     </details>
                   </div>
