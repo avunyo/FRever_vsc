@@ -345,12 +345,24 @@ const SettingsPage = () => {
 
                       <div className="flex items-center bg-muted/50 rounded-xl p-1 border border-primary/10">
                         <button
-                          onClick={() => setRemindTime(t => (parseInt(t) - 1).toString().padStart(2, '0') + ":00")}
+                         onClick={() => {
+  setRemindTime(t => {
+    const currentHour = parseInt(t);
+    const newHour = currentHour <= 0 ? 23 : currentHour - 1;
+    return newHour.toString().padStart(2, '0') + ":00";
+  });
+}}
                           className="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors text-lg"
                         > - </button>
                         <span className="px-3 font-black text-primary text-lg min-w-[60px] text-center">{remindTime}</span>
                         <button
-                          onClick={() => setRemindTime(t => (parseInt(t) + 1).toString().padStart(2, '0') + ":00")}
+                          onClick={() => {
+  setRemindTime(t => {
+    const currentHour = parseInt(t);
+    const newHour = currentHour >= 23 ? 0 : currentHour + 1;
+    return newHour.toString().padStart(2, '0') + ":00";
+  });
+}}
                           className="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors text-lg"
                         > + </button>
                       </div>
