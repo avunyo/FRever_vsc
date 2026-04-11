@@ -236,7 +236,7 @@ const SettingsPage = () => {
 
             <button
               onClick={() => setShowPrivacyModal(false)}
-              className="w-full py-4 bg-secondary rounded-2xl font-bold"
+              className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold"
             >
               Verstanden
             </button>
@@ -345,24 +345,24 @@ const SettingsPage = () => {
 
                       <div className="flex items-center bg-muted/50 rounded-xl p-1 border border-primary/10">
                         <button
-                         onClick={() => {
-  setRemindTime(t => {
-    const currentHour = parseInt(t);
-    const newHour = currentHour <= 0 ? 23 : currentHour - 1;
-    return newHour.toString().padStart(2, '0') + ":00";
-  });
-}}
+                          onClick={() => {
+                            setRemindTime(t => {
+                              const currentHour = parseInt(t);
+                              const newHour = currentHour <= 0 ? 23 : currentHour - 1;
+                              return newHour.toString().padStart(2, '0') + ":00";
+                            });
+                          }}
                           className="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors text-lg"
                         > - </button>
                         <span className="px-3 font-black text-primary text-lg min-w-[60px] text-center">{remindTime}</span>
                         <button
                           onClick={() => {
-  setRemindTime(t => {
-    const currentHour = parseInt(t);
-    const newHour = currentHour >= 23 ? 0 : currentHour + 1;
-    return newHour.toString().padStart(2, '0') + ":00";
-  });
-}}
+                            setRemindTime(t => {
+                              const currentHour = parseInt(t);
+                              const newHour = currentHour >= 23 ? 0 : currentHour + 1;
+                              return newHour.toString().padStart(2, '0') + ":00";
+                            });
+                          }}
                           className="w-8 h-8 flex items-center justify-center hover:text-primary transition-colors text-lg"
                         > + </button>
                       </div>
@@ -417,13 +417,13 @@ const SettingsPage = () => {
                           setActiveModal("Ziele"); // Сначала переключаем вкладку
                           setIsConfiguringHeuristics(true); // Потом включаем этап 2
                         }}
-                        className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
+                        className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-black text-lg shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
                       >
                         Weiter zur Konfiguration 🚀
                       </button>
                       <button
                         onClick={() => setActiveModal(null)}
-                        className="w-full py-4 rounded-[20px] bg-primary text-primary-foreground font-black uppercase tracking-widest text-[13px] shadow-[0_10px_20px_rgba(var(--primary),0.2)] hover:shadow-[0_15px_25px_rgba(var(--primary),0.3)] active:scale-95 transition-all"
+                        className="w-full py-4 rounded-[20px] bg-primary text-primary-foreground rounded-2xl font-black text-[14px] shadow-[0_10px_20px_rgba(var(--primary),0.2)] hover:shadow-[0_15px_25px_rgba(var(--primary),0.3)] active:scale-95 transition-all"
                       >
                         Speichern
                       </button>
@@ -703,9 +703,9 @@ const SettingsPage = () => {
                       href="https://github.com/avunyo/FRever_vsc"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center w-full py-4 rounded-[16px] bg-[#1a9e6e] dark:bg-[#2dd498] text-white dark:text-[#1a2421] font-extrabold uppercase tracking-widest text-[13px] shadow-[0_5px_15px_rgba(26,158,110,0.25)] dark:shadow-[0_5px_15px_rgba(45,212,152,0.2)] active:scale-95 transition-all text-center"
+                      className="flex items-center justify-center w-full py-2 rounded-[16px] bg-primary text-white rounded-2xl font-black text-lg shadow-lg shadow-[0_5px_15px_rgba(26,158,110,0.25)] dark:shadow-[0_5px_15px_rgba(45,212,152,0.2)] active:scale-95 transition-all text-center"
                     >
-                      repository
+                      Repository
                     </a>
                   </div>
                 </div>
@@ -717,7 +717,7 @@ const SettingsPage = () => {
                     setActiveModal(null);
                     setIsConfiguringHeuristics(false); // Сбрасываем шаг, чтобы при следующем открытии снова были "Цели"
                   }}
-                  className="w-full py-4 rounded-[16px] bg-[#396A54] dark:bg-[#2dd498] border border-white/5 text-white text-[14px] font-bold active:bg-white/10 transition-all"
+                  className="w-full py-4 rounded-[16px] bg-primary text-primary-foreground border border-white/5 text-black text-[14px] font-bold active:bg-white/10 transition-all"
                 >
                   Verstanden
                 </button>
