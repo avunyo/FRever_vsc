@@ -343,7 +343,6 @@ const SettingsPage = () => {
                         </div>
                       </div>
 
-                      {/* ВМЕСТО ИНПУТА: Красивая кнопка-счетчик */}
                       <div className="flex items-center bg-muted/50 rounded-xl p-1 border border-primary/10">
                         <button
                           onClick={() => setRemindTime(t => (parseInt(t) - 1).toString().padStart(2, '0') + ":00")}
@@ -357,22 +356,15 @@ const SettingsPage = () => {
                       </div>
                     </div>
 
-                    {/* ДНИ НЕДЕЛИ: Теперь точно кликаются */}
                     <div className="flex justify-between items-center gap-1">
                       {['M', 'D', 'M', 'D', 'F', 'S', 'S'].map((day, i) => {
                         const isActive = selectedDays.includes(i);
                         return (
                           <button
                             key={i}
-                            onClick={() => {
-                              setSelectedDays(prev =>
-                                prev.includes(i) ? prev.filter(d => d !== i) : [...prev, i]
-                              );
-                            }}
+                            onClick={() => setSelectedDays(prev => prev.includes(i) ? prev.filter(d => d !== i) : [...prev, i])}
                             className={`h-10 w-10 rounded-full flex items-center justify-center text-[10px] font-black transition-all transform active:scale-90
-                ${isActive
-                                ? 'bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.3)] scale-110'
-                                : 'bg-muted/30 text-muted-foreground border border-transparent hover:border-primary/20'}`}
+                ${isActive ? 'bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.3)] scale-110' : 'bg-muted/30 text-muted-foreground border border-transparent hover:border-primary/20'}`}
                           >
                             {day}
                           </button>
@@ -381,7 +373,7 @@ const SettingsPage = () => {
                     </div>
                   </div>
 
-                  {/* РЫЧАЖКИ (SWITCHES): Сделал через Framer Motion для плавности */}
+                  {/* РЫЧАЖКИ (SWITCHES) */}
                   <div className="space-y-4">
                     {[
                       { id: 'morning', label: "Morgendlicher Check", desc: "Statusbericht am Morgen", state: morningCheck, setter: setMorningCheck },
@@ -389,14 +381,13 @@ const SettingsPage = () => {
                     ].map((item) => (
                       <div
                         key={item.id}
-                        onClick={() => item.setter(!item.state)} // Теперь кликается вся область
+                        onClick={() => item.setter(!item.state)}
                         className="flex items-center justify-between p-4 rounded-2xl bg-muted/20 border border-transparent hover:border-primary/20 transition-all cursor-pointer group mb-3"
                       >
                         <div>
                           <p className="font-bold text-sm group-hover:text-primary transition-colors">{item.label}</p>
                           <p className="text-[11px] text-muted-foreground">{item.desc}</p>
                         </div>
-
                         <div className={`h-6 w-11 rounded-full p-1 transition-colors duration-300 ${item.state ? 'bg-primary' : 'bg-muted'}`}>
                           <motion.div
                             animate={{ x: item.state ? 20 : 0 }}
@@ -407,17 +398,23 @@ const SettingsPage = () => {
                       </div>
                     ))}
 
-                    {/* КНОПКА ПОДТВЕРЖДЕНИЯ */}
-                    <div className="mt-4 flex-shrink-0">
+                    {/* КНОПКИ УПРАВЛЕНИЯ (Перенесенная логика) */}
+                    <div className="mt-4 flex flex-col gap-3">
+                      <button
+                        onClick={() => {
+                          setActiveModal("Ziele"); // Сначала переключаем вкладку
+                          setIsConfiguringHeuristics(true); // Потом включаем этап 2
+                        }}
+                        className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
+                      >
+                        Weiter zur Konfiguration 🚀
+                      </button>
                       <button
                         onClick={() => setActiveModal(null)}
                         className="w-full py-4 rounded-[20px] bg-primary text-primary-foreground font-black uppercase tracking-widest text-[13px] shadow-[0_10px_20px_rgba(var(--primary),0.2)] hover:shadow-[0_15px_25px_rgba(var(--primary),0.3)] active:scale-95 transition-all"
                       >
                         Speichern
                       </button>
-                      <p className="text-center text-[10px] text-muted-foreground mt-3 opacity-60">
-                        Deine Einstellungen werden automatisch übernommen
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -425,7 +422,6 @@ const SettingsPage = () => {
               {activeModal === "Ziele" && (
                 <div className="flex flex-col h-full">
                   {!isConfiguringHeuristics ? (
-                    // --- ЭТАП 1: ВЫБОР ЦЕЛИ ---
                     <>
                       <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
                         <Target className="text-primary" /> Deine Mission
@@ -461,15 +457,16 @@ const SettingsPage = () => {
                         })}
                       </div>
 
+                      {/* Кнопка в целях теперь только сохраняет выбор */}
                       <button
-                        onClick={() => setIsConfiguringHeuristics(true)}
+                        onClick={() => setActiveModal(null)}
                         className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
                       >
-                        Weiter zur Konfiguration 🚀
+                        Mission starten
                       </button>
                     </>
                   ) : (
-                    // --- ЭТАП 2: НАСТРОЙКА СРОКОВ (HEURISTIKEN) ---
+                    // ЭТАП 2: HEURISTIKEN (Сюда прыгаем из Benachrichtigungen)
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                       <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
                         <Sliders className="text-primary" /> Strategie anpassen
@@ -500,12 +497,6 @@ const SettingsPage = () => {
                         className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold text-lg active:scale-[0.98] transition-all"
                       >
                         Alles bereit!
-                      </button>
-                      <button
-                        onClick={() => setIsConfiguringHeuristics(false)}
-                        className="w-full mt-2 py-2 text-xs text-muted-foreground hover:text-primary transition-colors"
-                      >
-                        ← Zurück zu den Zielen
                       </button>
                     </motion.div>
                   )}
