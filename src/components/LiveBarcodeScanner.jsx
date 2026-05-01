@@ -54,7 +54,7 @@ export default function LiveBarcodeScanner({ onBarcodeDetected, isProcessing }) 
       const backCamera = devices.find(d => /back|rear|задн/i.test(d.label)) || devices[0];
 
       if (!backCamera) {
-        throw new Error("Kamera не найдена");
+        throw new Error("Keine Kamera gefunden");
       }
 
       // 3. Запуск с параметрами видео
@@ -74,7 +74,7 @@ export default function LiveBarcodeScanner({ onBarcodeDetected, isProcessing }) 
       );
     } catch (err) {
       console.error("Scanner Start Error:", err);
-      alert("Ошибка камеры. Убедитесь, что дали разрешение и используете HTTPS.");
+      alert("Kamerafehler. Stellen Sie sicher, dass Sie HTTPS verwenden.");
       setIsScanning(false);
     }
   };
