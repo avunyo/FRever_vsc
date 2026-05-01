@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { Box, ShoppingCart, Plus, CalendarDays, Check, Trash2, Camera, Milk, Apple, Croissant, Pencil, Settings2, Search, CheckCheck, Utensils } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { isMatch } from "node_modules/date-fns/isMatch";
 
@@ -36,6 +36,7 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
   const filterRef = useRef<HTMLDivElement>(null);
   const [showRecent, setShowRecent] = useState(true);
   const [showCameraModal, setShowCameraModal] = useState(false);
+  const navigate = useNavigate(); // Добавьте эту строку
 
   const markAsBought = (item: any) => {
     setProducts(prev => [...prev, { ...item, id: Date.now().toString(), status: 'fresh' }]);
@@ -216,7 +217,7 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
                   const CategoryIcon = items[0].categoryIcon;
 
                   return (
-                    <div key={category} className="rounded-2xl border border-border/60 shadow-sm dark:bg-muted/75 dark:border-white/10 bg-card overflow-hidden transition-all h-fit mb-3">
+                    <div key={category} className="rounded-2xl border border-border/60 shadow-sm bg-[#EAF0ED] dark:bg-[#212A28] dark:border-white/10 overflow-hidden transition-all h-fit mb-3">
                       <button
                         onClick={() => setExpandedCategory(isExpanded ? null : category)}
                         className={`w-full flex items-center justify-between p-4 transition-colors ${isExpanded ? "bg-primary/5" : "hover:bg-muted/50"
@@ -458,15 +459,15 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
           >
             {/* Если вкладка "Инвентарь" — камера, если "Список покупок" — плюс */}
             {activeTab === "products" ? (
-              <motion.button
-                onClick={() => setShowCameraModal(true)} // Теперь открывает модалку
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
-              >
-                <Camera className="h-8 w-8" />
-              </motion.button>
-            ) : (
+  <motion.button
+    onClick={() => navigate("/scan")} // <-- ТЕПЕРЬ ОНА ПЕРЕКЛЮЧИТ СТРАНИЦУ
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40"
+  >
+    <Camera className="h-8 w-8" />
+  </motion.button>
+) : (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -480,53 +481,7 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
         )}
       </AnimatePresence>
       {/* Модалка разрешения камеры */}
-      <AnimatePresence>
-        {showCameraModal && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowCameraModal(false)}
-              className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 z-[130] bg-card border-t border-border rounded-t-[32px] p-8 pb-12 max-w-2xl mx-auto shadow-2xl"
-            >
-              <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-8" />
 
-              <div className="flex flex-col items-center text-center">
-                <div className="p-4 bg-primary/10 rounded-2xl text-primary mb-6">
-                  <Camera className="h-10 w-10" />
-                </div>
-
-                <h2 className="text-2xl font-bold mb-3">Kamera-Zugriff</h2>
-                <p className="text-muted-foreground mb-8 text-sm leading-relaxed max-w-xs">
-                  Um Barcodes zu scannen und Produkte automatisch hinzuzufügen, benötigen wir Zugriff auf deine Kamera.
-                </p>
-
-                <div className="flex flex-col w-full gap-3">
-                  <Link to="/scan" className="w-full">
-                    <button className="w-full py-4 bg-primary text-primary-foreground rounded-2xl font-bold active:scale-95 transition-all shadow-lg shadow-primary/20">
-                      Kamera aktivieren
-                    </button>
-                  </Link>
-                  <button
-                    onClick={() => setShowCameraModal(false)}
-                    className="w-full py-4 bg-muted text-muted-foreground rounded-2xl font-medium text-sm hover:bg-accent transition-colors"
-                  >
-                    Vielleicht später
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

@@ -190,7 +190,10 @@ const Dashboard = () => {
                       variants={itemVariants}
                       exit="exit"
                       layout
-                      className="flex items-center gap-3 rounded-xl border border-border/60 shadow-sm dark:bg-muted/20 dark:border-white/10 bg-card p-2 group hover:border-primary/30 transition-all duration-200"
+                      // Было: bg-card и dark:bg-muted/20
+// Стало: bg-[#2F3B39]
+
+className="flex items-center gap-3 rounded-xl border border-border/60 shadow-sm bg-[#EAF0ED] dark:bg-[#2B3635] dark:border-white/10 p-2 group hover:border-primary/30 transition-all duration-200"
                     >
                       {/* Иконка стала меньше (h-9 w-9) */}
                       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground shrink-0">
