@@ -40,46 +40,55 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
     let active = true;
 
     const start = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-        });
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
 
-        if (!active) {
-          stream.getTracks().forEach(t => t.stop());
-          return;
-        }
+    if (!active) {
+      stream.getTracks().forEach(t => t.stop());
+      return;
+    }
 
-        streamRef.current = stream;
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+    streamRef.current = stream;
+    videoRef.current.srcObject = stream;
+    await videoRef.current.play();
 
-        const hints = new Map();
-        hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-          BarcodeFormat.EAN_13,
-          BarcodeFormat.EAN_8,
-          BarcodeFormat.CODE_128,
-          BarcodeFormat.UPC_A,
-        ]);
-        hints.set(DecodeHintType.TRY_HARDER, true);
+    // Zxing direkt auf video element — NICHT decodeFromStream
+    const hints = new Map();
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+      BarcodeFormat.EAN_13,
+      BarcodeFormat.EAN_8,
+      BarcodeFormat.CODE_128,
+      BarcodeFormat.UPC_A,
+    ]);
+    hints.set(DecodeHintType.TRY_HARDER, true);
 
-        const reader = new BrowserMultiFormatReader(hints);
-        readerRef.current = reader;
+    const reader = new BrowserMultiFormatReader(hints);
+    readerRef.current = reader;
 
-        reader.decodeFromStream(stream, videoRef.current, (result, err) => {
-          if (result && active) {
-            if (navigator.vibrate) navigator.vibrate(100);
-            onBarcodeDetected(result.getText());
-            stopScanner();
-          }
-        });
+    // Direkt vom video element lesen mit Polling
+    const scan = async () => {
+  if (!active || !videoRef.current) return;
+  try {
+    const result = await reader.decodeFromVideoElement(videoRef.current);
+    if (result && active) {
+      if (navigator.vibrate) navigator.vibrate(100);
+      onBarcodeDetected(result.getText());
+      stopScanner();
+      return;
+    }
+  } catch (e) {}
+  if (active) requestAnimationFrame(scan);
+};
 
-      } catch (err) {
-        console.error(err);
-        alert('Kamera Fehler: ' + err?.message);
-        setIsScanning(false);
-      }
-    };
+scan();
+
+  } catch (err) {
+    alert('Fehler: ' + err?.message);
+    setIsScanning(false);
+  }
+};
 
     start();
 
