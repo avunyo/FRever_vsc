@@ -1,64 +1,90 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BrowserMultiFormatReader, DecodeHintType } from '@zxing/library';
+import { BrowserMultiFormatReader, BarcodeFormat, DecodeHintType } from '@zxing/library';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Package, Trash2, Loader2, Keyboard, Scan, CameraOff, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { fetchProductInfo } from '@/lib/foodApi';
 
-// --- КОМПОНЕНТ СКАНЕРА ---
-function LiveBarcodeScanner({ onBarcodeDetected, isProcessing }) {
+function LiveBarcodeScanner({ onBarcodeDetected }) {
   const videoRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
   const [manualBarcode, setManualBarcode] = useState('');
-  const codeReaderRef = useRef(null);
+  const readerRef = useRef(null);
+  const streamRef = useRef(null);
 
   useEffect(() => {
     return () => stopScanner();
   }, []);
 
   const stopScanner = () => {
-    if (codeReaderRef.current) {
-      codeReaderRef.current.reset();
-      codeReaderRef.current = null;
+    if (readerRef.current) {
+      readerRef.current.reset();
+      readerRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
     }
     setIsScanning(false);
   };
 
-  const startScanner = async () => {
-  try {
-    // Явно запрашиваем разрешение перед запуском библиотеки
-    await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    
-    setIsScanning(true);
-    const codeReader = new BrowserMultiFormatReader();
-    codeReaderRef.current = codeReader;
+  // Läuft NACHDEM React das <video> gerendert hat
+  useEffect(() => {
+    if (!isScanning) return;
+    if (!videoRef.current) return;
 
-    const devices = await codeReader.listVideoInputDevices();
-    // Фильтруем только видео-входы
-    const backCamera = devices.find(d => /back|rear|задн/i.test(d.label)) || devices[0];
+    let active = true;
 
-    if (!backCamera) {
-      alert("Камера не найдена");
-      return;
-    }
+    const start = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
 
-    await codeReader.decodeFromVideoDevice(
-      backCamera.deviceId, 
-      videoRef.current, 
-      (result) => {
-        if (result) {
-          onBarcodeDetected(result.getText());
-          stopScanner();
+        if (!active) {
+          stream.getTracks().forEach(t => t.stop());
+          return;
         }
+
+        streamRef.current = stream;
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+
+        const hints = new Map();
+        hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+          BarcodeFormat.EAN_13,
+          BarcodeFormat.EAN_8,
+          BarcodeFormat.CODE_128,
+          BarcodeFormat.UPC_A,
+        ]);
+        hints.set(DecodeHintType.TRY_HARDER, true);
+
+        const reader = new BrowserMultiFormatReader(hints);
+        readerRef.current = reader;
+
+        reader.decodeFromStream(stream, videoRef.current, (result, err) => {
+          if (result && active) {
+            if (navigator.vibrate) navigator.vibrate(100);
+            onBarcodeDetected(result.getText());
+            stopScanner();
+          }
+        });
+
+      } catch (err) {
+        console.error(err);
+        alert('Kamera Fehler: ' + err?.message);
+        setIsScanning(false);
       }
-    );
-  } catch (err) {
-    console.error("Scanner Error:", err);
-    alert("Доступ к камере отклонен или заблокирован браузером.");
-    setIsScanning(false);
-  }
-};
+    };
+
+    start();
+
+    return () => { active = false; };
+  }, [isScanning]);
 
   return (
     <div className="w-full space-y-6">
@@ -73,7 +99,10 @@ function LiveBarcodeScanner({ onBarcodeDetected, isProcessing }) {
               <div className="p-6 bg-white rounded-full shadow-sm">
                 <Scan className="w-12 h-12 text-[#2F3B39]" />
               </div>
-              <Button onClick={startScanner} className="bg-[#2F3B39] text-white hover:bg-[#1a2321] rounded-full px-8">
+              <Button
+                onClick={() => setIsScanning(true)}
+                className="bg-[#2F3B39] text-white hover:bg-[#1a2321] rounded-full px-8"
+              >
                 Kamera starten
               </Button>
             </motion.div>
@@ -83,16 +112,26 @@ function LiveBarcodeScanner({ onBarcodeDetected, isProcessing }) {
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="relative aspect-square rounded-[24px] overflow-hidden bg-black"
             >
-              <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
-              <div className="absolute inset-0 pointer-events-none border-[20px] border-black/40" style={{ clipPath: 'polygon(0% 0%, 0% 100%, 10% 100%, 10% 10%, 90% 10%, 90% 90%, 10% 90%, 10% 100%, 100% 100%, 100% 0%)' }} />
-              <div className="absolute top-[10%] left-[10%] right-[10%] bottom-[10%] border-2 border-white/30 rounded-[20px] pointer-events-none">
-                <motion.div 
-                  animate={{ top: ['10%', '90%'] }} 
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  className="absolute left-0 right-0 h-[2px] bg-[#A3E635] shadow-[0_0_15px_#A3E635]" 
+              <video
+                ref={videoRef}
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                playsInline
+              />
+
+              <div className="absolute inset-0 pointer-events-none">
+                <motion.div
+                  animate={{ top: ['10%', '90%'] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                  className="absolute left-[10%] right-[10%] h-[2px] bg-[#A3E635] shadow-[0_0_15px_#A3E635] z-10"
                 />
               </div>
-              <button onClick={stopScanner} className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 border border-white/20">
+
+              <button
+                onClick={stopScanner}
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 border border-white/20 z-20"
+              >
                 <CameraOff className="w-4 h-4" /> Beenden
               </button>
             </motion.div>
@@ -108,11 +147,22 @@ function LiveBarcodeScanner({ onBarcodeDetected, isProcessing }) {
             placeholder="Barcode eingeben..."
             value={manualBarcode}
             onChange={(e) => setManualBarcode(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && manualBarcode) {
+                onBarcodeDetected(manualBarcode);
+                setManualBarcode('');
+              }
+            }}
             className="pl-10 h-12 rounded-2xl border-[#2F3B39]/10 bg-white"
           />
         </div>
         <Button
-          onClick={() => { if(manualBarcode) { onBarcodeDetected(manualBarcode); setManualBarcode(''); } }}
+          onClick={() => {
+            if (manualBarcode) {
+              onBarcodeDetected(manualBarcode);
+              setManualBarcode('');
+            }
+          }}
           className="h-12 w-12 rounded-2xl bg-[#A3E635]/20 text-[#2F3B39] hover:bg-[#A3E635]/40 border border-[#A3E635]/30"
         >
           <Search className="w-5 h-5" />
@@ -122,8 +172,6 @@ function LiveBarcodeScanner({ onBarcodeDetected, isProcessing }) {
   );
 }
 
-// --- ГЛАВНАЯ СТРАНИЦА ---
-// --- ГЛАВНАЯ СТРАНИЦА (ScanPage) ---
 export default function ScanPage() {
   const [products, setProducts] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -136,7 +184,7 @@ export default function ScanPage() {
       if (productData) {
         setProducts(prev => [productData, ...prev]);
       } else {
-        alert("Barcode " + barcode + " nicht gefunden");
+        alert('Barcode ' + barcode + ' nicht gefunden');
       }
     } catch (e) {
       console.error(e);
@@ -146,34 +194,24 @@ export default function ScanPage() {
   };
 
   return (
-    /* Внешний контейнер на весь экран с серым фоном */
-    <div className="min-h-screen bg-gray-100 md:py-8"> 
-      
-      {/* 
-         Контейнер-"телефон": 
-         max-w-md — ограничивает ширину (ок. 450px)
-         mx-auto — центрирует
-         bg-[#F8FAF9] — внутренний фон приложения
-      */}
+    <div className="min-h-screen bg-gray-100 md:py-8">
       <div className="max-w-md mx-auto bg-[#F8FAF9] min-h-screen md:min-h-[850px] shadow-2xl md:rounded-[40px] overflow-hidden flex flex-col">
-        
-        {/* Шапка (теперь она внутри ограниченного контейнера) */}
+
         <div className="bg-white rounded-b-[40px] shadow-sm p-6 mb-8 border-b border-[#2F3B39]/5">
           <h1 className="text-center text-xl font-black italic uppercase text-[#2F3B39] mb-6 tracking-tighter">
             Frever Scanner
           </h1>
-          <LiveBarcodeScanner onBarcodeDetected={handleBarcodeDetected} isProcessing={isProcessing} />
+          <LiveBarcodeScanner onBarcodeDetected={handleBarcodeDetected} />
         </div>
 
-        {/* Список отсканированного */}
         <div className="flex-1 px-6 pb-20">
           <div className="flex justify-between items-end mb-6">
             <h2 className="text-2xl font-black text-[#2F3B39] tracking-tight uppercase">Gescannt</h2>
             {products.length > 0 && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setProducts([])} 
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setProducts([])}
                 className="text-red-400 text-[10px] font-bold uppercase tracking-widest hover:bg-red-50"
               >
                 <Trash2 className="w-3 h-3 mr-1" /> Löschen
@@ -190,9 +228,9 @@ export default function ScanPage() {
           <div className="space-y-4">
             <AnimatePresence initial={false}>
               {products.length === 0 ? (
-                <motion.div 
-                  initial={{ opacity: 0 }} 
-                  animate={{ opacity: 1 }} 
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   className="text-center py-12 border-2 border-dashed border-gray-200 rounded-[32px] bg-white/50"
                 >
                   <Package className="w-10 h-10 text-gray-200 mx-auto mb-2" />
