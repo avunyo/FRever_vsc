@@ -11,103 +11,60 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
   const [isScanning, setIsScanning] = useState(false);
   const [manualBarcode, setManualBarcode] = useState('');
   const readerRef = useRef(null);
-  const streamRef = useRef(null);
-  const intervalRef = useRef(null);
-  const activeRef = useRef(false);
+  const detectedRef = useRef(false);
 
   useEffect(() => {
-    return () => cleanup();
+    return () => stopScanner();
   }, []);
 
-  // Nur Hardware stoppen — kein setState
-  const cleanup = () => {
-    activeRef.current = false;
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
+  const stopScanner = () => {
     if (readerRef.current) {
       try { readerRef.current.reset(); } catch (e) {}
       readerRef.current = null;
     }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop());
-      streamRef.current = null;
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-  };
-
-  // Button "Beenden" — stoppt Hardware UND setzt State
-  const stopScanner = () => {
-    cleanup();
+    detectedRef.current = false;
     setIsScanning(false);
   };
 
   useEffect(() => {
-    if (!isScanning) {
-      cleanup();
-      return;
-    }
+    if (!isScanning) return;
 
-    activeRef.current = true;
+    detectedRef.current = false;
 
-    const start = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-        });
+    const hints = new Map();
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+      BarcodeFormat.EAN_13,
+      BarcodeFormat.EAN_8,
+      BarcodeFormat.CODE_128,
+      BarcodeFormat.UPC_A,
+      BarcodeFormat.UPC_E,
+    ]);
+    hints.set(DecodeHintType.TRY_HARDER, true);
 
-        if (!activeRef.current) {
-          stream.getTracks().forEach(t => t.stop());
-          return;
+    const reader = new BrowserMultiFormatReader(hints);
+    readerRef.current = reader;
+
+    // decodeFromVideoDevice kümmert sich selbst um Kamera + Video + kontinuierliches Scannen
+    reader.decodeFromVideoDevice(
+      undefined, // undefined = automatisch beste Kamera wählen
+      videoRef.current,
+      (result, error) => {
+        if (result && !detectedRef.current) {
+          detectedRef.current = true;
+          if (navigator.vibrate) navigator.vibrate(100);
+          onBarcodeDetected(result.getText());
+          stopScanner();
         }
-
-        streamRef.current = stream;
-        const video = videoRef.current;
-        if (!video) return;
-
-        video.srcObject = stream;
-        video.muted = true;
-
-        await new Promise(resolve => { video.onloadedmetadata = () => resolve(null); });
-        await video.play();
-
-        const hints = new Map();
-        hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-          BarcodeFormat.EAN_13,
-          BarcodeFormat.EAN_8,
-          BarcodeFormat.CODE_128,
-          BarcodeFormat.UPC_A,
-          BarcodeFormat.UPC_E,
-        ]);
-        hints.set(DecodeHintType.TRY_HARDER, true);
-
-        const reader = new BrowserMultiFormatReader(hints);
-        readerRef.current = reader;
-
-        intervalRef.current = setInterval(async () => {
-          if (!activeRef.current || !videoRef.current) return;
-          try {
-            const result = await reader.decodeFromVideoElement(videoRef.current);
-            if (result && activeRef.current) {
-              if (navigator.vibrate) navigator.vibrate(100);
-              onBarcodeDetected(result.getText());
-              stopScanner();
-            }
-          } catch (e) {}
-        }, 300);
-
-      } catch (err) {
-        alert('Kamera Fehler: ' + err?.message);
-        setIsScanning(false);
       }
+    ).catch(err => {
+      console.error(err);
+      alert('Kamera Fehler: ' + err?.message);
+      setIsScanning(false);
+    });
+
+    return () => {
+      try { reader.reset(); } catch (e) {}
     };
-
-    start();
-
-    // Kein cleanup hier — wird von stopScanner / cleanup() erledigt
   }, [isScanning]);
 
   return (
@@ -128,43 +85,45 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
           </div>
         )}
 
-        {isScanning && (
+        {/* Video immer im DOM — aber nur sichtbar wenn isScanning */}
+        <div style={{
+          display: isScanning ? 'block' : 'none',
+          position: 'relative', width: '100%', aspectRatio: '1',
+          borderRadius: '24px', overflow: 'hidden', background: 'black',
+        }}>
+          <video
+            ref={videoRef}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            autoPlay muted playsInline
+          />
+
+          {/* Abdunklung oben */}
           <div style={{
-            position: 'relative', width: '100%', aspectRatio: '1',
-            borderRadius: '24px', overflow: 'hidden', background: 'black',
+            position: 'absolute', top: 0, left: 0, right: 0, height: '35%',
+            background: 'rgba(0,0,0,0.55)', pointerEvents: 'none',
+          }} />
+
+          {/* Abdunklung unten */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: '35%',
+            background: 'rgba(0,0,0,0.55)', pointerEvents: 'none',
+          }} />
+
+          {/* Rechteckiger Rahmen mit Ecken */}
+          <div style={{
+            position: 'absolute', top: '35%', left: '5%', right: '5%', height: '30%',
+            pointerEvents: 'none',
           }}>
-            <video
-              ref={videoRef}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              autoPlay muted playsInline
-            />
+            <div style={{ position: 'absolute', top: 0, left: 0, width: 24, height: 24,
+              borderTop: '3px solid #A3E635', borderLeft: '3px solid #A3E635' }} />
+            <div style={{ position: 'absolute', top: 0, right: 0, width: 24, height: 24,
+              borderTop: '3px solid #A3E635', borderRight: '3px solid #A3E635' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, width: 24, height: 24,
+              borderBottom: '3px solid #A3E635', borderLeft: '3px solid #A3E635' }} />
+            <div style={{ position: 'absolute', bottom: 0, right: 0, width: 24, height: 24,
+              borderBottom: '3px solid #A3E635', borderRight: '3px solid #A3E635' }} />
 
-            {/* Abdunklung oben */}
-            <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0, height: '35%',
-              background: 'rgba(0,0,0,0.55)', pointerEvents: 'none',
-            }} />
-
-            {/* Abdunklung unten */}
-            <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0, height: '35%',
-              background: 'rgba(0,0,0,0.55)', pointerEvents: 'none',
-            }} />
-
-            {/* Rechteckiger Rahmen mit Ecken */}
-            <div style={{
-              position: 'absolute', top: '35%', left: '5%', right: '5%', height: '30%',
-              pointerEvents: 'none',
-            }}>
-              <div style={{ position: 'absolute', top: 0, left: 0, width: 24, height: 24,
-                borderTop: '3px solid #A3E635', borderLeft: '3px solid #A3E635' }} />
-              <div style={{ position: 'absolute', top: 0, right: 0, width: 24, height: 24,
-                borderTop: '3px solid #A3E635', borderRight: '3px solid #A3E635' }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, width: 24, height: 24,
-                borderBottom: '3px solid #A3E635', borderLeft: '3px solid #A3E635' }} />
-              <div style={{ position: 'absolute', bottom: 0, right: 0, width: 24, height: 24,
-                borderBottom: '3px solid #A3E635', borderRight: '3px solid #A3E635' }} />
-
+            {isScanning && (
               <motion.div
                 animate={{ top: ['5%', '95%'] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
@@ -173,32 +132,32 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
                   background: '#A3E635', boxShadow: '0 0 8px #A3E635, 0 0 20px #A3E635',
                 }}
               />
-            </div>
-
-            <div style={{
-              position: 'absolute', bottom: '60px', left: 0, right: 0,
-              textAlign: 'center', color: 'rgba(255,255,255,0.7)',
-              fontSize: '12px', pointerEvents: 'none',
-            }}>
-              Barcode in den Rahmen halten
-            </div>
-
-            <button
-              onClick={stopScanner}
-              style={{
-                position: 'absolute', bottom: '16px', left: '50%',
-                transform: 'translateX(-50%)', zIndex: 20,
-                background: 'rgba(0,0,0,0.6)', color: 'white',
-                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '999px',
-                padding: '8px 16px', fontSize: '12px', fontWeight: 'bold',
-                display: 'flex', alignItems: 'center', gap: '8px',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              <CameraOff style={{ width: 16, height: 16 }} /> Beenden
-            </button>
+            )}
           </div>
-        )}
+
+          <div style={{
+            position: 'absolute', bottom: '60px', left: 0, right: 0,
+            textAlign: 'center', color: 'rgba(255,255,255,0.7)',
+            fontSize: '12px', pointerEvents: 'none',
+          }}>
+            Barcode in den Rahmen halten
+          </div>
+
+          <button
+            onClick={stopScanner}
+            style={{
+              position: 'absolute', bottom: '16px', left: '50%',
+              transform: 'translateX(-50%)', zIndex: 20,
+              background: 'rgba(0,0,0,0.6)', color: 'white',
+              border: '1px solid rgba(255,255,255,0.2)', borderRadius: '999px',
+              padding: '8px 16px', fontSize: '12px', fontWeight: 'bold',
+              display: 'flex', alignItems: 'center', gap: '8px',
+              backdropFilter: 'blur(8px)',
+            }}
+          >
+            <CameraOff style={{ width: 16, height: 16 }} /> Beenden
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-2">
