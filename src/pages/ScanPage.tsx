@@ -32,7 +32,6 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
     setIsScanning(false);
   };
 
-  // Läuft NACHDEM React das <video> gerendert hat
   useEffect(() => {
     if (!isScanning) return;
     if (!videoRef.current) return;
@@ -40,114 +39,147 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
     let active = true;
 
     const start = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }
-    });
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' }
+        });
 
-    if (!active) {
-      stream.getTracks().forEach(t => t.stop());
-      return;
-    }
+        if (!active) {
+          stream.getTracks().forEach(t => t.stop());
+          return;
+        }
 
-    streamRef.current = stream;
-    videoRef.current.srcObject = stream;
-    await videoRef.current.play();
+        streamRef.current = stream;
 
-    // Zxing direkt auf video element — NICHT decodeFromStream
-    const hints = new Map();
-    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-      BarcodeFormat.EAN_13,
-      BarcodeFormat.EAN_8,
-      BarcodeFormat.CODE_128,
-      BarcodeFormat.UPC_A,
-    ]);
-    hints.set(DecodeHintType.TRY_HARDER, true);
+        // Video direkt setzen ohne auf React zu warten
+        const video = videoRef.current;
+        video.srcObject = stream;
+        video.setAttribute('playsinline', 'true');
+        video.setAttribute('muted', 'true');
+        video.muted = true;
 
-    const reader = new BrowserMultiFormatReader(hints);
-    readerRef.current = reader;
+        await new Promise((resolve) => {
+          video.onloadedmetadata = () => resolve(null);
+        });
+        await video.play();
 
-    // Direkt vom video element lesen mit Polling
-    const scan = async () => {
-  if (!active || !videoRef.current) return;
-  try {
-    const result = await reader.decodeFromVideoElement(videoRef.current);
-    if (result && active) {
-      if (navigator.vibrate) navigator.vibrate(100);
-      onBarcodeDetected(result.getText());
-      stopScanner();
-      return;
-    }
-  } catch (e) {}
-  if (active) requestAnimationFrame(scan);
-};
+        const hints = new Map();
+        hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+          BarcodeFormat.EAN_13,
+          BarcodeFormat.EAN_8,
+          BarcodeFormat.CODE_128,
+          BarcodeFormat.UPC_A,
+        ]);
+        hints.set(DecodeHintType.TRY_HARDER, true);
 
-scan();
+        const reader = new BrowserMultiFormatReader(hints);
+        readerRef.current = reader;
 
-  } catch (err) {
-    alert('Fehler: ' + err?.message);
-    setIsScanning(false);
-  }
-};
+        const scan = async () => {
+          if (!active || !videoRef.current) return;
+          try {
+            const result = await reader.decodeFromVideoElement(videoRef.current);
+            if (result && active) {
+              if (navigator.vibrate) navigator.vibrate(100);
+              onBarcodeDetected(result.getText());
+              stopScanner();
+              return;
+            }
+          } catch (e) {}
+          if (active) requestAnimationFrame(scan);
+        };
+
+        scan();
+
+      } catch (err) {
+        alert('Fehler: ' + err?.message);
+        setIsScanning(false);
+      }
+    };
 
     start();
-
     return () => { active = false; };
   }, [isScanning]);
 
   return (
     <div className="w-full space-y-6">
-      <div className="relative bg-white rounded-[32px] border border-[#2F3B39]/10 shadow-sm overflow-hidden p-4">
-        <AnimatePresence mode="wait">
-          {!isScanning ? (
-            <motion.div
-              key="start"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="aspect-square flex flex-col items-center justify-center space-y-4 bg-[#2F3B39]/5 rounded-[24px] border-2 border-dashed border-[#2F3B39]/10"
-            >
-              <div className="p-6 bg-white rounded-full shadow-sm">
-                <Scan className="w-12 h-12 text-[#2F3B39]" />
-              </div>
-              <Button
-                onClick={() => setIsScanning(true)}
-                className="bg-[#2F3B39] text-white hover:bg-[#1a2321] rounded-full px-8"
-              >
-                Kamera starten
-              </Button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="active"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="relative aspect-square rounded-[24px] overflow-hidden bg-black"
-            >
-              <video
-                ref={videoRef}
-                className="w-full h-full object-cover"
-                autoPlay
-                muted
-                playsInline
-              />
+      <div className="relative bg-white rounded-[32px] border border-[#2F3B39]/10 shadow-sm p-4">
 
-              <div className="absolute inset-0 pointer-events-none">
-                <motion.div
-                  animate={{ top: ['10%', '90%'] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                  className="absolute left-[10%] right-[10%] h-[2px] bg-[#A3E635] shadow-[0_0_15px_#A3E635] z-10"
-                />
-              </div>
+        {/* Kamera AUS */}
+        {!isScanning && (
+          <div className="aspect-square flex flex-col items-center justify-center space-y-4 bg-[#2F3B39]/5 rounded-[24px] border-2 border-dashed border-[#2F3B39]/10">
+            <div className="p-6 bg-white rounded-full shadow-sm">
+              <Scan className="w-12 h-12 text-[#2F3B39]" />
+            </div>
+            <Button
+              onClick={() => setIsScanning(true)}
+              className="bg-[#2F3B39] text-white hover:bg-[#1a2321] rounded-full px-8"
+            >
+              Kamera starten
+            </Button>
+          </div>
+        )}
 
-              <button
-                onClick={stopScanner}
-                className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 border border-white/20 z-20"
-              >
-                <CameraOff className="w-4 h-4" /> Beenden
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Kamera AN — kein overflow-hidden, kein AnimatePresence */}
+        {isScanning && (
+          <div className="relative aspect-square rounded-[24px] bg-black" style={{ overflow: 'hidden' }}>
+            <video
+              ref={videoRef}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                display: 'block',
+              }}
+              autoPlay
+              muted
+              playsInline
+            />
+
+            {/* Scan-Linie */}
+            <motion.div
+              animate={{ top: ['10%', '90%'] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+              style={{
+                position: 'absolute',
+                left: '10%',
+                right: '10%',
+                height: '2px',
+                background: '#A3E635',
+                boxShadow: '0 0 15px #A3E635',
+                zIndex: 10,
+                pointerEvents: 'none',
+              }}
+            />
+
+            <button
+              onClick={stopScanner}
+              style={{
+                position: 'absolute',
+                bottom: '16px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 20,
+                background: 'rgba(0,0,0,0.6)',
+                color: 'white',
+                border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '999px',
+                padding: '8px 16px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              <CameraOff style={{ width: 16, height: 16 }} /> Beenden
+            </button>
+          </div>
+        )}
       </div>
 
+      {/* Manuelle Eingabe */}
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Keyboard className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
