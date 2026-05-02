@@ -13,18 +13,21 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
   const readerRef = useRef(null);
   const streamRef = useRef(null);
   const intervalRef = useRef(null);
+  const activeRef = useRef(false);
 
   useEffect(() => {
-    return () => stopScanner();
+    return () => cleanup();
   }, []);
 
-  const stopScanner = () => {
+  // Nur Hardware stoppen — kein setState
+  const cleanup = () => {
+    activeRef.current = false;
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
     if (readerRef.current) {
-      readerRef.current.reset();
+      try { readerRef.current.reset(); } catch (e) {}
       readerRef.current = null;
     }
     if (streamRef.current) {
@@ -34,14 +37,21 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
+  };
+
+  // Button "Beenden" — stoppt Hardware UND setzt State
+  const stopScanner = () => {
+    cleanup();
     setIsScanning(false);
   };
 
   useEffect(() => {
-    if (!isScanning) return;
-    if (!videoRef.current) return;
+    if (!isScanning) {
+      cleanup();
+      return;
+    }
 
-    let active = true;
+    activeRef.current = true;
 
     const start = async () => {
       try {
@@ -49,10 +59,15 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
           video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
         });
 
-        if (!active) { stream.getTracks().forEach(t => t.stop()); return; }
+        if (!activeRef.current) {
+          stream.getTracks().forEach(t => t.stop());
+          return;
+        }
 
         streamRef.current = stream;
         const video = videoRef.current;
+        if (!video) return;
+
         video.srcObject = stream;
         video.muted = true;
 
@@ -73,14 +88,12 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
         readerRef.current = reader;
 
         intervalRef.current = setInterval(async () => {
-          if (!active || !videoRef.current) return;
+          if (!activeRef.current || !videoRef.current) return;
           try {
             const result = await reader.decodeFromVideoElement(videoRef.current);
-            if (result && active) {
+            if (result && activeRef.current) {
               if (navigator.vibrate) navigator.vibrate(100);
               onBarcodeDetected(result.getText());
-              clearInterval(intervalRef.current);
-              intervalRef.current = null;
               stopScanner();
             }
           } catch (e) {}
@@ -93,13 +106,8 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
     };
 
     start();
-    return () => {
-      active = false;
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
+
+    // Kein cleanup hier — wird von stopScanner / cleanup() erledigt
   }, [isScanning]);
 
   return (
