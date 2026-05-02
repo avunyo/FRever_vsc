@@ -12,12 +12,17 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
   const [manualBarcode, setManualBarcode] = useState('');
   const readerRef = useRef(null);
   const streamRef = useRef(null);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     return () => stopScanner();
   }, []);
 
   const stopScanner = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     if (readerRef.current) {
       readerRef.current.reset();
       readerRef.current = null;
@@ -41,26 +46,17 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
     const start = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' }
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
         });
 
-        if (!active) {
-          stream.getTracks().forEach(t => t.stop());
-          return;
-        }
+        if (!active) { stream.getTracks().forEach(t => t.stop()); return; }
 
         streamRef.current = stream;
-
-        // Video direkt setzen ohne auf React zu warten
         const video = videoRef.current;
         video.srcObject = stream;
-        video.setAttribute('playsinline', 'true');
-        video.setAttribute('muted', 'true');
         video.muted = true;
 
-        await new Promise((resolve) => {
-          video.onloadedmetadata = () => resolve(null);
-        });
+        await new Promise(resolve => { video.onloadedmetadata = () => resolve(null); });
         await video.play();
 
         const hints = new Map();
@@ -69,43 +65,47 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
           BarcodeFormat.EAN_8,
           BarcodeFormat.CODE_128,
           BarcodeFormat.UPC_A,
+          BarcodeFormat.UPC_E,
         ]);
         hints.set(DecodeHintType.TRY_HARDER, true);
 
         const reader = new BrowserMultiFormatReader(hints);
         readerRef.current = reader;
 
-        const scan = async () => {
+        intervalRef.current = setInterval(async () => {
           if (!active || !videoRef.current) return;
           try {
             const result = await reader.decodeFromVideoElement(videoRef.current);
             if (result && active) {
               if (navigator.vibrate) navigator.vibrate(100);
               onBarcodeDetected(result.getText());
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
               stopScanner();
-              return;
             }
           } catch (e) {}
-          if (active) requestAnimationFrame(scan);
-        };
-
-        scan();
+        }, 300);
 
       } catch (err) {
-        alert('Fehler: ' + err?.message);
+        alert('Kamera Fehler: ' + err?.message);
         setIsScanning(false);
       }
     };
 
     start();
-    return () => { active = false; };
+    return () => {
+      active = false;
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [isScanning]);
 
   return (
     <div className="w-full space-y-6">
       <div className="relative bg-white rounded-[32px] border border-[#2F3B39]/10 shadow-sm p-4">
 
-        {/* Kamera AUS */}
         {!isScanning && (
           <div className="aspect-square flex flex-col items-center justify-center space-y-4 bg-[#2F3B39]/5 rounded-[24px] border-2 border-dashed border-[#2F3B39]/10">
             <div className="p-6 bg-white rounded-full shadow-sm">
@@ -120,56 +120,70 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
           </div>
         )}
 
-        {/* Kamera AN — kein overflow-hidden, kein AnimatePresence */}
         {isScanning && (
-          <div className="relative aspect-square rounded-[24px] bg-black" style={{ overflow: 'hidden' }}>
+          <div style={{
+            position: 'relative', width: '100%', aspectRatio: '1',
+            borderRadius: '24px', overflow: 'hidden', background: 'black',
+          }}>
             <video
               ref={videoRef}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-              autoPlay
-              muted
-              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              autoPlay muted playsInline
             />
 
-            {/* Scan-Linie */}
-            <motion.div
-              animate={{ top: ['10%', '90%'] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              style={{
-                position: 'absolute',
-                left: '10%',
-                right: '10%',
-                height: '2px',
-                background: '#A3E635',
-                boxShadow: '0 0 15px #A3E635',
-                zIndex: 10,
-                pointerEvents: 'none',
-              }}
-            />
+            {/* Abdunklung oben */}
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, height: '35%',
+              background: 'rgba(0,0,0,0.55)', pointerEvents: 'none',
+            }} />
+
+            {/* Abdunklung unten */}
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0, height: '35%',
+              background: 'rgba(0,0,0,0.55)', pointerEvents: 'none',
+            }} />
+
+            {/* Rechteckiger Rahmen mit Ecken */}
+            <div style={{
+              position: 'absolute', top: '35%', left: '5%', right: '5%', height: '30%',
+              pointerEvents: 'none',
+            }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, width: 24, height: 24,
+                borderTop: '3px solid #A3E635', borderLeft: '3px solid #A3E635' }} />
+              <div style={{ position: 'absolute', top: 0, right: 0, width: 24, height: 24,
+                borderTop: '3px solid #A3E635', borderRight: '3px solid #A3E635' }} />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, width: 24, height: 24,
+                borderBottom: '3px solid #A3E635', borderLeft: '3px solid #A3E635' }} />
+              <div style={{ position: 'absolute', bottom: 0, right: 0, width: 24, height: 24,
+                borderBottom: '3px solid #A3E635', borderRight: '3px solid #A3E635' }} />
+
+              <motion.div
+                animate={{ top: ['5%', '95%'] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+                style={{
+                  position: 'absolute', left: 0, right: 0, height: '2px',
+                  background: '#A3E635', boxShadow: '0 0 8px #A3E635, 0 0 20px #A3E635',
+                }}
+              />
+            </div>
+
+            <div style={{
+              position: 'absolute', bottom: '60px', left: 0, right: 0,
+              textAlign: 'center', color: 'rgba(255,255,255,0.7)',
+              fontSize: '12px', pointerEvents: 'none',
+            }}>
+              Barcode in den Rahmen halten
+            </div>
 
             <button
               onClick={stopScanner}
               style={{
-                position: 'absolute',
-                bottom: '16px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                zIndex: 20,
-                background: 'rgba(0,0,0,0.6)',
-                color: 'white',
-                border: '1px solid rgba(255,255,255,0.2)',
-                borderRadius: '999px',
-                padding: '8px 16px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
+                position: 'absolute', bottom: '16px', left: '50%',
+                transform: 'translateX(-50%)', zIndex: 20,
+                background: 'rgba(0,0,0,0.6)', color: 'white',
+                border: '1px solid rgba(255,255,255,0.2)', borderRadius: '999px',
+                padding: '8px 16px', fontSize: '12px', fontWeight: 'bold',
+                display: 'flex', alignItems: 'center', gap: '8px',
                 backdropFilter: 'blur(8px)',
               }}
             >
@@ -179,7 +193,6 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
         )}
       </div>
 
-      {/* Manuelle Eingabe */}
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Keyboard className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
