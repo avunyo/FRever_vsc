@@ -58,20 +58,20 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
   return (
     <div className="w-full space-y-6">
       {/* КРАСНОЕ: Основной контейнер камеры (сделали темнее и убрали лишнюю серость) */}
-      <div className="relative bg-card rounded-[32px] border border-border/50 shadow-lg p-6 transition-all">
-  {!isScanning && (
-    <div className="aspect-square flex flex-col items-center justify-center space-y-6 bg-muted/30 rounded-[24px] border-2 border-dashed border-border">
-      <div className="p-6 bg-background rounded-3xl border border-border shadow-sm">
-        <Scan className="w-12 h-12 text-primary" />
-      </div>
-      <Button 
-        onClick={() => setIsScanning(true)} 
-        className="rounded-full px-8 h-12 bg-primary text-primary-foreground font-bold"
-      >
-        Kamera starten
-      </Button>
-    </div>
-  )}
+      <div className="relative bg-card rounded-[32px] dark:bg-[#2B3836]  border border-border/50 shadow-lg p-6 transition-all">
+        {!isScanning && (
+          <div className="aspect-square flex flex-col items-center justify-center space-y-6 bg-muted/30 rounded-[24px] border-2 border-dashed border-border">
+            <div className="p-6 bg-background rounded-3xl border border-border shadow-sm">
+              <Scan className="w-12 h-12 text-primary" />
+            </div>
+            <Button
+              onClick={() => setIsScanning(true)}
+              className="rounded-full px-8 h-12 bg-primary text-primary-foreground font-bold"
+            >
+              Kamera starten
+            </Button>
+          </div>
+        )}
 
         {/* Состояние: Камера ВКЛ */}
         <div style={{
@@ -80,15 +80,15 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
           borderRadius: '24px', overflow: 'hidden', background: '#000',
         }} className="ring-1 ring-white/10">
           <video ref={videoRef} style={{ width: '100%', height: '100%', objectFit: 'cover' }} autoPlay muted playsInline />
-          
+
           <div className="absolute inset-0 bg-black/40 pointer-events-none" />
-          
+
           <div className="absolute top-[35%] left-[5%] right-[5%] height-[30%] pointer-events-none z-10">
-             <div className="absolute top-0 left-0 width-[24px] height-[24px] border-t-4 border-l-4 border-primary rounded-tl-lg shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
-             <div className="absolute top-0 right-0 width-[24px] height-[24px] border-t-4 border-r-4 border-primary rounded-tr-lg shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
-             <div className="absolute bottom-0 left-0 width-[24px] height-[24px] border-b-4 border-l-4 border-primary rounded-bl-lg shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
-             <div className="absolute bottom-0 right-0 width-[24px] height-[24px] border-b-4 border-r-4 border-primary rounded-br-lg shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
-            
+            <div className="absolute top-0 left-0 width-[24px] height-[24px] border-t-4 border-l-4 border-primary rounded-tl-lg shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+            <div className="absolute top-0 right-0 width-[24px] height-[24px] border-t-4 border-r-4 border-primary rounded-tr-lg shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+            <div className="absolute bottom-0 left-0 width-[24px] height-[24px] border-b-4 border-l-4 border-primary rounded-bl-lg shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+            <div className="absolute bottom-0 right-0 width-[24px] height-[24px] border-b-4 border-r-4 border-primary rounded-br-lg shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+
             {isScanning && (
               <motion.div
                 animate={{ top: ['0%', '100%', '0%'] }}
@@ -105,20 +105,23 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
       </div>
 
       {/* КРАСНОЕ: Поле ввода (сделали темным и стильным) */}
-      <div className="flex gap-2">
+      {/* Секция ввода: теперь адаптивная */}
+      <div className="flex gap-3">
         <div className="relative flex-1">
-          <Keyboard className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/40" />
+          <Keyboard className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
           <Input
             type="number"
             placeholder="Barcode eingeben..."
             value={manualBarcode}
             onChange={(e) => setManualBarcode(e.target.value)}
-            className="pl-11 h-14 rounded-2xl bg-black/30 border-white/5 text-white placeholder:text-white/20 focus:bg-black/50 focus:ring-1 focus:ring-primary/30 transition-all"
+            // Убрали bg-black/30, добавили системные цвета
+            className="pl-11 h-14 rounded-2xl bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-primary/20 transition-all"
           />
         </div>
         <Button
           onClick={() => { if (manualBarcode) { onBarcodeDetected(manualBarcode); setManualBarcode(''); } }}
-          className="h-14 w-14 rounded-2xl bg-[#1a2c2c] border border-white/5 text-primary hover:bg-primary hover:text-background transition-all"
+          // Используем variant="secondary" или настраиваем цвета через переменные
+          className="h-14 w-14 rounded-2xl bg-primary text-primary-foreground hover:opacity-90 transition-all shadow-md"
         >
           <Search className="w-6 h-6" />
         </Button>
@@ -239,13 +242,13 @@ export default function ScanPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className={`border p-4 rounded-[24px] shadow-sm flex items-center gap-4 transition-all duration-300 ${item.notFound
-                        ? 'bg-destructive/5 border-destructive/30 shadow-[0_0_15px_rgba(239,68,68,0.05)]'
-                        : 'bg-card border-border hover:border-primary/40 hover:shadow-[0_0_20px_rgba(var(--primary),0.05)]'
+                      ? 'bg-destructive/5 border-destructive/30 shadow-[0_0_15px_rgba(239,68,68,0.05)]'
+                      : 'bg-card border-border hover:border-primary/40 hover:shadow-[0_0_20px_rgba(var(--primary),0.05)]'
                       }`}
                   >
                     <div className={`w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border ${item.notFound
-                        ? 'bg-destructive/10 border-destructive/20'
-                        : 'bg-muted/30 border-border'
+                      ? 'bg-destructive/10 border-destructive/20'
+                      : 'bg-muted/30 border-border'
                       }`}>
                       {item.image ? (
                         <img src={item.image} alt="" className="w-full h-full object-contain p-1" />
