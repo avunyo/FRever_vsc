@@ -7,10 +7,9 @@ import {
   ReceiptText, Barcode, UserSearch, Sparkles
 } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 type ScannedItem = {
   id: string;
   name: string;
@@ -19,7 +18,6 @@ type ScannedItem = {
   selected: boolean;
 };
 
-// ─── Mock inventory data ──────────────────────────────────────────────────────
 const mockProducts = [
   { id: "1",  name: "Vollmilch 1,5%",      category: "Milchprodukte",  categoryIcon: Milk,      expiryDate: "2026-04-15", status: "expiring", quantity: 2 },
   { id: "2",  name: "Bio Joghurt Erdbeer",  category: "Milchprodukte",  categoryIcon: Milk,      expiryDate: "2026-05-16", status: "fresh",    quantity: 1 },
@@ -48,10 +46,7 @@ const MOCK_SCANNED_BASE = [
 
 function generateScannedItems(): ScannedItem[] {
   const ts = Date.now();
-  return MOCK_SCANNED_BASE.map((item, idx) => ({
-    ...item,
-    id: `scan-${ts}-${idx}`,
-  }));
+  return MOCK_SCANNED_BASE.map((item, idx) => ({ ...item, id: `scan-${ts}-${idx}` }));
 }
 
 // ─── Add Products Sub-Page ────────────────────────────────────────────────────
@@ -69,7 +64,7 @@ function AddProductsPage({
   const scanSessionRef = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ── Lock body scroll while this page is mounted ──────────────────────────
+  // Lock body scroll
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -85,9 +80,7 @@ function AddProductsPage({
   useEffect(() => {
     if (phase !== "loading") return;
     const session = scanSessionRef.current;
-    const t = setTimeout(() => {
-      if (scanSessionRef.current === session) setPhase("list");
-    }, 1800);
+    const t = setTimeout(() => { if (scanSessionRef.current === session) setPhase("list"); }, 1800);
     return () => clearTimeout(t);
   }, [phase]);
 
@@ -100,19 +93,15 @@ function AddProductsPage({
     const iv = setInterval(() => {
       if (scanSessionRef.current !== session) { clearInterval(iv); return; }
       if (i >= freshItems.length) { clearInterval(iv); return; }
-      const item = freshItems[i];
-      i++;
-      setItems(prev => [...prev, item]);
+      setItems(prev => [...prev, freshItems[i++]]);
     }, 140);
     return () => clearInterval(iv);
   }, [phase]);
 
   const toggle = (id: string) =>
     setItems(prev => prev.map(it => it.id === id ? { ...it, selected: !it.selected } : it));
-
   const removeItem = (id: string) =>
     setItems(prev => prev.filter(it => it.id !== id));
-
   const selected = items.filter(it => it.selected);
 
   const actions = [
@@ -156,14 +145,12 @@ function AddProductsPage({
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ type: "spring", damping: 32, stiffness: 310 }}
-      // ── KEY CHANGE: fixed overlay, flex column, overflow hidden on root ──
+      // ── Root: fixed fullscreen, flex column — children stack vertically ──
       className="fixed inset-0 z-40 bg-background flex flex-col overflow-hidden"
     >
-      {/* ── Header (static, never scrolls) ────────────────────────────────── */}
+      {/* ── 1. Header — never scrolls ─────────────────────────────────────── */}
       <div className="flex-shrink-0 flex items-center gap-3 px-5 pt-20 pb-5 border-b border-border/40 bg-background/95 backdrop-blur-sm">
-        <motion.button
-          whileTap={{ scale: 0.88 }}
-          onClick={onBack}
+        <motion.button whileTap={{ scale: 0.88 }} onClick={onBack}
           className="h-9 w-9 rounded-full bg-muted flex items-center justify-center flex-shrink-0"
         >
           <ChevronLeft className="h-5 w-5 text-foreground" />
@@ -174,13 +161,10 @@ function AddProductsPage({
         </div>
       </div>
 
-      {/* ── Action buttons (static, never scrolls) ─────────────────────────── */}
+      {/* ── 2. Action buttons — never scrolls ─────────────────────────────── */}
       <div className="flex-shrink-0 px-5 pt-5 pb-4 grid grid-cols-4 gap-2">
         {actions.map((action, idx) => (
-          <motion.button
-            key={idx}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.93 }}
+          <motion.button key={idx} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.93 }}
             onClick={action.onClick}
             className={`flex flex-col items-center gap-2 py-3.5 px-1 rounded-2xl border transition-all ${action.bg}`}
           >
@@ -194,12 +178,8 @@ function AddProductsPage({
         ))}
       </div>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="hidden"
+      {/* No capture attr → shows Gallery / Camera picker on mobile */}
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
         onChange={e => {
           if (!e.target.files?.length) return;
           e.target.value = "";
@@ -208,20 +188,21 @@ function AddProductsPage({
         }}
       />
 
-      {/* ── Divider (static) ───────────────────────────────────────────────── */}
+      {/* ── 3. Divider — never scrolls ────────────────────────────────────── */}
       <div className="flex-shrink-0 flex items-center gap-3 px-5 mb-2">
         <div className="flex-1 h-px bg-border/50" />
         <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Erkannte Produkte</span>
         <div className="flex-1 h-px bg-border/50" />
       </div>
 
-      {/* ── SCROLLABLE CONTENT — only this area scrolls ────────────────────── */}
-      <div
-        className="flex-1 overflow-y-auto overscroll-contain px-5 pb-36"
-        // overscroll-contain stops scroll from propagating to the page behind
-      >
+      {/*
+        ── 4. Scrollable list — flex-1 means it takes ALL remaining space
+           between the divider and the CTA button below.
+           overscroll-contain keeps scroll inside this element.
+           pb-4 just adds a little breathing room at the bottom of the list.
+      */}
+      <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-4">
         <AnimatePresence mode="wait">
-
           {phase === "idle" && (
             <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="flex flex-col items-center justify-center py-16 gap-3"
@@ -240,14 +221,11 @@ function AddProductsPage({
               className="flex flex-col items-center justify-center py-16 gap-5"
             >
               <div className="relative">
-                <motion.div
-                  animate={{ scale: [1, 1.5, 1], opacity: [0.1, 0.2, 0.1] }}
+                <motion.div animate={{ scale: [1, 1.5, 1], opacity: [0.1, 0.2, 0.1] }}
                   transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute rounded-full bg-primary"
-                  style={{ inset: -18 }}
+                  className="absolute rounded-full bg-primary" style={{ inset: -18 }}
                 />
-                <motion.div
-                  animate={{ scale: [1, 1.07, 1] }}
+                <motion.div animate={{ scale: [1, 1.07, 1] }}
                   transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
                   className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/25 flex items-center justify-center"
                 >
@@ -270,9 +248,7 @@ function AddProductsPage({
             <motion.div key="list" className="space-y-2 pt-1">
               <AnimatePresence initial={false}>
                 {items.map(item => (
-                  <motion.div
-                    key={item.id}
-                    layout
+                  <motion.div key={item.id} layout
                     initial={{ opacity: 0, y: 10, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.18 } }}
@@ -284,11 +260,7 @@ function AddProductsPage({
                     <div className="absolute inset-0 bg-destructive/10 dark:bg-red-900/20 flex items-center justify-end px-5 rounded-2xl">
                       <Trash2 className="h-4 w-4 text-destructive/60" />
                     </div>
-
-                    <motion.div
-                      drag="x"
-                      dragConstraints={{ left: -70, right: 0 }}
-                      dragSnapToOrigin
+                    <motion.div drag="x" dragConstraints={{ left: -70, right: 0 }} dragSnapToOrigin
                       onDragEnd={(_, info) => { if (info.offset.x < -40) removeItem(item.id); }}
                       className="relative z-10 flex items-center gap-3 p-3.5 bg-background dark:bg-card rounded-2xl"
                       style={{ touchAction: "pan-y" }}
@@ -296,32 +268,26 @@ function AddProductsPage({
                       <div className="h-11 w-11 rounded-xl bg-muted/60 border border-border/30 flex items-center justify-center text-xl flex-shrink-0">
                         {item.emoji}
                       </div>
-
                       <div className="flex-1 min-w-0" onClick={() => toggle(item.id)}>
                         <p className={`text-sm font-bold truncate ${item.selected ? "text-foreground" : "text-muted-foreground"}`}>
                           {item.name}
                         </p>
                         <p className="text-[10px] text-muted-foreground">{item.quantity}x</p>
                       </div>
-
                       <div className="flex items-center gap-1 flex-shrink-0">
-                        <motion.button
-                          whileTap={{ scale: 0.88 }}
+                        <motion.button whileTap={{ scale: 0.9 }}
                           onClick={() => toast({ description: `${item.name} bearbeiten` })}
-                          className="h-7 w-7 rounded-lg bg-muted/60 flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+                          className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
                         >
-                          <Pencil className="h-3 w-3" />
+                          <Pencil className="h-4 w-4" />
                         </motion.button>
-
-                        <motion.button
-                          whileTap={{ scale: 0.88 }}
+                        <motion.button whileTap={{ scale: 0.9 }}
                           onClick={() => toggle(item.id)}
-                          animate={{ scale: item.selected ? 1 : 0.85, opacity: item.selected ? 1 : 0.4 }}
-                          className={`h-7 w-7 rounded-full flex items-center justify-center ml-0.5 transition-colors ${
-                            item.selected ? "bg-primary" : "bg-muted border border-border"
+                          className={`p-2 rounded-lg transition-colors ${
+                            item.selected ? "hover:bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground opacity-40"
                           }`}
                         >
-                          <Check className="h-3.5 w-3.5 text-white" />
+                          <Check className="h-4 w-4" />
                         </motion.button>
                       </div>
                     </motion.div>
@@ -330,8 +296,7 @@ function AddProductsPage({
               </AnimatePresence>
 
               {items.length > 0 && items.length === MOCK_SCANNED_BASE.length && (
-                <motion.div
-                  initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                   className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/30 border border-border/30 mt-1"
                 >
                   <Sparkles className="h-3.5 w-3.5 text-primary flex-shrink-0" />
@@ -343,16 +308,21 @@ function AddProductsPage({
         </AnimatePresence>
       </div>
 
-      {/* ── Bottom CTA (static, never scrolls) ────────────────────────────── */}
+      {/*
+        ── 5. CTA button — flex-shrink-0, always at the bottom of the flex column.
+           It is NOT absolute/fixed — it's a real flex child that pushes the
+           scrollable area (#4) upward, so the list never goes behind it.
+           AnimatePresence slides it in from below when it first appears.
+      */}
       <AnimatePresence>
         {phase === "list" && selected.length > 0 && (
           <motion.div
-            initial={{ y: 100, opacity: 0 }}
+            initial={{ y: 80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
+            exit={{ y: 80, opacity: 0 }}
             transition={{ type: "spring", damping: 28, stiffness: 300 }}
-            // ── absolute instead of fixed so it stays inside the overlay ──
-            className="absolute bottom-0 left-0 right-0 px-5 pb-10 pt-3 bg-background/95 backdrop-blur-xl border-t border-border/30"
+            // flex-shrink-0 ensures this never collapses; pb-28 clears tab bar
+            className="flex-shrink-0 px-5 pt-3 pb-28 bg-background/95 backdrop-blur-xl border-t border-border/30"
           >
             <div className="flex justify-between items-center mb-2.5 px-0.5">
               <span className="text-xs text-muted-foreground">{selected.length} / {items.length} ausgewählt</span>
@@ -366,8 +336,7 @@ function AddProductsPage({
                 {items.every(it => it.selected) ? "Alle abwählen" : "Alle auswählen"}
               </button>
             </div>
-            <motion.button
-              whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
+            <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
               onClick={() => { onImport(selected); onBack(); }}
               className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
             >
@@ -390,6 +359,15 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddPage, setShowAddPage] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Reopen AddProductsPage when ScanPage sends us back with this flag
+  useEffect(() => {
+    if (location.state?.reopenAddProducts) {
+      setShowAddPage(true);
+      window.history.replaceState({}, "");
+    }
+  }, [location.state]);
 
   const markAsBought = (item: any) => {
     setProducts(prev => [...prev, { ...item, id: Date.now().toString(), status: "fresh" }]);
@@ -452,6 +430,7 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
   };
 
   const ORDER = ["Milchprodukte", "Backwaren", "Obst & Gemüse"];
+  const showFab = fabVisible && !showAddPage;
 
   return (
     <>
@@ -459,7 +438,6 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
         <AppHeader />
         <main className="container max-w-2xl mx-auto px-4 py-8">
 
-          {/* Header */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-2xl font-bold font-heading text-foreground">Mein Inventar</h1>
@@ -478,17 +456,13 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Suchen..."
-                value={searchQuery}
+              <input type="text" placeholder="Suchen..." value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-xl bg-card border border-border shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
               />
             </div>
           </div>
 
-          {/* Tabs */}
           <div className="flex p-1 bg-muted rounded-xl mb-4">
             {(["products", "shopping"] as const).map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
@@ -512,7 +486,6 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
             </motion.button>
           )}
 
-          {/* Content */}
           <AnimatePresence mode="wait">
             {activeTab === "products" ? (
               <motion.div key="products" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
@@ -523,8 +496,7 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
                     const CategoryIcon = items[0].categoryIcon;
                     return (
                       <div key={category} className="rounded-2xl border border-border/60 shadow-sm bg-[#EAF0ED] dark:bg-[#212A28] dark:border-white/10 overflow-hidden mb-3">
-                        <button
-                          onClick={() => setExpandedCategory(isExpanded ? null : category)}
+                        <button onClick={() => setExpandedCategory(isExpanded ? null : category)}
                           className={`w-full flex items-center justify-between p-4 transition-colors ${isExpanded ? "bg-primary/5" : "hover:bg-muted/50"}`}
                         >
                           <div className="flex items-center gap-3">
@@ -540,7 +512,6 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
                             <Plus className={`h-5 w-5 ${isExpanded ? "text-primary" : "text-muted-foreground"}`} />
                           </motion.div>
                         </button>
-
                         <AnimatePresence>
                           {isExpanded && (
                             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
@@ -552,22 +523,14 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
                                     .map(item => {
                                       const isMatch = searchQuery.length > 1 && item.name.toLowerCase().includes(searchQuery.toLowerCase());
                                       return (
-                                        <motion.div
-                                          key={item.id}
-                                          layout
-                                          initial={{ opacity: 0, scale: 0.96 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          exit={{ opacity: 0, scale: 0.95 }}
-                                          id={`prod-${item.id}`}
-                                          className="relative overflow-hidden rounded-xl mb-2"
+                                        <motion.div key={item.id} layout
+                                          initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                                          id={`prod-${item.id}`} className="relative overflow-hidden rounded-xl mb-2"
                                         >
                                           <div className="absolute inset-0 bg-destructive/10 dark:bg-red-900/20 flex items-center justify-end px-6 rounded-xl">
                                             <Trash2 className="h-5 w-5 text-destructive opacity-40" />
                                           </div>
-                                          <motion.div
-                                            drag="x"
-                                            dragConstraints={{ left: -70, right: 0 }}
-                                            dragSnapToOrigin
+                                          <motion.div drag="x" dragConstraints={{ left: -70, right: 0 }} dragSnapToOrigin
                                             onDragEnd={(_, info) => { if (info.offset.x < -40) deleteProduct(item.id); }}
                                             className={`relative z-10 flex items-center justify-between p-3 border-[3px] rounded-xl transition-colors ${
                                               isMatch ? "bg-card border-primary shadow-lg"
@@ -647,20 +610,13 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
           </AnimatePresence>
         </main>
 
-        {/* FAB */}
         <AnimatePresence>
-          {fabVisible && activeTab === "products" && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0, opacity: 0, y: 20 }}
+          {showFab && activeTab === "products" && (
+            <motion.div initial={{ scale: 0, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0, opacity: 0, y: 20 }}
               className="fixed bottom-24 right-6 z-[60] md:bottom-10 md:right-10"
             >
               <div className="relative w-16 h-16">
-                <motion.button
-                  onClick={() => navigate("/scan")}
-                  whileHover={{ scale: 1.12 }}
-                  whileTap={{ scale: 0.88 }}
+                <motion.button onClick={() => navigate("/scan")} whileHover={{ scale: 1.12 }} whileTap={{ scale: 0.88 }}
                   className="absolute -top-4 -right-4 z-10 h-9 w-9 rounded-full bg-card border-2 border-primary/30 text-primary shadow-md flex items-center justify-center"
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -669,10 +625,7 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
                     <line x1="7" y1="12" x2="17" y2="12" />
                   </svg>
                 </motion.button>
-                <motion.button
-                  onClick={() => setShowAddPage(true)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <motion.button onClick={() => setShowAddPage(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                   className="h-16 w-16 rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40 flex items-center justify-center"
                 >
                   <Camera className="h-7 w-7" />
@@ -680,11 +633,8 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
               </div>
             </motion.div>
           )}
-          {fabVisible && activeTab === "shopping" && (
-            <motion.div
-              initial={{ scale: 0, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0, opacity: 0, y: 20 }}
+          {showFab && activeTab === "shopping" && (
+            <motion.div initial={{ scale: 0, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0, opacity: 0, y: 20 }}
               className="fixed bottom-24 right-6 z-[60] md:bottom-10 md:right-10"
             >
               <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
@@ -703,7 +653,10 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
           <AddProductsPage
             onBack={() => setShowAddPage(false)}
             onImport={handleImport}
-            onGoBarcode={() => { setShowAddPage(false); navigate("/scan"); }}
+            onGoBarcode={() => {
+              setShowAddPage(false);
+              navigate("/scan", { state: { returnToAddProducts: true } });
+            }}
           />
         )}
       </AnimatePresence>

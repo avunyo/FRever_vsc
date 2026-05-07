@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BrowserMultiFormatReader, BarcodeFormat, DecodeHintType } from '@zxing/library';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Package, Trash2, Loader2, Keyboard, Scan, CameraOff, Search, AlertCircle, HelpCircle, X, ChevronLeft, Plus } from 'lucide-react';
+import {
+  Package, Trash2, Loader2, Keyboard, Scan, CameraOff,
+  Search, AlertCircle, HelpCircle, X, ChevronLeft, PackageCheck
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { fetchProductInfo } from '@/lib/foodApi';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+// ─── Live barcode scanner component ──────────────────────────────────────────
 function LiveBarcodeScanner({ onBarcodeDetected }) {
   const videoRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -50,6 +54,7 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
   return (
     <div className="w-full space-y-6">
       <div className="relative bg-card rounded-[32px] dark:bg-[#2B3836] border border-border/50 shadow-lg p-6">
+        {/* Idle state */}
         {!isScanning && (
           <div className="aspect-square flex flex-col items-center justify-center space-y-6 bg-muted/30 rounded-[24px] border-2 border-dashed border-border">
             <div className="p-6 bg-background rounded-3xl border border-border shadow-sm">
@@ -61,6 +66,7 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
           </div>
         )}
 
+        {/* Active camera */}
         <div
           style={{ display: isScanning ? 'block' : 'none', position: 'relative', width: '100%', aspectRatio: '1', borderRadius: '24px', overflow: 'hidden', background: '#000' }}
           className="ring-1 ring-white/10"
@@ -80,11 +86,7 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
                 <motion.div
                   animate={{ top: ['2%', '98%', '2%'] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  style={{
-                    position: 'absolute', left: 0, right: 0, height: 2,
-                    background: '#4ade80',
-                    boxShadow: '0 0 10px 2px rgba(74,222,128,0.7)',
-                  }}
+                  style={{ position: 'absolute', left: 0, right: 0, height: 2, background: '#4ade80', boxShadow: '0 0 10px 2px rgba(74,222,128,0.7)' }}
                 />
               </div>
             </div>
@@ -95,6 +97,7 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
         </div>
       </div>
 
+      {/* Manual barcode input */}
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Keyboard className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
@@ -117,6 +120,7 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
   );
 }
 
+// ─── Not-found info modal ─────────────────────────────────────────────────────
 function NotFoundInfo({ barcode, onClose }) {
   return (
     <motion.div
@@ -145,6 +149,7 @@ function NotFoundInfo({ barcode, onClose }) {
   );
 }
 
+// ─── ScanPage ─────────────────────────────────────────────────────────────────
 export default function ScanPage() {
   const [products, setProducts] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -152,6 +157,11 @@ export default function ScanPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  /*
+    If we came from AddProductsPage (via onGoBarcode), navigate back to
+    /inventory with state that tells InventoryPage to reopen AddProductsPage.
+    Otherwise just go back normally.
+  */
   const returnToAddProducts = location.state?.returnToAddProducts === true;
 
   const handleBack = () => {
@@ -170,7 +180,13 @@ export default function ScanPage() {
       if (productData) {
         setProducts(prev => [productData, ...prev]);
       } else {
-        setProducts(prev => [{ id: barcode + Date.now(), name: 'Produkt nicht gefunden', image: '', brand: 'EAN: ' + barcode, notFound: true }, ...prev]);
+        setProducts(prev => [{
+          id: barcode + Date.now(),
+          name: 'Produkt nicht gefunden',
+          image: '',
+          brand: 'EAN: ' + barcode,
+          notFound: true,
+        }, ...prev]);
       }
     } catch (e) {
       console.error(e);
@@ -179,10 +195,14 @@ export default function ScanPage() {
     }
   };
 
+  // Count only found products for the CTA label
+  const foundProducts = products.filter(p => !p.notFound);
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Шапка и сканер — фиксированы сверху */}
-      <div className="bg-card rounded-b-[40px] shadow-sm border-b border-border z-10">
+    <div className="min-h-screen bg-background flex flex-col overflow-hidden">
+
+      {/* ── Header + Scanner (static, never scrolls) ──────────────────────── */}
+      <div className="flex-shrink-0 bg-card rounded-b-[40px] shadow-sm border-b border-border">
         <div className="flex items-center px-5 pt-12 pb-2">
           <motion.button whileTap={{ scale: 0.88 }} onClick={handleBack}
             className="h-9 w-9 rounded-full bg-muted flex items-center justify-center mr-3 flex-shrink-0"
@@ -198,8 +218,8 @@ export default function ScanPage() {
         </div>
       </div>
 
-      {/* Список товаров — скроллируемая область */}
-      <div className="flex-1 overflow-y-auto px-6 pt-6 pb-32">
+      {/* ── Scanned list (scrollable) ──────────────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto overscroll-contain px-6 pt-6 pb-36">
         <div className="flex justify-between items-end mb-6">
           <h2 className="text-2xl font-black text-foreground tracking-tight uppercase">Gescannt</h2>
           {products.length > 0 && (
@@ -228,9 +248,13 @@ export default function ScanPage() {
               </motion.div>
             ) : products.map((item, index) => (
               <motion.div key={item.id + index} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                className={`border p-4 rounded-[24px] shadow-sm flex items-center gap-4 ${item.notFound ? 'bg-destructive/5 border-destructive/30' : 'bg-card border-border hover:border-primary/40'}`}
+                className={`border p-4 rounded-[24px] shadow-sm flex items-center gap-4 ${
+                  item.notFound ? 'bg-destructive/5 border-destructive/30' : 'bg-card border-border hover:border-primary/40'
+                }`}
               >
-                <div className={`w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border ${item.notFound ? 'bg-destructive/10 border-destructive/20' : 'bg-muted/30 border-border'}`}>
+                <div className={`w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border ${
+                  item.notFound ? 'bg-destructive/10 border-destructive/20' : 'bg-muted/30 border-border'
+                }`}>
                   {item.image
                     ? <img src={item.image} alt="" className="w-full h-full object-contain p-1" />
                     : item.notFound
@@ -239,15 +263,19 @@ export default function ScanPage() {
                   }
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className={`font-bold truncate text-sm leading-tight ${item.notFound ? 'text-destructive' : 'text-foreground'}`}>{item.name}</h4>
+                  <h4 className={`font-bold truncate text-sm leading-tight ${item.notFound ? 'text-destructive' : 'text-foreground'}`}>
+                    {item.name}
+                  </h4>
                   <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{item.brand}</p>
                 </div>
-                {item.notFound && (
+                {item.notFound ? (
                   <button onClick={() => setInfoBarcode(item.id)}
                     className="flex-shrink-0 w-8 h-8 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center hover:bg-destructive/20"
                   >
                     <HelpCircle className="w-4 h-4 text-destructive/70" />
                   </button>
+                ) : (
+                  <div className="text-[9px] font-mono text-muted-foreground/30 rotate-90 flex-shrink-0">{item.id}</div>
                 )}
               </motion.div>
             ))}
@@ -255,23 +283,32 @@ export default function ScanPage() {
         </div>
       </div>
 
-      {/* ФИКСИРОВАННАЯ КНОПКА СНИЗУ */}
-      {products.length > 0 && (
-        <div className="fixed bottom-24 left-0 right-0 px-6 z-20">
-          <motion.div initial={{ y: 100 }} animate={{ y: 0 }}>
-            <Button 
-              className="w-full h-16 rounded-[24px] bg-primary text-primary-foreground font-black text-lg shadow-[0_10px_40px_rgba(0,0,0,0.3)] flex items-center justify-center gap-3"
-              onClick={() => {
-                // Логика добавления в инвентарь
-                handleBack();
-              }}
+      {/*
+        ── CTA button — fixed, raised above tab bar (bottom-24 ≈ 96px).
+           Only shows when there are found (non-error) products.
+           If opened from AddProductsPage, tapping it goes back there.
+      */}
+      <AnimatePresence>
+        {foundProducts.length > 0 && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+            className="fixed bottom-24 left-0 right-0 px-5 z-30"
+          >
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleBack}
+              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
             >
-              <Plus className="w-6 h-6" />
-              {products.length} Produkte ins Inventar
-            </Button>
+              <PackageCheck className="w-5 h-5" />
+              {foundProducts.length} Produkte ins Inventar
+            </motion.button>
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {infoBarcode && <NotFoundInfo barcode={infoBarcode} onClose={() => setInfoBarcode(null)} />}
