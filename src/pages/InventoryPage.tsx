@@ -64,7 +64,6 @@ function AddProductsPage({
   const scanSessionRef = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Lock body scroll
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -106,7 +105,7 @@ function AddProductsPage({
 
   const actions = [
     {
-      icon: <Barcode className="h-5 w-5" />,
+      icon: <Barcode className="h-4 w-4" />,
       label: "Barcode\nscannen",
       color: "text-primary",
       bg: "bg-primary/10 border-primary/20",
@@ -114,7 +113,7 @@ function AddProductsPage({
       onClick: onGoBarcode,
     },
     {
-      icon: <Camera className="h-5 w-5" />,
+      icon: <Camera className="h-4 w-4" />,
       label: "Foto\nhochladen",
       color: "text-sky-500",
       bg: "bg-sky-500/10 border-sky-500/20",
@@ -122,7 +121,7 @@ function AddProductsPage({
       onClick: () => fileInputRef.current?.click(),
     },
     {
-      icon: <UserSearch className="h-5 w-5" />,
+      icon: <UserSearch className="h-4 w-4" />,
       label: "KI\nerkennen",
       color: "text-violet-500",
       bg: "bg-violet-500/10 border-violet-500/20",
@@ -130,7 +129,7 @@ function AddProductsPage({
       onClick: startScan,
     },
     {
-      icon: <Plus className="h-5 w-5" />,
+      icon: <Plus className="h-4 w-4" />,
       label: "Manuell\nhinzufügen",
       color: "text-orange-500",
       bg: "bg-orange-500/10 border-orange-500/20",
@@ -145,40 +144,40 @@ function AddProductsPage({
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ type: "spring", damping: 32, stiffness: 310 }}
-      // ── Root: fixed fullscreen, flex column — children stack vertically ──
       className="fixed inset-0 z-40 bg-background flex flex-col overflow-hidden"
     >
-      {/* ── 1. Header — never scrolls ─────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center gap-3 px-5 pt-20 pb-5 border-b border-border/40 bg-background/95 backdrop-blur-sm">
+      {/* ── 1. Header — compact, moved up ─────────────────────────────────── */}
+      <div className="flex-shrink-0 flex items-center gap-2.5 px-4 pt-16 pb-3 border-b border-border/40 bg-background/95 backdrop-blur-sm">
         <motion.button whileTap={{ scale: 0.88 }} onClick={onBack}
-          className="h-9 w-9 rounded-full bg-muted flex items-center justify-center flex-shrink-0"
+          className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0"
         >
-          <ChevronLeft className="h-5 w-5 text-foreground" />
+          <ChevronLeft className="h-4 w-4 text-foreground" />
         </motion.button>
         <div className="flex-1 min-w-0">
-          <h1 className="font-black text-lg tracking-tight text-foreground leading-none">Produkte hinzufügen</h1>
-          <p className="text-[11px] text-muted-foreground mt-1">Wähle eine Methode</p>
+          {/* Smaller title */}
+          <h1 className="font-black text-base tracking-tight text-foreground leading-none">Produkte hinzufügen</h1>
+          <p className="text-[10px] text-muted-foreground mt-0.5">Wähle eine Methode</p>
         </div>
       </div>
 
-      {/* ── 2. Action buttons — never scrolls ─────────────────────────────── */}
-      <div className="flex-shrink-0 px-5 pt-5 pb-4 grid grid-cols-4 gap-2">
+      {/* ── 2. Action buttons — smaller, closer to header ─────────────────── */}
+      <div className="flex-shrink-0 px-4 pt-3 pb-3 grid grid-cols-4 gap-1.5">
         {actions.map((action, idx) => (
           <motion.button key={idx} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.93 }}
             onClick={action.onClick}
-            className={`flex flex-col items-center gap-2 py-3.5 px-1 rounded-2xl border transition-all ${action.bg}`}
+            className={`flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-xl border transition-all ${action.bg}`}
           >
-            <div className={`h-9 w-9 rounded-xl flex items-center justify-center ${action.iconBg} ${action.color}`}>
+            {/* Smaller icon container */}
+            <div className={`h-7 w-7 rounded-lg flex items-center justify-center ${action.iconBg} ${action.color}`}>
               {action.icon}
             </div>
-            <span className={`text-[9px] font-bold text-center leading-tight ${action.color}`} style={{ whiteSpace: "pre-line" }}>
+            <span className={`text-[8px] font-bold text-center leading-tight ${action.color}`} style={{ whiteSpace: "pre-line" }}>
               {action.label}
             </span>
           </motion.button>
         ))}
       </div>
 
-      {/* No capture attr → shows Gallery / Camera picker on mobile */}
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
         onChange={e => {
           if (!e.target.files?.length) return;
@@ -188,29 +187,24 @@ function AddProductsPage({
         }}
       />
 
-      {/* ── 3. Divider — never scrolls ────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center gap-3 px-5 mb-2">
+      {/* ── 3. Divider ────────────────────────────────────────────────────── */}
+      <div className="flex-shrink-0 flex items-center gap-3 px-4 mb-2">
         <div className="flex-1 h-px bg-border/50" />
-        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Erkannte Produkte</span>
+        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Erkannte Produkte</span>
         <div className="flex-1 h-px bg-border/50" />
       </div>
 
-      {/*
-        ── 4. Scrollable list — flex-1 means it takes ALL remaining space
-           between the divider and the CTA button below.
-           overscroll-contain keeps scroll inside this element.
-           pb-4 just adds a little breathing room at the bottom of the list.
-      */}
-      <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-4">
+      {/* ── 4. Scrollable list ────────────────────────────────────────────── */}
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-3">
         <AnimatePresence mode="wait">
           {phase === "idle" && (
             <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center py-16 gap-3"
+              className="flex flex-col items-center justify-center py-12 gap-3"
             >
-              <div className="h-14 w-14 rounded-2xl bg-muted/50 border border-border/40 flex items-center justify-center">
-                <PackageCheck className="h-7 w-7 text-muted-foreground/40" />
+              <div className="h-12 w-12 rounded-2xl bg-muted/50 border border-border/40 flex items-center justify-center">
+                <PackageCheck className="h-6 w-6 text-muted-foreground/40" />
               </div>
-              <p className="text-sm text-muted-foreground text-center leading-relaxed">
+              <p className="text-xs text-muted-foreground text-center leading-relaxed">
                 Wähle oben eine Methode<br />um Produkte zu scannen
               </p>
             </motion.div>
@@ -218,76 +212,77 @@ function AddProductsPage({
 
           {phase === "loading" && (
             <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="flex flex-col items-center justify-center py-16 gap-5"
+              className="flex flex-col items-center justify-center py-12 gap-4"
             >
               <div className="relative">
                 <motion.div animate={{ scale: [1, 1.5, 1], opacity: [0.1, 0.2, 0.1] }}
                   transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute rounded-full bg-primary" style={{ inset: -18 }}
+                  className="absolute rounded-full bg-primary" style={{ inset: -16 }}
                 />
                 <motion.div animate={{ scale: [1, 1.07, 1] }}
                   transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-                  className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/25 flex items-center justify-center"
+                  className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/25 flex items-center justify-center"
                 >
-                  <ReceiptText className="h-7 w-7 text-primary" />
+                  <ReceiptText className="h-6 w-6 text-primary" />
                 </motion.div>
               </div>
               <div className="flex gap-1.5">
                 {[0, 1, 2].map(i => (
-                  <motion.div key={i} className="h-2 w-2 rounded-full bg-primary"
-                    animate={{ y: [0, -6, 0], opacity: [0.3, 1, 0.3] }}
+                  <motion.div key={i} className="h-1.5 w-1.5 rounded-full bg-primary"
+                    animate={{ y: [0, -5, 0], opacity: [0.3, 1, 0.3] }}
                     transition={{ duration: 0.75, repeat: Infinity, delay: i * 0.16 }}
                   />
                 ))}
               </div>
-              <p className="text-sm text-muted-foreground font-medium">Wird analysiert...</p>
+              <p className="text-xs text-muted-foreground font-medium">Wird analysiert...</p>
             </motion.div>
           )}
 
           {phase === "list" && (
-            <motion.div key="list" className="space-y-2 pt-1">
+            <motion.div key="list" className="space-y-1.5 pt-0.5">
               <AnimatePresence initial={false}>
                 {items.map(item => (
                   <motion.div key={item.id} layout
-                    initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                    initial={{ opacity: 0, y: 8, scale: 0.97 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.18 } }}
-                    transition={{ duration: 0.22 }}
-                    className={`relative overflow-hidden rounded-2xl border-2 transition-colors ${
+                    transition={{ duration: 0.2 }}
+                    className={`relative overflow-hidden rounded-xl border-2 transition-colors ${
                       item.selected ? "bg-card border-primary/30" : "bg-muted/20 border-transparent opacity-50"
                     }`}
                   >
-                    <div className="absolute inset-0 bg-destructive/10 dark:bg-red-900/20 flex items-center justify-end px-5 rounded-2xl">
-                      <Trash2 className="h-4 w-4 text-destructive/60" />
+                    <div className="absolute inset-0 bg-destructive/10 dark:bg-red-900/20 flex items-center justify-end px-4 rounded-xl">
+                      <Trash2 className="h-3.5 w-3.5 text-destructive/60" />
                     </div>
                     <motion.div drag="x" dragConstraints={{ left: -70, right: 0 }} dragSnapToOrigin
                       onDragEnd={(_, info) => { if (info.offset.x < -40) removeItem(item.id); }}
-                      className="relative z-10 flex items-center gap-3 p-3.5 bg-background dark:bg-card rounded-2xl"
+                      className="relative z-10 flex items-center gap-2.5 p-2.5 bg-background dark:bg-card rounded-xl"
                       style={{ touchAction: "pan-y" }}
                     >
-                      <div className="h-11 w-11 rounded-xl bg-muted/60 border border-border/30 flex items-center justify-center text-xl flex-shrink-0">
+                      {/* Smaller emoji box */}
+                      <div className="h-9 w-9 rounded-lg bg-muted/60 border border-border/30 flex items-center justify-center text-lg flex-shrink-0">
                         {item.emoji}
                       </div>
                       <div className="flex-1 min-w-0" onClick={() => toggle(item.id)}>
-                        <p className={`text-sm font-bold truncate ${item.selected ? "text-foreground" : "text-muted-foreground"}`}>
+                        <p className={`text-xs font-bold truncate ${item.selected ? "text-foreground" : "text-muted-foreground"}`}>
                           {item.name}
                         </p>
-                        <p className="text-[10px] text-muted-foreground">{item.quantity}x</p>
+                        <p className="text-[9px] text-muted-foreground">{item.quantity}x</p>
                       </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
+                      <div className="flex items-center gap-0.5 flex-shrink-0">
                         <motion.button whileTap={{ scale: 0.9 }}
                           onClick={() => toast({ description: `${item.name} bearbeiten` })}
-                          className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="h-3 w-3" />
                         </motion.button>
                         <motion.button whileTap={{ scale: 0.9 }}
                           onClick={() => toggle(item.id)}
-                          className={`p-2 rounded-lg transition-colors ${
+                          className={`p-1.5 rounded-lg transition-colors ${
                             item.selected ? "hover:bg-primary/10 text-primary" : "hover:bg-muted text-muted-foreground opacity-40"
                           }`}
                         >
-                          <Check className="h-4 w-4" />
+                          <Check className="h-3 w-3" />
                         </motion.button>
                       </div>
                     </motion.div>
@@ -297,10 +292,10 @@ function AddProductsPage({
 
               {items.length > 0 && items.length === MOCK_SCANNED_BASE.length && (
                 <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-muted/30 border border-border/30 mt-1"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/30 border border-border/30 mt-1"
                 >
-                  <Sparkles className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                  <p className="text-[10px] text-muted-foreground">Tippe um auszuwählen · Wische links zum Löschen</p>
+                  <Sparkles className="h-3 w-3 text-primary flex-shrink-0" />
+                  <p className="text-[9px] text-muted-foreground">Tippe um auszuwählen · Wische links zum Löschen</p>
                 </motion.div>
               )}
             </motion.div>
@@ -308,12 +303,7 @@ function AddProductsPage({
         </AnimatePresence>
       </div>
 
-      {/*
-        ── 5. CTA button — flex-shrink-0, always at the bottom of the flex column.
-           It is NOT absolute/fixed — it's a real flex child that pushes the
-           scrollable area (#4) upward, so the list never goes behind it.
-           AnimatePresence slides it in from below when it first appears.
-      */}
+      {/* ── 5. CTA button — slightly smaller, pushed a bit lower ─────────── */}
       <AnimatePresence>
         {phase === "list" && selected.length > 0 && (
           <motion.div
@@ -321,26 +311,27 @@ function AddProductsPage({
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
             transition={{ type: "spring", damping: 28, stiffness: 300 }}
-            // flex-shrink-0 ensures this never collapses; pb-28 clears tab bar
-            className="flex-shrink-0 px-5 pt-3 pb-28 bg-background/95 backdrop-blur-xl border-t border-border/30"
+            // pb-24 pushes button a bit lower (more breathing room above tab bar)
+            className="flex-shrink-0 px-4 pt-2 pb-24 bg-background/95 backdrop-blur-xl border-t border-border/30"
           >
-            <div className="flex justify-between items-center mb-2.5 px-0.5">
-              <span className="text-xs text-muted-foreground">{selected.length} / {items.length} ausgewählt</span>
+            <div className="flex justify-between items-center mb-2 px-0.5">
+              <span className="text-[10px] text-muted-foreground">{selected.length} / {items.length} ausgewählt</span>
               <button
                 onClick={() => {
                   const allSel = items.every(it => it.selected);
                   setItems(prev => prev.map(it => ({ ...it, selected: !allSel })));
                 }}
-                className="text-[11px] font-bold text-muted-foreground hover:text-foreground transition-colors"
+                className="text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors"
               >
                 {items.every(it => it.selected) ? "Alle abwählen" : "Alle auswählen"}
               </button>
             </div>
+            {/* Slightly smaller button: h-12 instead of h-14 */}
             <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
               onClick={() => { onImport(selected); onBack(); }}
-              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
+              className="w-full h-12 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
             >
-              <PackageCheck className="h-5 w-5" />
+              <PackageCheck className="h-4 w-4" />
               {selected.length} Produkte ins Inventar
             </motion.button>
           </motion.div>
@@ -361,7 +352,6 @@ const InventoryPage = ({ shoppingItems: initialShoppingItems = [] }: { shoppingI
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Reopen AddProductsPage when ScanPage sends us back with this flag
   useEffect(() => {
     if (location.state?.reopenAddProducts) {
       setShowAddPage(true);
