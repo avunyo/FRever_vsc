@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { fetchProductInfo } from '@/lib/foodApi';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-// ─── Live barcode scanner component ──────────────────────────────────────────
+// ─── Live barcode scanner ─────────────────────────────────────────────────────
 function LiveBarcodeScanner({ onBarcodeDetected }) {
   const videoRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -52,23 +52,29 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
   }, [isScanning]);
 
   return (
-    <div className="w-full space-y-6">
-      <div className="relative bg-card rounded-[32px] dark:bg-[#2B3836] border border-border/50 shadow-lg p-6">
-        {/* Idle state */}
+    <div className="w-full space-y-4">
+      {/* Camera box */}
+      <div className="relative bg-card/50 rounded-3xl border border-border/40 shadow-sm p-4">
         {!isScanning && (
-          <div className="aspect-square flex flex-col items-center justify-center space-y-6 bg-muted/30 rounded-[24px] border-2 border-dashed border-border">
-            <div className="p-6 bg-background rounded-3xl border border-border shadow-sm">
-              <Scan className="w-12 h-12 text-primary" />
+          <div className="py-10 flex flex-col items-center justify-center gap-5 bg-muted/20 rounded-3xl border-2 border-dashed border-border/50">
+            <div className="p-5 bg-card rounded-3xl border border-border/60 shadow-sm">
+              <Scan className="w-10 h-10 text-primary" />
             </div>
-            <Button onClick={() => setIsScanning(true)} className="rounded-full px-8 h-12 bg-primary text-primary-foreground font-bold">
+            <Button
+              onClick={() => setIsScanning(true)}
+              className="rounded-2xl px-8 h-12 bg-primary text-primary-foreground font-bold text-sm"
+            >
               Kamera starten
             </Button>
           </div>
         )}
 
-        {/* Active camera */}
         <div
-          style={{ display: isScanning ? 'block' : 'none', position: 'relative', width: '100%', aspectRatio: '1', borderRadius: '24px', overflow: 'hidden', background: '#000' }}
+          style={{
+            display: isScanning ? 'block' : 'none',
+            position: 'relative', width: '100%', aspectRatio: '1',
+            borderRadius: '24px', overflow: 'hidden', background: '#000'
+          }}
           className="ring-1 ring-white/10"
         >
           <video ref={videoRef} style={{ width: '100%', height: '100%', objectFit: 'cover' }} autoPlay muted playsInline />
@@ -86,18 +92,24 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
                 <motion.div
                   animate={{ top: ['2%', '98%', '2%'] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  style={{ position: 'absolute', left: 0, right: 0, height: 2, background: '#4ade80', boxShadow: '0 0 10px 2px rgba(74,222,128,0.7)' }}
+                  style={{
+                    position: 'absolute', left: 0, right: 0, height: 2,
+                    background: '#4ade80', boxShadow: '0 0 10px 2px rgba(74,222,128,0.7)',
+                  }}
                 />
               </div>
             </div>
           )}
-          <button onClick={stopScanner} className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 bg-black/80 text-white border border-white/20 rounded-full px-6 py-2 text-xs font-bold flex items-center gap-2 backdrop-blur-xl">
+          <button
+            onClick={stopScanner}
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 bg-black/80 text-white border border-white/20 rounded-full px-6 py-2 text-xs font-bold flex items-center gap-2 backdrop-blur-xl"
+          >
             <CameraOff className="w-4 h-4" /> Beenden
           </button>
         </div>
       </div>
 
-      {/* Manual barcode input */}
+      {/* Manual input */}
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Keyboard className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
@@ -120,7 +132,7 @@ function LiveBarcodeScanner({ onBarcodeDetected }) {
   );
 }
 
-// ─── Not-found info modal ─────────────────────────────────────────────────────
+// ─── Not-found modal ──────────────────────────────────────────────────────────
 function NotFoundInfo({ barcode, onClose }) {
   return (
     <motion.div
@@ -132,7 +144,9 @@ function NotFoundInfo({ barcode, onClose }) {
       <div className="bg-card border border-border rounded-[32px] p-6 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-start mb-4">
           <div className="p-3 bg-destructive/10 rounded-2xl"><AlertCircle className="w-6 h-6 text-destructive" /></div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-colors"><X className="w-4 h-4 text-muted-foreground" /></button>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-colors">
+            <X className="w-4 h-4 text-muted-foreground" />
+          </button>
         </div>
         <h3 className="font-black text-foreground text-lg mb-2">Produkt nicht gefunden</h3>
         <p className="text-muted-foreground text-sm mb-4">
@@ -157,19 +171,18 @@ export default function ScanPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  /*
-    If we came from AddProductsPage (via onGoBarcode), navigate back to
-    /inventory with state that tells InventoryPage to reopen AddProductsPage.
-    Otherwise just go back normally.
-  */
   const returnToAddProducts = location.state?.returnToAddProducts === true;
 
-  const handleBack = () => {
-    if (returnToAddProducts) {
-      navigate('/inventory', { state: { reopenAddProducts: true } });
-    } else {
-      navigate(-1);
-    }
+  // ── Back arrow: always goes back in history ────────────────────────────────
+  const handleBack = () => navigate(-1);
+
+  // ── "X Produkte ins Inventar" CTA: navigates to /inventory ────────────────
+  // If came from AddProductsPage (returnToAddProducts=true) → reopen that sheet
+  // Otherwise → go to inventory normally
+  const handleAddToInventory = () => {
+    navigate('/inventory', {
+      state: returnToAddProducts ? { reopenAddProducts: true } : undefined,
+    });
   };
 
   const handleBarcodeDetected = async (barcode) => {
@@ -195,117 +208,136 @@ export default function ScanPage() {
     }
   };
 
-  // Count only found products for the CTA label
   const foundProducts = products.filter(p => !p.notFound);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col">
 
-      {/* ── Header + Scanner (static, never scrolls) ──────────────────────── */}
-      <div className="flex-shrink-0 bg-card rounded-b-[40px] shadow-sm border-b border-border">
-        <div className="flex items-center px-5 pt-12 pb-2">
+      {/* ── Header ──────────────────────────────────────────────────────────── */}
+      <div className="bg-card/80 backdrop-blur-xl border-b border-border/40 sticky top-0 z-10 flex-shrink-0">
+        <div className="max-w-md mx-auto px-5 pt-4 pb-2 md:pt-2 md:pb-3 flex items-center gap-3">
           <motion.button whileTap={{ scale: 0.88 }} onClick={handleBack}
-            className="h-9 w-9 rounded-full bg-muted flex items-center justify-center mr-3 flex-shrink-0"
+            className="h-9 w-9 rounded-2xl bg-muted/80 flex items-center justify-center flex-shrink-0"
           >
             <ChevronLeft className="h-5 w-5 text-foreground" />
           </motion.button>
-          <h1 className="text-xl font-black italic uppercase text-primary tracking-tighter flex-1 text-center pr-9">
-            Frever Scanner
-          </h1>
-        </div>
-        <div className="px-6 pb-6 pt-2">
-          <LiveBarcodeScanner onBarcodeDetected={handleBarcodeDetected} />
-        </div>
-      </div>
-
-      {/* ── Scanned list (scrollable) ──────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto overscroll-contain px-6 pt-6 pb-36">
-        <div className="flex justify-between items-end mb-6">
-          <h2 className="text-2xl font-black text-foreground tracking-tight uppercase">Gescannt</h2>
-          {products.length > 0 && (
-            <Button variant="ghost" size="sm" onClick={() => setProducts([])}
-              className="text-destructive text-[10px] font-bold uppercase tracking-widest hover:bg-destructive/10"
-            >
-              <Trash2 className="w-3 h-3 mr-1" /> Löschen
-            </Button>
-          )}
-        </div>
-
-        {isProcessing && (
-          <div className="flex items-center justify-center py-4 gap-2 text-muted-foreground italic text-sm">
-            <Loader2 className="animate-spin w-4 h-4" /> Wird gesucht...
+          <div>
+            <h1 className="text-lg font-black italic uppercase tracking-tight leading-none">
+              <span className="text-foreground">Frever</span>{" "}
+              <span className="text-primary">Scanner</span>
+            </h1>
+            <p className="text-[11px] text-muted-foreground mt-0.5 font-medium">Barcode scannen oder eingeben</p>
           </div>
-        )}
-
-        <div className="space-y-4">
-          <AnimatePresence initial={false}>
-            {products.length === 0 ? (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="text-center py-12 border-2 border-dashed border-border rounded-[32px] bg-card/50"
-              >
-                <Package className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
-                <p className="text-muted-foreground text-xs font-medium">Noch keine Produkte</p>
-              </motion.div>
-            ) : products.map((item, index) => (
-              <motion.div key={item.id + index} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                className={`border p-4 rounded-[24px] shadow-sm flex items-center gap-4 ${
-                  item.notFound ? 'bg-destructive/5 border-destructive/30' : 'bg-card border-border hover:border-primary/40'
-                }`}
-              >
-                <div className={`w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border ${
-                  item.notFound ? 'bg-destructive/10 border-destructive/20' : 'bg-muted/30 border-border'
-                }`}>
-                  {item.image
-                    ? <img src={item.image} alt="" className="w-full h-full object-contain p-1" />
-                    : item.notFound
-                      ? <AlertCircle className="text-destructive/50 w-6 h-6" />
-                      : <Package className="text-muted-foreground/30 w-6 h-6" />
-                  }
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className={`font-bold truncate text-sm leading-tight ${item.notFound ? 'text-destructive' : 'text-foreground'}`}>
-                    {item.name}
-                  </h4>
-                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{item.brand}</p>
-                </div>
-                {item.notFound ? (
-                  <button onClick={() => setInfoBarcode(item.id)}
-                    className="flex-shrink-0 w-8 h-8 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center hover:bg-destructive/20"
-                  >
-                    <HelpCircle className="w-4 h-4 text-destructive/70" />
-                  </button>
-                ) : (
-                  <div className="text-[9px] font-mono text-muted-foreground/30 rotate-90 flex-shrink-0">{item.id}</div>
-                )}
-              </motion.div>
-            ))}
-          </AnimatePresence>
         </div>
       </div>
 
-      {/*
-        ── CTA button — fixed, raised above tab bar (bottom-24 ≈ 96px).
-           Only shows when there are found (non-error) products.
-           If opened from AddProductsPage, tapping it goes back there.
-      */}
+      {/* ── Scrollable body ─────────────────────────────────────────────────── */}
+      <div className="flex-1 pb-28">
+        <div className="max-w-md mx-auto">
+
+          {/* Scanner section — no harsh border, just padding */}
+          <div className="px-5 pt-5 pb-2">
+            <LiveBarcodeScanner onBarcodeDetected={handleBarcodeDetected} />
+          </div>
+
+          {/* Scanned list */}
+          <div className="px-5 pt-5 pb-4">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Erkannte Produkte</p>
+                <h2 className="text-xl font-black text-foreground tracking-tight">Gescannt</h2>
+              </div>
+              {products.length > 0 && (
+                <Button variant="ghost" size="sm" onClick={() => setProducts([])}
+                  className="text-destructive text-[10px] font-bold uppercase tracking-widest hover:bg-destructive/10 rounded-xl"
+                >
+                  <Trash2 className="w-3 h-3 mr-1" /> Löschen
+                </Button>
+              )}
+            </div>
+
+            {isProcessing && (
+              <div className="flex items-center justify-center py-4 gap-2 text-muted-foreground italic text-sm">
+                <Loader2 className="animate-spin w-4 h-4" /> Wird gesucht...
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <AnimatePresence initial={false}>
+                {products.length === 0 ? (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    className="text-center py-14 border-2 border-dashed border-border/50 rounded-3xl bg-card/30"
+                  >
+                    <Package className="w-10 h-10 text-muted-foreground/30 mx-auto mb-2" />
+                    <p className="text-muted-foreground text-xs font-medium">Noch keine Produkte</p>
+                  </motion.div>
+                ) : products.map((item, index) => (
+                  <motion.div
+                    key={item.id + index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`border p-4 rounded-3xl shadow-sm flex items-center gap-4 ${
+                      item.notFound
+                        ? 'bg-destructive/5 border-destructive/30'
+                        : 'bg-card border-border/60 hover:border-primary/40'
+                    }`}
+                  >
+                    <div className={`w-14 h-14 rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center border ${
+                      item.notFound ? 'bg-destructive/10 border-destructive/20' : 'bg-muted/40 border-border/40'
+                    }`}>
+                      {item.image
+                        ? <img src={item.image} alt="" className="w-full h-full object-contain p-1" />
+                        : item.notFound
+                          ? <AlertCircle className="text-destructive/50 w-5 h-5" />
+                          : <Package className="text-muted-foreground/30 w-5 h-5" />
+                      }
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className={`font-bold truncate text-sm leading-tight ${item.notFound ? 'text-destructive' : 'text-foreground'}`}>
+                        {item.name}
+                      </h4>
+                      <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mt-0.5">{item.brand}</p>
+                    </div>
+                    {item.notFound ? (
+                      <button
+                        onClick={() => setInfoBarcode(item.id)}
+                        className="flex-shrink-0 w-8 h-8 rounded-2xl bg-destructive/10 border border-destructive/20 flex items-center justify-center hover:bg-destructive/20 transition-colors"
+                      >
+                        <HelpCircle className="w-4 h-4 text-destructive/70" />
+                      </button>
+                    ) : (
+                      <div className="text-[9px] font-mono text-muted-foreground/20 rotate-90 flex-shrink-0">{item.id}</div>
+                    )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Fixed CTA at bottom ──────────────────────────────────────────────── */}
       <AnimatePresence>
         {foundProducts.length > 0 && (
           <motion.div
-            initial={{ y: 100, opacity: 0 }}
+            initial={{ y: 80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
+            exit={{ y: 80, opacity: 0 }}
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            className="fixed bottom-24 left-0 right-0 px-5 z-30"
+            className="fixed bottom-0 left-0 right-0 z-20 px-5 pt-3 pb-10 bg-background/95 backdrop-blur-xl border-t border-border/30"
           >
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleBack}
-              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
-            >
-              <PackageCheck className="w-5 h-5" />
-              {foundProducts.length} Produkte ins Inventar
-            </motion.button>
+            <div className="max-w-md mx-auto">
+              <motion.button
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleAddToInventory}
+                className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
+              >
+                <PackageCheck className="w-5 h-5" />
+                {foundProducts.length} Produkte ins Inventar
+              </motion.button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
