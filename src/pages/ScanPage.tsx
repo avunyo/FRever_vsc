@@ -335,7 +335,7 @@ export default function ScanPage() {
                 className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
               >
                 <PackageCheck className="w-5 h-5" />
-                {foundProducts.length} Produkte ins Inventar
+                {foundProducts.length} Produkt(e) ins Inventar
               </motion.button>
             </div>
           </motion.div>

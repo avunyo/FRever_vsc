@@ -147,18 +147,24 @@ function AddProductsPage({
       className="fixed inset-0 z-40 bg-background flex flex-col overflow-hidden"
     >
       {/* ── 1. Header — compact, moved up ─────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center gap-2.5 px-4 pt-16 pb-3 border-b border-border/40 bg-background/95 backdrop-blur-sm">
-        <motion.button whileTap={{ scale: 0.88 }} onClick={onBack}
-          className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0"
-        >
-          <ChevronLeft className="h-4 w-4 text-foreground" />
-        </motion.button>
-        <div className="flex-1 min-w-0">
-          {/* Smaller title */}
-          <h1 className="font-black text-base tracking-tight text-foreground leading-none">Produkte hinzufügen</h1>
-          <p className="text-[10px] text-muted-foreground mt-0.5">Wähle eine Methode</p>
-        </div>
-      </div>
+      <div className="flex-shrink-0 flex items-center gap-2.5 px-4 mt-16 pt-5 pb-3 border-b border-border/40 bg-background/95 backdrop-blur-sm">
+  <motion.button 
+    whileTap={{ scale: 0.88 }} 
+    onClick={onBack}
+    className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0"
+  >
+    <ChevronLeft className="h-4 w-4 text-foreground" />
+  </motion.button>
+  
+  <div className="flex-1 min-w-0">
+    <h1 className="font-black text-base tracking-tight text-foreground leading-none">
+      Produkte hinzufügen
+    </h1>
+    <p className="text-[10px] text-muted-foreground mt-0.5">
+      Wähle eine Methode
+    </p>
+  </div>
+</div>
 
       {/* ── 2. Action buttons — smaller, closer to header ─────────────────── */}
       <div className="flex-shrink-0 px-4 pt-3 pb-3 grid grid-cols-4 gap-1.5">
@@ -295,7 +301,7 @@ function AddProductsPage({
                   className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/30 border border-border/30 mt-1"
                 >
                   <Sparkles className="h-3 w-3 text-primary flex-shrink-0" />
-                  <p className="text-[9px] text-muted-foreground">Tippe um auszuwählen · Wische links zum Löschen</p>
+                  <p className="text-[9px] text-muted-foreground">Tippe, um auszuwählen · Wische nach links zum Löschen</p>
                 </motion.div>
               )}
             </motion.div>
@@ -332,7 +338,7 @@ function AddProductsPage({
               className="w-full h-12 rounded-2xl bg-primary text-primary-foreground font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
             >
               <PackageCheck className="h-4 w-4" />
-              {selected.length} Produkte ins Inventar
+              {selected.length} Produkt(e) ins Inventar
             </motion.button>
           </motion.div>
         )}
