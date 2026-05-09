@@ -303,7 +303,6 @@ const SettingsPage = () => {
                         <li className="flex items-start gap-2">✨ <span>Smart-Sync Inventar</span></li>
                         <li className="flex items-start gap-2 text-primary">✨ <span>Finanzberichte</span></li>
                         <li className="flex items-start gap-2">✨ <span>Preisvergleich</span></li>
-                        <li className="flex items-start gap-2 text-primary">✨ <span>KI-IntelliScan</span></li>
                         <li className="flex items-start gap-2">✨ <span>Alle Rezept-Ideen</span></li>
                       </ul>
                     </div>
